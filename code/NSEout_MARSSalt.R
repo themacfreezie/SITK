@@ -84,63 +84,64 @@ obsE <- data.matrix(wobserverE.df[2:ncol(wobserverE.df)])
 # specify matrices for MARSS models
 bE.model <- "identity"
 
-uE.model <- matrix(
-  c("u1", "u2"),
-  nrow = 2,
-  ncol = 1,
-  byrow = TRUE
-)
-# uE.model <- "zero"
+# uE.model <- matrix(
+#   c("u1", "u2"),
+#   nrow = 2,
+#   ncol = 1,
+#   byrow = TRUE
+# )
+uE.model <- "zero"
 
 qE.model <- "diagonal and equal"
 
 # zE.model <- "identity"
 zE.model <- matrix(
-  c(1, 0, 
-    1, 0, 
-    1, 0, 
-    1, 0, 
-    1, 0, 
+  c(1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
     0, 1,
-    1, 0, 
-    1, 0, 
-    1, 0, 
-    1, 0, 
-    1, 0, 
     1, 0,
-    1, 0, 
-    1, 0, 
-    1, 0, 
-    1, 0, 
-    1, 0, 
     1, 0,
-    1, 0, 
-    1, 0, 
-    1, 0, 
-    1, 0, 
-    1, 0, 
     1, 0,
-    1, 0, 
-    1, 0, 
-    1, 0, 
-    1, 0, 
-    1, 0, 
     1, 0,
-    1, 0, 
-    1, 0, 
-    1, 0, 
-    1, 0, 
-    1, 0, 
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
+    1, 0,
     1, 0),
   nrow = 36,
   ncol = 2,
   byrow = TRUE
 )
+# zE.model <- matrix(1, nE, 1)
 
 aE.model <- "zero"
 
-rE.model <- "diagonal and equal"
-# rE.model <- "equalvarcov" 
+# rE.model <- "diagonal and equal"
+rE.model <- "equalvarcov" 
   # will compare with AIC
 
 dE.model <- matrix(list(0), nE, nE)
@@ -157,10 +158,15 @@ model.listE <- list(
   D = dE.model, d = obsE)
 
 # specify MARSS model
+# ptm <- proc.time()
+# ssE <- MARSS(datE, model = model.listE, method = "TMB")
+# proc.time()[3] - ptm
+
 ptm <- proc.time()
-ssE <- MARSS(datE, model = model.listE, method = "TMB")
+ssE <- MARSS(datE, model = model.listE, method = "kem")
 proc.time()[3] - ptm
 
 # let's see those estimates
 fitted(ssE)
 autoplot(ssE)
+
