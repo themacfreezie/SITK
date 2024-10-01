@@ -84,14 +84,13 @@ obsE <- data.matrix(wobserverE.df[2:ncol(wobserverE.df)])
 # specify matrices for MARSS models
 bE.model <- "identity"
 
-# uE.model <- matrix(c(paste0("u", seq(nE))))
-# uE.model <- matrix(
-#   c("u1", "u2"),
-#   nrow = 2,
-#   ncol = 1,
-#   byrow = TRUE
-# )
-uE.model <- "zero"
+uE.model <- matrix(
+  c("u1", "u2"),
+  nrow = 2,
+  ncol = 1,
+  byrow = TRUE
+)
+# uE.model <- "zero"
 
 qE.model <- "diagonal and equal"
 
@@ -164,9 +163,4 @@ proc.time()[3] - ptm
 
 # let's see those estimates
 fitted(ssE)
-
 autoplot(ssE)
-
-plot(nile, type = "p", pch = 16, col = "blue") 
-# lines(fitted(fit, type="xtt1")$.fitted, col = "red", lwd = 2) 
-# lines(fitted(fit, type="xtt2")$.fitted, col = "grey", lwd = 2)
