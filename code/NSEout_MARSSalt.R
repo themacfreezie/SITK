@@ -5,7 +5,7 @@
 # library(cowplot)
 library(data.table)
 library(dplyr)
-# library(gghighlight)
+library(gghighlight)
 library(ggplot2)
 # library(gplots)
 library(here)
@@ -168,5 +168,69 @@ proc.time()[3] - ptm
 
 # let's see those estimates
 fitted(ssE)
-autoplot(ssE)
+# autoplot(ssE)
 
+#grabbing data for figures
+statesE.est <- ssE$states
+statesEse.est <- ssE$states.se
+statesE.est
+statesEse.est
+
+# plot variance terms
+statesE.df <- as.data.frame(statesE.est)
+statesEse.df <- as.data.frame(statesEse.est)
+
+statesLong <- statesE.df %>% 
+  pivot_longer("V1":"V32", names_to="Year", values_to="fitted")
+
+statesLong <- statesLong %>% 
+  mutate(Year = c(1960, 1962, 1964, 1966, 1968,
+                  1970, 1972, 1974, 1976, 1978,
+                  1980, 1982, 1984, 1986, 1988,
+                  1990, 1992, 1994, 1996, 1998,
+                  2000, 2002, 2004, 2006, 2008,
+                  2010, 2012, 2014, 2016, 2018,
+                  2020, 2022,
+                  1960, 1962, 1964, 1966, 1968,
+                  1970, 1972, 1974, 1976, 1978,
+                  1980, 1982, 1984, 1986, 1988,
+                  1990, 1992, 1994, 1996, 1998,
+                  2000, 2002, 2004, 2006, 2008,
+                  2010, 2012, 2014, 2016, 2018,
+                  2020, 2022))
+
+statesLong <- statesLong %>% 
+  mutate(state = c("Indian River","Indian River","Indian River","Indian River","Indian River",
+                   "Indian River","Indian River","Indian River","Indian River","Indian River",
+                   "Indian River","Indian River","Indian River","Indian River","Indian River",
+                   "Indian River","Indian River","Indian River","Indian River","Indian River",
+                   "Indian River","Indian River","Indian River","Indian River","Indian River",
+                   "Indian River","Indian River","Indian River","Indian River","Indian River",
+                   "Indian River","Indian River",
+                   "NSE Outer", "NSE Outer", "NSE Outer", "NSE Outer", "NSE Outer",
+                   "NSE Outer", "NSE Outer", "NSE Outer", "NSE Outer", "NSE Outer",
+                   "NSE Outer", "NSE Outer", "NSE Outer", "NSE Outer", "NSE Outer",
+                   "NSE Outer", "NSE Outer", "NSE Outer", "NSE Outer", "NSE Outer",
+                   "NSE Outer", "NSE Outer", "NSE Outer", "NSE Outer", "NSE Outer",
+                   "NSE Outer", "NSE Outer", "NSE Outer", "NSE Outer", "NSE Outer",
+                   "NSE Outer", "NSE Outer"))
+
+statesseLong <- statesEse.df %>% 
+  pivot_longer("V1":"V32", names_to="Year", values_to="se")
+
+statesLong <- statesLong %>% 
+  mutate(se = statesseLong$se)
+
+statesLong$ub = statesLong$fitted + statesLong$se
+statesLong$lb = statesLong$fitted - statesLong$se
+
+# plotting
+ggplot(data = statesLong, aes(y=fitted, x=Year, color = state)) +
+  geom_ribbon(aes(ymin=lb, ymax=ub, fill=state), alpha=0.4) +
+  geom_line(show.legend = FALSE) +
+  theme_classic() +  
+  gghighlight(state == "Indian River", use_direct_label = TRUE, unhighlighted_params = list(color="gray70")) +
+  xlab("") +
+  ylab("State Estimate (standardized)") +
+  scale_x_continuous(expand = c(0, 0)) + 
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
