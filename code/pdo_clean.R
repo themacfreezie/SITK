@@ -1,0 +1,49 @@
+library(here)
+library(tidyverse)
+
+here::i_am("code/pdo_clean.R")
+
+# read in data from table
+col_classes = c(rep("numeric", 13))
+pdo <- read.table(here("data", "ERSST_PDOindex.txt"), sep = "", header = TRUE, nrows = 172)
+
+save(pdo, file=here("data", "pdo_raw.Rda"))
+
+# annual average - is this smart?
+annual <- rowMeans(pdo[ ,2:13])
+annual
+
+pdo$annual <- annual
+
+# drop month vars and years before 1960
+pdo <- pdo[-c(2:13)]
+
+pdo <- pdo %>% filter(Year >= 1959)
+pdo <- pdo %>% filter(Year < 2023)
+
+# create lag (year pinks are at sea)
+pdo$returnYear <- pdo$Year + 1
+
+# data transform - split into odd/even runs
+pdoE <- pdo %>% filter(returnYear %% 2 == 0)
+pdoO <- pdo %>% filter(returnYear %% 2 != 0)
+
+# setting wide
+yrsE <- pdoE$returnYear
+idxE <- pdoE$annual
+
+yrsO <- pdoO$returnYear
+idxO <- pdoO$annual
+
+WpdoE <- as.data.frame(matrix(idxE, nrow = 1, byrow = TRUE))
+names(WpdoE) <- yrsE
+
+WpdoO <- as.data.frame(matrix(idxO, nrow = 1, byrow = TRUE))
+names(WpdoO) <- yrsO
+
+save(WpdoE, file=here("data", "WpdoE.Rda"))
+save(WpdoO, file=here("data", "WpdoO.Rda"))
+
+pdoEplot <- ggplot() +
+  geom_line(data = pdoE, aes(y=annual, x=Year, color=annual))
+pdoEplot
