@@ -1,13 +1,13 @@
 library(here)
 library(tidyverse)
 
-here::i_am("code/pdo_clean.R")
+here::i_am("code/primary/04-pdo_clean.R")
 
 # read in data from table
 col_classes = c(rep("numeric", 13))
-pdo <- read.table(here("data", "ERSST_PDOindex.txt"), sep = "", header = TRUE, nrows = 172)
+pdo <- read.table(here("data", "raw", "ERSST_PDOindex.txt"), sep = "", header = TRUE, nrows = 172)
 
-save(pdo, file=here("data", "pdo_raw.Rda"))
+save(pdo, file=here("data", "clean", "pdo_raw.Rda"))
 
 # annual average - is this smart?
 annual <- rowMeans(pdo[ ,2:13])
@@ -41,8 +41,8 @@ names(WpdoE) <- yrsE
 WpdoO <- as.data.frame(matrix(idxO, nrow = 1, byrow = TRUE))
 names(WpdoO) <- yrsO
 
-save(WpdoE, file=here("data", "WpdoE.Rda"))
-save(WpdoO, file=here("data", "WpdoO.Rda"))
+save(WpdoE, file=here("data", "clean", "WpdoE.Rda"))
+save(WpdoO, file=here("data", "clean", "WpdoO.Rda"))
 
 pdoEplot <- ggplot() +
   geom_line(data = pdoE, aes(y=annual, x=Year, color=annual))
