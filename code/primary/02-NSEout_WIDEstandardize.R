@@ -1,28 +1,18 @@
 ## SET WORKING DIR & PACKAGES
 
 # import packages
-# library(car)
-# library(cowplot)
 library(dplyr, warn.conflicts = FALSE)
-# library(gghighlight)
-# library(ggplot2)
-# library(gplots)
 library (here)
-# library(lmtest)
-# library (MARSS)
 library (panelr)
-# library(plm)
 library(readxl)
-# library(tidyverse)
-# library(tseries)
 
 # create working dir and output folder
-here::i_am("code/NSEout_WIDEstandardize.R")
+here::i_am("code/primary/02-NSEout_WIDEstandardize.R")
 options(max.print=10000)
 
 # pull in data
-load(here("data", "pinksE_sc.Rda"))
-load(here("data", "pinksO_sc.Rda"))
+load(here("data", "clean", "pinksE_sc.Rda"))
+load(here("data", "clean", "pinksO_sc.Rda"))
 
 ## DATA FILTERING
 
@@ -66,8 +56,8 @@ stream_mctO <- stream_mctO %>%
             sd = mean(sd_ct))
 stream_mctO
 
-save(stream_mctE, file=here("data", "stream_mctE.Rda"))
-save(stream_mctO, file=here("data", "stream_mctO.Rda"))
+save(stream_mctE, file=here("data", "clean", "stream_mctE.Rda"))
+save(stream_mctO, file=here("data", "clean", "stream_mctO.Rda"))
 
 #standardize ln(ct)
 pinksE_scst.df <- pinksE_sc.df %>% 
@@ -88,5 +78,5 @@ wpinksO_scst.df <- panel_data(pinksO_scst.df, id = STREAMID, wave = YEAR)
 wpinksO_scst.df <- widen_panel(wpinksO_scst.df, separator = "_")
 
 # save wide dataframes
-save(wpinksE_scst.df, file=here("data", "NSEout_wpinksE_scst.Rda"))
-save(wpinksO_scst.df, file=here("data", "NSEout_wpinksO_scst.Rda"))
+save(wpinksE_scst.df, file=here("data", "clean", "NSEout_wpinksE_scst.Rda"))
+save(wpinksO_scst.df, file=here("data", "clean", "NSEout_wpinksO_scst.Rda"))

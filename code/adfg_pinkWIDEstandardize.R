@@ -7,7 +7,7 @@ library(panelr)
 library(readxl)
 
 # create working dir and output folder
-here::i_am("code/primary/02-adfg_pinkWIDEstandardize.R")
+here::i_am("code/adfg_pinkWIDEstandardize.R")
 options(max.print=10000)
 
 # pull in data
