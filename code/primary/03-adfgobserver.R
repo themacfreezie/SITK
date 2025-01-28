@@ -1,28 +1,19 @@
 ## SET WORKING DIR & PACKAGES
 
 # import packages
-# library(car)
-# library(cowplot)
-# library(dplyr)
-# library(gghighlight)
-# library(ggplot2)
-# library(gplots)
 library(here)
-# library(lmtest)
-# library(plm)
 library(panelr)
 library(readxl)
 library(tidyverse)
-# library(tseries)
 
 # create working dir and output folder
-here::i_am("code/adfgobserver.R")
+here::i_am("code/primary/03-adfgobserver.R")
 options(max.print=10000)
 
 # escapement data (IR & ADFG)
 # pull in data
-pinks.df <- read_excel(here("data", "adfg_pink.xlsx"), col_names = TRUE)
-indianr.df <- read_excel(here("data", "IndianRiver.xlsx"), sheet = "Stopha 2015 - Table 6", col_names = TRUE)
+pinks.df <- read_excel(here("data", "raw", "adfg_pink.xlsx"), col_names = TRUE)
+indianr.df <- read_excel(here("data", "raw", "IndianRiver.xlsx"), sheet = "Stopha 2015 - Table 6", col_names = TRUE)
 
 # rename vars in indianr.df to match pinks.df
 names(indianr.df)[names(indianr.df) == "Indian River Peak Escapement"] <- "PEAK_COUNT"
@@ -51,7 +42,7 @@ pinks.df <- rbind(pinks.df, indianr.df)
 pinks.df <- pinks.df[-c(2, 4:6)]
 
 # grab observer data
-observer.df <- read_excel(here("data", "Pink Salmon Index Counts_from OceanAK.xlsx"), sheet = "Observers", col_names = TRUE)
+observer.df <- read_excel(here("data", "raw", "Pink Salmon Index Counts_from OceanAK.xlsx"), sheet = "Observers", col_names = TRUE)
 
 ## if desired, drop extraneous regions from observer.df
 observer.df <- observer.df %>% filter(District!="111")
@@ -87,5 +78,5 @@ wobserverO.df <- panel_data(observerO.df, id = STREAMID, wave = YEAR)
 wobserverO.df <- widen_panel(wobserverO.df, separator = "_")
 
 # save wide dataframes
-save(wobserverE.df, file=here("data", "wobserverE.Rda"))
-save(wobserverO.df, file=here("data", "wobserverO.Rda"))
+save(wobserverE.df, file=here("data", "clean", "wobserverE.Rda"))
+save(wobserverO.df, file=here("data", "clean", "wobserverO.Rda"))
