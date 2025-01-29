@@ -1,10 +1,10 @@
 library(here)
 library(tidyverse)
 
-here::i_am("code/strayrates_clean.R")
+here::i_am("code/primary/07a-strayrates_clean.R")
 
 # read in data
-strays <- read_csv(here("data", "strayrates_raw.csv"), col_names = TRUE)
+strays <- read_csv(here("data", "raw", "strayrates_raw.csv"), col_names = TRUE)
 
 # dismissing NSE inner and SSE
 straysIR <- strays %>% filter(Source=="ESCAPEMENT SURVEY")
@@ -46,4 +46,4 @@ straysSJ <- straysSJ[-c(2:3)]
 
 strays_clean <- merge(straysIR, straysSJ, by="Year")
 
-save(strays_clean, file=here("data", "strays_clean.Rda"))
+save(strays_clean, file=here("data", "clean", "strays_clean.Rda"))

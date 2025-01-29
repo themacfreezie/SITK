@@ -1,16 +1,15 @@
-library(gghighlight)
 library(here) # set workind directory
 library(tidyverse)
 
 # set loc
-here::i_am("code/IR_statetransform.R")
+here::i_am("code/primary/07b-IR_statetransform.R")
 options(max.print=2000)
 
 # load data - from adfg_pinkWIDE
-load(here("data", "STKste_statesLongE.Rda"))
-load(here("data", "STKste_statesLongO.Rda"))
-load(here("data", "stream_mctE.Rda"))
-load(here("data", "stream_mctO.Rda"))
+load(here("data", "clean", "STKste_statesLongE.Rda"))
+load(here("data", "clean", "STKste_statesLongO.Rda"))
+load(here("data", "clean", "stream_mctE.Rda"))
+load(here("data", "clean", "stream_mctO.Rda"))
 
 # reaname state variables to match
 names(statesLongE)[names(statesLongE) == "state"] <- "STREAMID"
@@ -32,5 +31,5 @@ mergeO$ct <- mergeO$ct - 1
 IR_stateE <- mergeE %>% filter(STREAMID=="113-41-019")
 IR_stateO <- mergeO %>% filter(STREAMID=="113-41-019")
 
-save(IR_stateE, file=here("data", "IR_stateE.Rda"))
-save(IR_stateO, file=here("data", "IR_stateO.Rda"))
+save(IR_stateE, file=here("data", "clean", "IR_stateE.Rda"))
+save(IR_stateO, file=here("data", "clean", "IR_stateO.Rda"))

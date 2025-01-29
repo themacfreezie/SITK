@@ -1,10 +1,10 @@
 library(ggplot2)
 library(here)
 
-here::i_am("code/strayrates_compare.R")
+here::i_am("code/primary/07c-strayrates_compare.R")
 
 # load data
-load(here("data", "strays_clean.Rda"))
+load(here("data", "clean", "strays_clean.Rda"))
 
 stray_comp <- ggplot(data = strays_clean, aes(x = ir_pctMark, y = sj_pctMark, label=Year)) +
   geom_point() +
@@ -43,8 +43,8 @@ stray_time
 ggsave(here("output", "figures", "stray_time.png"), plot=stray_time, device="png", dpi=300)
 
 # pull in IR estimated states
-load(here("data", "IR_stateE.Rda"))
-load(here("data", "IR_stateO.Rda"))
+load(here("data", "clean", "IR_stateE.Rda"))
+load(here("data", "clean", "IR_stateO.Rda"))
 
 # merge
 mergeE <- merge(IR_stateE, strays_clean, by="Year")

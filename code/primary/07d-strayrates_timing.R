@@ -1,10 +1,10 @@
 library(here)
 library(tidyverse)
 
-here::i_am("code/strayrates_timing.R")
+here::i_am("code/primary/07d-strayrates_timing.R")
 
 # read in data
-stray_weeks <- read_xlsx(here("data", "ADFG_strayrates.xlsx"), sheet= "timing", col_names = TRUE)
+stray_weeks <- read_xlsx(here("data", "raw", "ADFG_strayrates.xlsx"), sheet= "timing", col_names = TRUE)
 
 strayrate_timing <- ggplot(stray_weeks, aes(StatWeek, fill = Site)) + 
   geom_histogram(alpha = 0.5) +

@@ -53,7 +53,7 @@ statesLongE$ub = statesLongE$fitted + statesLongE$se
 statesLongE$lb = statesLongE$fitted - statesLongE$se
 
 # save long state estimates
-save(statesLongE, file=here("data", "STKste_statesLongE.Rda"))
+save(statesLongE, file=here("data", "clean", "STKste_statesLongE.Rda"))
 
 # plotting
 STKsteE_pdo <- ggplot(data = statesLongE, aes(y=fitted, x=Year, color = state)) +
@@ -79,7 +79,7 @@ IRstatesLongE$data <- IRdata
 IRstatesLongE$predict <- ssE$ytT[6,]
 
 # save long state estimates
-save(IRstatesLongE, file=here("data", "IRstatesLongE.Rda"))
+save(IRstatesLongE, file=here("data", "clean", "IRstatesLongE.Rda"))
 
 IR_resid <- ggplot(data = IRstatesLongE, aes(y=fitted, x=Year, color = state)) +
   geom_ribbon(aes(ymin=lb, ymax=ub, fill=state), alpha=0.35, linetype=0) +
@@ -88,4 +88,5 @@ IR_resid <- ggplot(data = IRstatesLongE, aes(y=fitted, x=Year, color = state)) +
   theme_classic()
 IR_resid
 
-autoplot(ssE)
+if(autoplot_06 == "yes")autoplot(ssE)
+
