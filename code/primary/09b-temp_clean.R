@@ -1,6 +1,6 @@
 library(here)
 
-here::i_am("code/primary/08b-temp_clean.R")
+here::i_am("code/primary/09b-temp_clean.R")
 
 col_classes = c(rep("numeric", 14))
 temp <- read.table(here("data", "raw", "NOWdata_temperature_sitkaairport.txt"), sep = "", header = TRUE, nrows = 82)

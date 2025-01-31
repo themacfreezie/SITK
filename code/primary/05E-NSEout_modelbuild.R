@@ -3,7 +3,7 @@ library(MARSS)
 library(tidyverse)
 
 # set loc
-here::i_am("code/primary/05E-NSEout_modeleval.R")
+here::i_am("code/primary/05E-NSEout_modelbuild.R")
 options(max.print=2000)
 
 # load data 
@@ -105,14 +105,15 @@ model.listEb <- list(
 
 # specify MARSS model
 ptm <- proc.time()
-ssEa <- MARSS(datE, model = model.listEa, method = "kem")
-ssEb <- MARSS(datE, model = model.listEb, method = "kem")
+if(!file.exists(here("data", "clean", "ssEa.rds"))){
+  ssEa <- MARSS(datE, model = model.listEa, method = "kem")
+  saveRDS(ssEa, file=here("data", "clean", "ssEa.rds"))
+}
+if(!file.exists(here("data", "clean", "ssEb.rds"))){
+  ssEb <- MARSS(datE, model = model.listEb, method = "kem")
+  saveRDS(ssEb, file=here("data", "clean", "ssEb.rds"))
+}
 proc.time()[3] - ptm
-
-# aic evaluation of competing models
-MARSSaic(ssEa, output = c("AIC"))
-MARSSaic(ssEb, output = c("AIC"))
-  # ssEb is better model
 
 zEa.model <- "identity"
 uEbb.model <- matrix(paste0("u", seq(2)))
@@ -173,14 +174,12 @@ model.listEbb <- list(
 
 # specify MARSS model
 ptm <- proc.time()
-ssEba <- MARSS(datE, model = model.listEba, method = "kem")
-ssEbb <- MARSS(datE, model = model.listEbb, method = "kem")
+if(!file.exists(here("data", "clean", "ssEba.rds"))){
+  ssEba <- MARSS(datE, model = model.listEba, method = "kem")
+  saveRDS(ssEba, file=here("data", "clean", "ssEba.rds"))
+}
+if(!file.exists(here("data", "clean", "ssEbb.rds"))){
+  ssEbb <- MARSS(datE, model = model.listEbb, method = "kem")
+  saveRDS(ssEbb, file=here("data", "clean", "ssEbb.rds"))
+}
 proc.time()[3] - ptm
-
-# aic evaluation of competing models
-MARSSaic(ssEba, output = c("AIC"))
-MARSSaic(ssEbb, output = c("AIC"))
-  # ssEbb is better model
-
-ssE <- ssEbb
-saveRDS(ssE, file=here("data", "clean", "ssE.rds"))

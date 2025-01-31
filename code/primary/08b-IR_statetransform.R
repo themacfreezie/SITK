@@ -2,7 +2,7 @@ library(here) # set workind directory
 library(tidyverse)
 
 # set loc
-here::i_am("code/primary/07b-IR_statetransform.R")
+here::i_am("code/primary/08b-IR_statetransform.R")
 options(max.print=2000)
 
 # load data - from adfg_pinkWIDE

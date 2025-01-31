@@ -4,7 +4,7 @@ library(here) # set workind directory
 library(tidyverse)
 
 # set loc
-here::i_am("code/primary/06E-NSEout_output.R")
+here::i_am("code/primary/07E-NSEout_output.R")
 options(max.print=2000)
 
 # load in ssE (from 05E)

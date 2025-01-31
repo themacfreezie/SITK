@@ -1,7 +1,7 @@
 library(ggplot2)
 library(here)
 
-here::i_am("code/primary/07c-strayrates_compare.R")
+here::i_am("code/primary/08c-strayrates_compare.R")
 
 # load data
 load(here("data", "clean", "strays_clean.Rda"))

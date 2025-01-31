@@ -1,7 +1,7 @@
 library(here)
 library(tidyverse)
 
-here::i_am("code/primary/07d-strayrates_timing.R")
+here::i_am("code/primary/08d-strayrates_timing.R")
 
 # read in data
 stray_weeks <- read_xlsx(here("data", "raw", "ADFG_strayrates.xlsx"), sheet= "timing", col_names = TRUE)

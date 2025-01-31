@@ -1,13 +1,21 @@
 library(here)
+library(readr)
 library(tidyverse)
 
 here::i_am("code/primary/04-pdo_clean.R")
 
 # read in data from table
-col_classes = c(rep("numeric", 13))
-pdo <- read.table(here("data", "raw", "ERSST_PDOindex.txt"), sep = "", header = TRUE, nrows = 172)
-
-save(pdo, file=here("data", "clean", "pdo_raw.Rda"))
+if(!file.exists(here("data", "clean", "pdo_raw.Rda"))){
+  pdo <- read.table("https://www.ncei.noaa.gov/pub/data/cmb/ersst/v5/index/ersst.v5.pdo.dat",
+                  sep = "",
+                  header = TRUE,
+                  skip = 1)
+  save(pdo, file=here("data", "clean", "pdo_raw.Rda"))
+} 
+  
+if(file.exists(here("data", "clean", "pdo_raw.Rda"))) {
+  load(here("data", "clean", "pdo_raw.Rda"))
+}
 
 # annual average - is this smart?
 annual <- rowMeans(pdo[ ,2:13])

@@ -1,7 +1,7 @@
 library(here)
 library(tidyverse)
 
-here::i_am("code/primary/07a-strayrates_clean.R")
+here::i_am("code/primary/08a-strayrates_clean.R")
 
 # read in data
 strays <- read_csv(here("data", "raw", "strayrates_raw.csv"), col_names = TRUE)
