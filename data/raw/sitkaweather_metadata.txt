@@ -1,5 +1,5 @@
 ERSST_PDOindex - NCEI PDO index 
-retrieved from: https://www.ncei.noaa.gov/access/monitoring/pdo/
+retrieved from: https://www.ncei.noaa.gov/pub/data/cmb/ersst/v5/index/ersst.v5.pdo.dat
 
 NOWdata_precipitation_sitkaairport - NOAA Online Weather Data
 Monthly total precipitation (in.) for Sitka Airport, AK
