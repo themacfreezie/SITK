@@ -36,6 +36,9 @@ pdo$returnYear <- pdo$Year + 1
 pdoE <- pdo %>% filter(returnYear %% 2 == 0)
 pdoO <- pdo %>% filter(returnYear %% 2 != 0)
 
+save(pdoE, file=here("data", "clean", "pdoE.Rda"))
+save(pdoO, file=here("data", "clean", "pdoO.Rda"))
+
 # setting wide
 yrsE <- pdoE$returnYear
 idxE <- pdoE$annual

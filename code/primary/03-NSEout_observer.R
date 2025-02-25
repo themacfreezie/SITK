@@ -69,6 +69,10 @@ mergeID.df <- merge.df[-c(3, 4)]
 observerE.df <- mergeID.df %>% filter(YEAR %% 2 == 0)
 observerO.df <- mergeID.df %>% filter(YEAR %% 2 != 0)
 
+# save dataframes
+save(observerE.df, file=here("data", "clean", "NSEout_observerE.Rda"))
+save(observerO.df, file=here("data", "clean", "NSEout_observerO.Rda"))
+
 # set data wide (rows = IDs, columns = year)
 wobserverE.df <- panel_data(observerE.df, id = STREAMID, wave = YEAR)
 wobserverE.df <- widen_panel(wobserverE.df, separator = "_")

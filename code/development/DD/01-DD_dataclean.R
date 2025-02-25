@@ -6,7 +6,7 @@ library(readxl)
 library(tidyverse)
 
 # create working dir and output folder
-here::i_am("code/development/01-DD_dataclean.R")
+here::i_am("code/development/DD/01-DD_dataclean.R")
 options(max.print=10000)
 
 
@@ -167,6 +167,23 @@ DD_pinksO_scst.df <- DD_pinksO_sc.df %>%
   group_by(STREAMID) %>% 
   mutate(standard_ct=scale(ct))
 DD_pinksO_scst.df <- DD_pinksO_scst.df[-c(3, 4)]
+
+#generating dummy variable for IR
+DD_pinksE_scst.df$dIR <- ifelse(DD_pinksE_scst.df$STREAMID=="113-41-019", 1, 0)
+DD_pinksO_scst.df$dIR <- ifelse(DD_pinksO_scst.df$STREAMID=="113-41-019", 1, 0)
+
+#generating dummy variables for treatment
+DD_pinksE_scst.df$dPost <- ifelse(DD_pinksE_scst.df$YEAR>1980, 1, 0)
+DD_pinksO_scst.df$dPost <- ifelse(DD_pinksO_scst.df$YEAR>1980, 1, 0)
+
+#drop obs with no count (IR)
+DD_pinksE_scst.df <- na.omit(DD_pinksE_scst.df)
+DD_pinksO_scst.df <- na.omit(DD_pinksO_scst.df)
+
+#drop obs after last IR observation
+# DD_pinksE_scst.df <- DD_pinksE_scst.df %>% filter(YEAR<=2016)
+# DD_pinksO_scst.df <- DD_pinksO_scst.df %>% filter(YEAR<=2015)
+  # not sure if this is necessary
 
 # save scaled dataframes
 save(DD_pinksE_scst.df, file=here("data", "clean", "DD_pinksE_scst.Rda"))
