@@ -56,3 +56,12 @@ summary(DDmodE_envi)
 summary(DDmodO_both)
 
 # what about aic? 
+AIC(DDmodE_base, k=2)
+AIC(DDmodE_envi, k=2) # best
+AIC(DDmodE_obsv, k=2)
+AIC(DDmodE_both, k=2)
+
+AIC(DDmodO_base, k=2)
+AIC(DDmodO_envi, k=2)
+AIC(DDmodO_obsv, k=2)
+AIC(DDmodO_both, k=2) # best
