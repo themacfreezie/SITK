@@ -6,7 +6,7 @@ library(readxl)
 library(tidyverse)
 
 # create working dir and output folder
-here::i_am("code/primary/01-adfgIR_scale.R")
+here::i_am("code/development/01-DD_dataclean.R")
 options(max.print=10000)
 
 
