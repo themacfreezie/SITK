@@ -1,5 +1,4 @@
 Version: 1.0
-ProjectId: f4a67972-10c3-43d6-917e-2f3b92b934c5
 
 RestoreWorkspace: Default
 SaveWorkspace: Default
@@ -12,5 +11,3 @@ Encoding: UTF-8
 
 RnwWeave: Sweave
 LaTeX: pdfLaTeX
-
-ProjectName: SITK
