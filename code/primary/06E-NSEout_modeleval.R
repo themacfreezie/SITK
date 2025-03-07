@@ -22,3 +22,6 @@ MARSSaic(ssEbb, output = c("AIC"))
 
 ssE <- ssEbb
 saveRDS(ssE, file=here("data", "clean", "ssE.rds"))
+
+ssE_identity <- ssEba
+saveRDS(ssE_identity, file=here("data", "clean", "ssE_identity.rds"))
