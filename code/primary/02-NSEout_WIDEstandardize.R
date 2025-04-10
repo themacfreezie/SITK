@@ -70,6 +70,10 @@ pinksO_scst.df <- pinksO_sc.df %>%
   mutate(standard_ct=scale(ct))
 pinksO_scst.df <- pinksO_scst.df[-c(3, 4)]
 
+# save wide dataframes
+save(pinksE_scst.df, file=here("data", "clean", "NSEout_tpinksE_scst.Rda"))
+save(pinksO_scst.df, file=here("data", "clean", "NSEout_tpinksO_scst.Rda"))
+
 # set data wide (rows = IDs, columns = year)
 wpinksE_scst.df <- panel_data(pinksE_scst.df, id = STREAMID, wave = YEAR)
 wpinksE_scst.df <- widen_panel(wpinksE_scst.df, separator = "_")
