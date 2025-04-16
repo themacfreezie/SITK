@@ -7,6 +7,7 @@ library(dplyr)
 library(gghighlight)
 library(ggplot2)
 library(gplots)
+library(here)
 library(lmtest)
 library(plm)
 library(readxl)
@@ -14,9 +15,7 @@ library(tidyverse)
 library(tseries)
 
 # create working dir and output folder
-WD1 <- "C:/Users/thema/OneDrive/Documents/dissertation/ch1/data"
-setwd(WD1)
-
+here::i_am("code/defunct/IRmultiline_scaledNSE.R")
 options(max.print=10000)
 
 
@@ -24,7 +23,7 @@ options(max.print=10000)
 
 # 1) AWC stream length data
 # pull in data
-streams.df <- read_excel("awc_stream.xlsx", col_names = TRUE)
+streams.df <- read_excel(here("data", "raw", "awc_stream.xlsx"), col_names = TRUE)
 
 # drop extraneous variables from streams.df
 streams.df <- streams.df[-c(1, 4:7)]
@@ -56,8 +55,8 @@ streams.df <- streams.df %>%
 
 # 2) escapement data (IR & ADFG)
 # pull in data
-nPinks.df <- read_excel("adfg_pink.xlsx", col_names = TRUE)
-indianr.df <- read_excel("IndianRiver.xlsx", sheet = "Stopha 2015 - Table 6", col_names = TRUE)
+nPinks.df <- read_excel(here("data", "raw", "adfg_pink.xlsx"), col_names = TRUE)
+indianr.df <- read_excel(here("data", "raw", "IndianRiver.xlsx"), sheet = "Stopha 2015 - Table 6", col_names = TRUE)
 
 # rename vars in indianr.df to match nPinks.df
 names(indianr.df)[names(indianr.df) == "Indian River Peak Escapement"] <- "PEAK_COUNT"
