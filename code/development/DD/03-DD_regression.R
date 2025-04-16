@@ -9,7 +9,7 @@ load(here("data", "clean", "DD_E.Rda"))
 load(here("data", "clean", "DD_O.Rda"))
 
 # basic DD regression model
-DDmodE_base <- lm(standard_ct ~ dPost + dI R + dIR*dPost , DD_E)
+DDmodE_base <- lm(standard_ct ~ dPost + dIR + dIR*dPost , DD_E)
 DDmodO_base <- lm(standard_ct ~ dPost + dIR + dIR*dPost , DD_O)
 
 # DD regression model + environmental covariates
