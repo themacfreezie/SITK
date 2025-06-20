@@ -1,3 +1,4 @@
+library(gghighlight)
 library(here) # set workind directory
 library(MARSS)
 library(tidyverse)
@@ -73,7 +74,7 @@ pdoE <- data.matrix(WpdoE)
 bE.model <- "identity"
 uEity.model <- matrix(paste0("u", seq(nE)))
 uE2st.model <- matrix(paste0("u", seq(2)))
-qE.model <- "diagonal and equal"
+qE.model <- "diagonal and unequal"
 zEity.model <- "identity"
 zE2st.model <- matrix(
   c(1, 0,
