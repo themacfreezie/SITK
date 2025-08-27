@@ -1,0 +1,73 @@
+Delivered-To: bemcgreal@gmail.com
+Received: by 2002:a05:6520:507:b0:26d:f2ce:af71 with SMTP id g7csp1564027lkv;
+        Sun, 20 Aug 2023 21:26:28 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IG7DsV6tYwjcg0w1GmuVQCpk8lwcO5/V6EPoYHv+ri635vMkcGfiPwu394MKk2KgiiODqCe
+X-Received: by 2002:a05:6a00:1818:b0:68a:54e5:24e6 with SMTP id y24-20020a056a00181800b0068a54e524e6mr1219845pfa.8.1692591988319;
+        Sun, 20 Aug 2023 21:26:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1692591988; cv=none;
+        d=google.com; s=arc-20160816;
+        b=qb1+KMzOIjGhM+95tj7ZUfoPzH+VI0MRUKR5PGuFsLBGO/IorRVjlyZ4lr/kX9MRTe
+         V7+xrT4b3138qkYL34awePuVMBs19sgTdkKuemox1ohRQ/pYAoEbLpT5znAIpnguQw3d
+         k8D107xFwnl3bEiTtUdXLNLk+3OXHUaen6ky6Fl8X3rUEJfaCuf5dQ/OklRl/+iTNp83
+         eZ+SL6ggWvbn9cn9A7fVrm7jkzaSYqgY2oiCmBC288pwdEcT3n/rj7IIB8IwacKDyEXc
+         aQlq1d2KHK/Dk4RLZKwYsEbrkDvRALiCn1Cz6uH5pA+vxzR93efFxhItl+E0Y9m23cl5
+         de2A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=message-id:content-transfer-encoding:subject:date:to:from
+         :mime-version:dkim-signature;
+        bh=OfJ8TqGFWWVYvNyZ9mX7Jd7V37EPrSI3q5Viu1KWpGw=;
+        fh=icAFCaz0PBmAiMzRR4yeLykwxCL6Vj1WgnFJRW+G4wQ=;
+        b=Oen3aiRDtcLjU3iI0B+Ch42qJ8RexubWc1PWkntSny2LwXUXh6TeP+myw8PqBF4+NP
+         o9anXTwQK3DJmtg63RmvHD4lPgnMAF08oHFFT7iSS0NyTqNNznNDtf9cQmu1aiX/li9a
+         wzJrPUy2YyxOeeOTykYyhRYAqGLMw3tyhJpUGLFvYLlmcXIVSuPPGV5S6zGsYL0V8kYd
+         0tnZNWnAYVnrb+5p66WhbB6F1hrVJWXE1wf2+FucbQB4qakY2L/uwJznBOU5thL0EbO5
+         y7A8D+tWQIS+nZIeuAKlKlaPm2X0UM4iZMnczxkegeF7UemhNG5hv/RYE8J66m2WnDEX
+         hXNw==
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@alaskaair.com header.s=m1 header.b=ZJnWiyaU;
+       spf=pass (google.com: domain of alaska.mobile@alaskaair.com designates 159.49.254.10 as permitted sender) smtp.mailfrom=Alaska.Mobile@alaskaair.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=alaskaair.com
+Return-Path: <Alaska.Mobile@alaskaair.com>
+Received: from outbound.alaskaair.com (aag.alaskaair.com. [159.49.254.10])
+        by mx.google.com with ESMTPS id t8-20020a056a00138800b006884632d5a0si6687168pfg.297.2023.08.20.21.26.27
+        for <bemcgreal@gmail.com>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Aug 2023 21:26:28 -0700 (PDT)
+Received-SPF: pass (google.com: domain of alaska.mobile@alaskaair.com designates 159.49.254.10 as permitted sender) client-ip=159.49.254.10;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@alaskaair.com header.s=m1 header.b=ZJnWiyaU;
+       spf=pass (google.com: domain of alaska.mobile@alaskaair.com designates 159.49.254.10 as permitted sender) smtp.mailfrom=Alaska.Mobile@alaskaair.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=alaskaair.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alaskaair.com; s=m1;
+	t=1692591987; bh=OfJ8TqGFWWVYvNyZ9mX7Jd7V37EPrSI3q5Viu1KWpGw=;
+	h=From:To:Date:Subject;
+	b=ZJnWiyaUOl1avOCtEPiVPBiaxPllK4X0cfOKJ9cuXph7ymfb4uLi7285wokKts1U+
+	 ioWRVCbLNgBUv3dfJeYlOZmpmcOULPKXEMLQlG9R2KhJd4cM4dl6ag3U7y6cQBmgsp
+	 SlVEXY6Q6V8vUuppHgfdZ0GpQp3pwydZHV6HWuZVrnlK54ZGHmWSZCVLWuZAnYq/7a
+	 SVL1s6I5IbsUp2/bPg34G26g+s/1olkcoxWojqdO4LkXDI21pnbzH07gjyMRDxiImS
+	 e6BZko4s5b06M/We2O8mTLF7llQRkGuWPLGF1769a9xzBRUXROnBxwi3AjyPwpPATR
+	 wHKA8YfMfro2A==
+Received: from seav3pdna02 (Not Verified[159.49.246.10]) by outbound.alaskaair.com with Trustwave SEG (v8,2,4,11170)
+	id <B64e2e7730000>; Sun, 20 Aug 2023 21:26:27 -0700
+MIME-Version: 1.0
+From: "Alaska Airlines" <Alaska.Mobile@alaskaair.com>
+To: bemcgreal@gmail.com
+Date: 20 Aug 2023 21:26:27 -0700
+Subject: Alaska Airlines Baggage Receipt
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Message-ID: <10h7y9h10qnf.2le0ebayyte3i@outbound.alaskaair.com>
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=KNsk82No c=1 sm=1 tr=0 a=8V1rf7S3Bx1IPFUarmVICg==:117 a=8V1rf7S3Bx1IPFUarmVICg==:17 a=kj9zAlcOel0A:10 a=UttIx32zK-AA:10 a=AUXPDvvYAAAA:8 a=X3-YhXD08TUB45vQvwYA:9 a=CjuIK1q_8ugA:10 a=QSmdjuUIh-wA:10 a=zgiPjhLxNE0A:10 a=0eR8PL59z1uqHDoY--3_:22
+X-SEG-SpamProfiler-Score: 0
+
+Thank you for using a mobile device to pay for your checked bagga=
+ge.=0D=0A=0D=0A=0D=0ABAGGAGE RECEIPT=0D=0A=0D=0AThe Visa card end=
+ing with ***0837 has been charged a total of $30.00 USD on August=
+ 20, 2023 for your Seattle, WA to Sitka, AK trip.=0D=0A=0D=0A=0D=0A=
+Traveler: Brian Mcgreal=0D=0ANumber of Bags: 1=0D=0AFee: $30.00=0D=0A=
+________________________=0D=0ATOTAL: $30.00 USD=0D=0A=0D=0A=0D=0A=
+If you have any questions, please call Customer Care at 1-800-654=
+-5669, Monday-Friday, between 8:00 a.m. and 5:45 p.m. (PT) or Sat=
+urday between 8:00 a.m. and 5:00 p.m. (PT).=0D=0A=0D=0AThanks aga=
+in!=0D=0A=0D=0AAlaska Airlines=0D=0Ahttp://www.alaskaair.com=0D=0A
+
