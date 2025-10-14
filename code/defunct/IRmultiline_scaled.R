@@ -16,7 +16,7 @@ library(tidyverse)
 # library(tseries)
 
 # create working dir and output folder
-here::i_am("code/IRmultiline_scaled.R")
+here::i_am("code/defunct/IRmultiline_scaled.R")
 options(max.print=10000)
 
 
@@ -24,8 +24,8 @@ options(max.print=10000)
 
 # pull in data
 # load data
-load(here("data", "pinksE_sc.Rda"))
-load(here("data", "pinksO_sc.Rda"))
+load(here("data", "clean", "pinksE_sc.Rda"))
+load(here("data", "clean", "pinksO_sc.Rda"))
 
 # highlight Indian River on charts of escapement
 print(ggplot(pinksE_sc.df, aes(x=YEAR, y=ESCbyKM, group=STREAM)) +
