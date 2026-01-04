@@ -70,14 +70,8 @@ obsE <- data.matrix(wobserverE.df[2:ncol(wobserverE.df)])
 pdoE <- data.matrix(WpdoE)
 
 # specify matrices for MARSS models
-bE.model <- "identity"
-# bE.model <- matrix(
-#   c(b11, b12,
-#     b21, b22),
-#   nrow = 2,
-#   ncol = 2,
-#   byrow = TRUE
-# )
+bE_i.model <- "identity"
+bE.model <- "unconstrained"
 uEbb.model <- matrix(paste0("u", seq(2)))
 qE.model <- "diagonal and equal"
 zEb.model <- matrix(
@@ -128,7 +122,13 @@ v0E.model <- "zero"
 cEb.model <- matrix("pdo", 2, 1)
 dE.model <- matrix(list(0), nE, nE)
 
-model.listEbb <- list(
+model.listEbeta_i <- list(
+  B = bE_i.model, U = uEbb.model, Q = qE.model,
+  Z = zEb.model, A = aE.model, R = rE.model,
+  x0 = x0E.model, V0 = v0E.model, tinitx = 0,
+  C= cEb.model, c = pdoE, D = dE.model, d = obsE)
+
+model.listEbeta <- list(
   B = bE.model, U = uEbb.model, Q = qE.model,
   Z = zEb.model, A = aE.model, R = rE.model,
   x0 = x0E.model, V0 = v0E.model, tinitx = 0,
@@ -136,8 +136,15 @@ model.listEbb <- list(
 
 # specify MARSS model
 ptm <- proc.time()
+if(!file.exists(here("data", "clean", "ssEbeta_i.rds"))){
+  ssEbeta_i <- MARSS(datE, model = model.listEbeta_i, method = "kem")
+  saveRDS(ssEbeta_i, file=here("data", "clean", "ssEbeta_i.rds"))
+}
+proc.time()[3] - ptm
+
+ptm <- proc.time()
 if(!file.exists(here("data", "clean", "ssEbeta.rds"))){
-  ssEbeta <- MARSS(datE, model = model.listEbb, method = "kem")
+  ssEbeta <- MARSS(datE, model = model.listEbeta, method = "kem")
   saveRDS(ssEbeta, file=here("data", "clean", "ssEbeta.rds"))
 }
 proc.time()[3] - ptm
