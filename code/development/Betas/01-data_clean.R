@@ -5,7 +5,7 @@ library(readxl)
 library(tidyverse)
 
 # set loc
-here::i_am("code/development/Betas/data_clean.R")
+here::i_am("code/development/Betas/01-data_clean.R")
 options(max.print=2000)
 
 ## DATA FILTERING

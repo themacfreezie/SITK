@@ -106,9 +106,9 @@ WbetaO_DFGe.df <- widen_panel(betaO_DFGe.df, separator = "_")
 
 # save wide dataframes
 save(WbetaE_AMPr.df, file=here("data", "clean", "WbetaE_AMPr.Rda"))
-save(WbetaO_AMPr.df, file=here("data", "clean", "WbetaE_AMPr.Rda"))
+save(WbetaO_AMPr.df, file=here("data", "clean", "WbetaO_AMPr.Rda"))
 save(WbetaE_DFGr.df, file=here("data", "clean", "WbetaE_DFGr.Rda"))
-save(WbetaO_DFGr.df, file=here("data", "clean", "WbetaE_DFGr.Rda"))
+save(WbetaO_DFGr.df, file=here("data", "clean", "WbetaO_DFGr.Rda"))
 save(WbetaE_DFGe.df, file=here("data", "clean", "WbetaE_DFGe.Rda"))
-save(WbetaO_DFGe.df, file=here("data", "clean", "WbetaE_DFGe.Rda"))
+save(WbetaO_DFGe.df, file=here("data", "clean", "WbetaO_DFGe.Rda"))
 
