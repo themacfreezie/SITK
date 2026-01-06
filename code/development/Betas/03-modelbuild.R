@@ -1,4 +1,6 @@
-library(here) # set workind directory
+## SET WORKING DIR & PACKAGES
+
+library(here)
 library(MARSS)
 library(tidyverse)
 
@@ -18,8 +20,9 @@ load(here("data", "clean", "WbetaO_DFGe.Rda"))
 load(here("data", "clean", "WpdoE.Rda"))
 load(here("data", "clean", "WpdoO.Rda"))
 
-WpdoE <- WpdoE[-c(1:9, 29:32)]
-WpdoO <- WpdoO[-c(1:8, 28:32)]
+WpdoE <- WpdoE[-c(1:9)]
+WpdoO <- WpdoO[-c(1:8)]
+  # needs more data for larger IR time series
 
 # grab year lists, # of observations, & pure count data
 yearsE <- names(WbetaE_AMPr.df)
@@ -56,14 +59,16 @@ c.model <- matrix("pdo", 2, 1)
 model.list_Ebeta <- list(
   B = b.model, U = u.model, Q = q.model,
   Z = z.model, A = a.model, R = r.model,
-  x0 = x.model, V0 = v.model, tinitx = 0,
-  C= c.model, c = pdoE)
+  x0 = x.model, V0 = v.model, tinitx = 0
+  # , C= c.model, c = pdoE
+  )
 
 model.list_Obeta <- list(
   B = b.model, U = u.model, Q = q.model,
   Z = z.model, A = a.model, R = r.model,
-  x0 = x.model, V0 = v.model, tinitx = 0,
-  C= c.model, c = pdoO)
+  x0 = x.model, V0 = v.model, tinitx = 0
+  # , C= c.model, c = pdoO
+  )
 
 # specify MARSS models
 ptm <- proc.time()

@@ -44,14 +44,18 @@ returns.df <- merge(SJHamp.df, SJHdfg.df, by="return_year")
 save(returns.df, file=here("data", "clean", "SJHreturns.Rda"))
 
 # 2) Indian river data
-indianr.df <- read_excel(here("data", "raw", "IndianRiver.xlsx"), sheet = "Stopha 2015 - Table 6", col_names = TRUE)
+indianr.df <- read_excel(here("data", "raw", "SITKA AREA HISTORIC PINK ESCAPEMENTS.xlsx"), sheet = "Sitka Sound", col_names = TRUE)
 
-# rename vars in indianr.df
-names(indianr.df)[names(indianr.df) == "Indian River Peak Escapement"] <- "IRpeak_count"
-names(indianr.df)[names(indianr.df) == "YEAR"] <- "return_year"
+# drop other streams and extra rows from indianr.df
+indianr.df <- indianr.df[-c(2:13, 15:20)]
+indianr.df <- indianr.df[-c(1, 67:76), ]
 
-# drop run and sitka sound index from indianr.df
-indianr.df <- indianr.df[-c(2, 4)]
+# rename vars in indianr.df to match pinks.df
+names(indianr.df)[names(indianr.df) == "11341019"] <- "IRpeak_count"
+names(indianr.df)[names(indianr.df) == "...1"] <- "return_year"
+
+indianr.df$IRpeak_count <- as.numeric(indianr.df$IRpeak_count)
+indianr.df$return_year <- as.numeric(indianr.df$return_year)
 
 # drop years prior to 1977
 indianr.df <- indianr.df %>% filter(return_year >= 1977)
