@@ -18,12 +18,12 @@ mod <- bootE_AMPr
 # grab bootstrap parameter estimates for b
 df <- mod$boot.params
 df <- data.frame(t(df))
-df <- df[, -c(1,2, 7:11)]
+df <- df[, -c(1,2, 7:12)]
 
 # rename columns
 names(df)[names(df) == "B..1.1."] <- "Hatchery(t)<<Hatchery(t-1)"
 names(df)[names(df) == "B..1.2."] <- "Hatchery(t)<<River(t-1)"
-names(df)[names(df) == "B..2.1."] <- "River(t)<<Hatchery(t-1)"
+names(df)[names(df) == "B..2.1."] <- "River(t)<<Hatchery(t-1)" # parameter of interest
 names(df)[names(df) == "B..2.2."] <- "River(t)<<River(t-1)"
 # let's doulbe check with mark and make sure I'm assigning hese correctly
 
@@ -31,7 +31,8 @@ names(df)[names(df) == "B..2.2."] <- "River(t)<<River(t-1)"
 names <- colnames(df)
 mean <- sapply(df, mean)
 sd <- sapply(df, sd)
-points <- data.frame(Beta = names, mean = mean, sd = sd)
+pointsE_AMPr <- data.frame(Beta = names, mean = mean, sd = sd)
+quantsE_AMPr <- data.frame(sapply(df, quantile))
 
 # plots
 bplot <- ggplot(stack(df), aes(x=ind, y=values)) + 
@@ -64,12 +65,12 @@ mod <- bootE_DFGr
 # grab bootstrap parameter estimates for b
 df <- mod$boot.params
 df <- data.frame(t(df))
-df <- df[, -c(1,2, 7:11)]
+df <- df[, -c(1,2, 7:12)]
 
 # rename columns
 names(df)[names(df) == "B..1.1."] <- "Hatchery(t)<<Hatchery(t-1)"
 names(df)[names(df) == "B..1.2."] <- "Hatchery(t)<<River(t-1)"
-names(df)[names(df) == "B..2.1."] <- "River(t)<<Hatchery(t-1)"
+names(df)[names(df) == "B..2.1."] <- "River(t)<<Hatchery(t-1)" # parameter of interest
 names(df)[names(df) == "B..2.2."] <- "River(t)<<River(t-1)"
 # let's doulbe check with mark and make sure I'm assigning hese correctly
 
@@ -77,7 +78,8 @@ names(df)[names(df) == "B..2.2."] <- "River(t)<<River(t-1)"
 names <- colnames(df)
 mean <- sapply(df, mean)
 sd <- sapply(df, sd)
-points <- data.frame(Beta = names, mean = mean, sd = sd)
+pointsE_DFGr <- data.frame(Beta = names, mean = mean, sd = sd)
+quantsE_DFGr <- data.frame(sapply(df, quantile))
 
 # plots
 bplot <- ggplot(stack(df), aes(x=ind, y=values)) + 
@@ -110,12 +112,12 @@ mod <- bootE_DFGe
 # grab bootstrap parameter estimates for b
 df <- mod$boot.params
 df <- data.frame(t(df))
-df <- df[, -c(1,2, 7:11)]
+df <- df[, -c(1,2, 7:12)]
 
 # rename columns
 names(df)[names(df) == "B..1.1."] <- "Hatchery(t)<<Hatchery(t-1)"
 names(df)[names(df) == "B..1.2."] <- "Hatchery(t)<<River(t-1)"
-names(df)[names(df) == "B..2.1."] <- "River(t)<<Hatchery(t-1)"
+names(df)[names(df) == "B..2.1."] <- "River(t)<<Hatchery(t-1)" # parameter of interest
 names(df)[names(df) == "B..2.2."] <- "River(t)<<River(t-1)"
 # let's doulbe check with mark and make sure I'm assigning hese correctly
 
@@ -123,7 +125,8 @@ names(df)[names(df) == "B..2.2."] <- "River(t)<<River(t-1)"
 names <- colnames(df)
 mean <- sapply(df, mean)
 sd <- sapply(df, sd)
-points <- data.frame(Beta = names, mean = mean, sd = sd)
+pointsE_DFGe <- data.frame(Beta = names, mean = mean, sd = sd)
+quantsE_DFGe <- data.frame(sapply(df, quantile))
 
 # plots
 bplot <- ggplot(stack(df), aes(x=ind, y=values)) + 
@@ -156,12 +159,12 @@ mod <- bootO_AMPr
 # grab bootstrap parameter estimates for b
 df <- mod$boot.params
 df <- data.frame(t(df))
-df <- df[, -c(1,2, 7:11)]
+df <- df[, -c(1,2, 7:12)]
 
 # rename columns
 names(df)[names(df) == "B..1.1."] <- "Hatchery(t)<<Hatchery(t-1)"
 names(df)[names(df) == "B..1.2."] <- "Hatchery(t)<<River(t-1)"
-names(df)[names(df) == "B..2.1."] <- "River(t)<<Hatchery(t-1)"
+names(df)[names(df) == "B..2.1."] <- "River(t)<<Hatchery(t-1)" # parameter of interest
 names(df)[names(df) == "B..2.2."] <- "River(t)<<River(t-1)"
 # let's doulbe check with mark and make sure I'm assigning hese correctly
 
@@ -169,7 +172,8 @@ names(df)[names(df) == "B..2.2."] <- "River(t)<<River(t-1)"
 names <- colnames(df)
 mean <- sapply(df, mean)
 sd <- sapply(df, sd)
-points <- data.frame(Beta = names, mean = mean, sd = sd)
+pointsO_AMPr <- data.frame(Beta = names, mean = mean, sd = sd)
+quantsO_AMPr <- data.frame(sapply(df, quantile))
 
 # plots
 bplot <- ggplot(stack(df), aes(x=ind, y=values)) + 
@@ -202,12 +206,12 @@ mod <- bootO_DFGr
 # grab bootstrap parameter estimates for b
 df <- mod$boot.params
 df <- data.frame(t(df))
-df <- df[, -c(1,2, 7:11)]
+df <- df[, -c(1,2, 7:12)]
 
 # rename columns
 names(df)[names(df) == "B..1.1."] <- "Hatchery(t)<<Hatchery(t-1)"
 names(df)[names(df) == "B..1.2."] <- "Hatchery(t)<<River(t-1)"
-names(df)[names(df) == "B..2.1."] <- "River(t)<<Hatchery(t-1)"
+names(df)[names(df) == "B..2.1."] <- "River(t)<<Hatchery(t-1)" # parameter of interest
 names(df)[names(df) == "B..2.2."] <- "River(t)<<River(t-1)"
   # let's doulbe check with mark and make sure I'm assigning hese correctly
 
@@ -215,7 +219,8 @@ names(df)[names(df) == "B..2.2."] <- "River(t)<<River(t-1)"
 names <- colnames(df)
 mean <- sapply(df, mean)
 sd <- sapply(df, sd)
-points <- data.frame(Beta = names, mean = mean, sd = sd)
+pointsO_DFGr <- data.frame(Beta = names, mean = mean, sd = sd)
+quantsO_DFGr <- data.frame(sapply(df, quantile))
 
 # plots
 bplot <- ggplot(stack(df), aes(x=ind, y=values)) + 
@@ -248,12 +253,12 @@ mod <- bootO_DFGe
 # grab bootstrap parameter estimates for b
 df <- mod$boot.params
 df <- data.frame(t(df))
-df <- df[, -c(1,2, 7:11)]
+df <- df[, -c(1,2, 7:12)]
 
 # rename columns
 names(df)[names(df) == "B..1.1."] <- "Hatchery(t)<<Hatchery(t-1)"
 names(df)[names(df) == "B..1.2."] <- "Hatchery(t)<<River(t-1)"
-names(df)[names(df) == "B..2.1."] <- "River(t)<<Hatchery(t-1)"
+names(df)[names(df) == "B..2.1."] <- "River(t)<<Hatchery(t-1)" # parameter of interest
 names(df)[names(df) == "B..2.2."] <- "River(t)<<River(t-1)"
 # let's doulbe check with mark and make sure I'm assigning hese correctly
 
@@ -261,7 +266,8 @@ names(df)[names(df) == "B..2.2."] <- "River(t)<<River(t-1)"
 names <- colnames(df)
 mean <- sapply(df, mean)
 sd <- sapply(df, sd)
-points <- data.frame(Beta = names, mean = mean, sd = sd)
+pointsO_DFGe <- data.frame(Beta = names, mean = mean, sd = sd)
+quantsO_DFGe <- data.frame(sapply(df, quantile))
 
 # plots
 bplot <- ggplot(stack(df), aes(x=ind, y=values)) + 

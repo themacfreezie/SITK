@@ -50,14 +50,6 @@ ssObeta_AMPr <- ssObeta_AMPr_r2
 ssObeta_DFGr <- ssObeta_DFGr_r2
 ssObeta_DFGe <- ssObeta_DFGe_r2
 
-# plots
-plot(ssEbeta_AMPr, plot.type = c("fitted.ytt"))
-plot(ssEbeta_DFGr, plot.type = c("fitted.ytt"))
-plot(ssEbeta_DFGe, plot.type = c("fitted.ytt"))
-plot(ssObeta_AMPr, plot.type = c("fitted.ytt"))
-plot(ssObeta_DFGr, plot.type = c("fitted.ytt"))
-plot(ssObeta_DFGe, plot.type = c("fitted.ytt"))
-
 # save best fit models
 saveRDS(ssEbeta_AMPr, file=here("data", "clean", "ssEbeta_AMPr.rds"))
 saveRDS(ssEbeta_DFGr, file=here("data", "clean", "ssEbeta_DFGr.rds"))
@@ -65,3 +57,102 @@ saveRDS(ssEbeta_DFGe, file=here("data", "clean", "ssEbeta_DFGe.rds"))
 saveRDS(ssObeta_AMPr, file=here("data", "clean", "ssObeta_AMPr.rds"))
 saveRDS(ssObeta_DFGr, file=here("data", "clean", "ssObeta_DFGr.rds"))
 saveRDS(ssObeta_DFGe, file=here("data", "clean", "ssObeta_DFGe.rds"))
+
+# # plots
+# plot(ssEbeta_AMPr, plot.type = c("fitted.ytt"))
+# plot(ssEbeta_DFGr, plot.type = c("fitted.ytt"))
+# plot(ssEbeta_DFGe, plot.type = c("fitted.ytt"))
+# plot(ssObeta_AMPr, plot.type = c("fitted.ytt"))
+# plot(ssObeta_DFGr, plot.type = c("fitted.ytt"))
+# plot(ssObeta_DFGe, plot.type = c("fitted.ytt"))
+
+# data comparison
+mod <- ssEbeta_AMPr
+
+states <- mod$states
+ytT <- mod$ytT
+d <- list(states, ytT)
+df <- data.frame(do.call(rbind,d))
+df <- data.frame(t(df))
+
+names(df)[names(df) == "X.Y1"] <- "SJ.x"
+names(df)[names(df) == "X.Y2"] <- "IR.x"
+names(df)[names(df) == "X"] <- "SJ.y"
+names(df)[names(df) == "X.1"] <- "IR.y"
+
+statesE_AMPr <- df
+
+mod <- ssEbeta_DFGr
+
+states <- mod$states
+ytT <- mod$ytT
+d <- list(states, ytT)
+df <- data.frame(do.call(rbind,d))
+df <- data.frame(t(df))
+
+names(df)[names(df) == "X.Y1"] <- "SJ.x"
+names(df)[names(df) == "X.Y2"] <- "IR.x"
+names(df)[names(df) == "X"] <- "SJ.y"
+names(df)[names(df) == "X.1"] <- "IR.y"
+
+statesE_DFGr <- df
+
+mod <- ssEbeta_DFGe
+
+states <- mod$states
+ytT <- mod$ytT
+d <- list(states, ytT)
+df <- data.frame(do.call(rbind,d))
+df <- data.frame(t(df))
+
+names(df)[names(df) == "X.Y1"] <- "SJ.x"
+names(df)[names(df) == "X.Y2"] <- "IR.x"
+names(df)[names(df) == "X"] <- "SJ.y"
+names(df)[names(df) == "X.1"] <- "IR.y"
+
+statesE_DFGe <- df
+
+mod <- ssObeta_AMPr
+
+states <- mod$states
+ytT <- mod$ytT
+d <- list(states, ytT)
+df <- data.frame(do.call(rbind,d))
+df <- data.frame(t(df))
+
+names(df)[names(df) == "X.Y1"] <- "SJ.x"
+names(df)[names(df) == "X.Y2"] <- "IR.x"
+names(df)[names(df) == "X"] <- "SJ.y"
+names(df)[names(df) == "X.1"] <- "IR.y"
+
+statesO_AMPr <- df
+
+mod <- ssObeta_DFGr
+
+states <- mod$states
+ytT <- mod$ytT
+d <- list(states, ytT)
+df <- data.frame(do.call(rbind,d))
+df <- data.frame(t(df))
+
+names(df)[names(df) == "X.Y1"] <- "SJ.x"
+names(df)[names(df) == "X.Y2"] <- "IR.x"
+names(df)[names(df) == "X"] <- "SJ.y"
+names(df)[names(df) == "X.1"] <- "IR.y"
+
+statesO_DFGr <- df
+
+mod <- ssObeta_DFGe
+
+states <- mod$states
+ytT <- mod$ytT
+d <- list(states, ytT)
+df <- data.frame(do.call(rbind,d))
+df <- data.frame(t(df))
+
+names(df)[names(df) == "X.Y1"] <- "SJ.x"
+names(df)[names(df) == "X.Y2"] <- "IR.x"
+names(df)[names(df) == "X"] <- "SJ.y"
+names(df)[names(df) == "X.1"] <- "IR.y"
+
+statesO_DFGe <- df
