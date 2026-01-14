@@ -80,6 +80,32 @@ names(df)[names(df) == "X.Y2"] <- "IR.x"
 names(df)[names(df) == "X"] <- "SJ.y"
 names(df)[names(df) == "X.1"] <- "IR.y"
 
+df$index <- 1:nrow(df)
+df <- df %>% 
+  pivot_longer(
+    cols = c("SJ.x", "IR.x", "SJ.y", "IR.y"),
+    names_to = "measure",
+    values_to = "value"
+  )
+dfSJ <- df %>% filter(!(measure == "IR.x" | measure == "IR.y"))
+dfIR <- df %>% filter(!(measure == "SJ.x" | measure == "SJ.y"))
+
+ggplot(dfIR, aes(x = index, y = value, color = measure)) +
+  geom_point() +
+  labs(x = NULL,
+       title='IR Data v. Fitted States',
+       subtitle="E_AMPr",
+       y=NULL) +
+  theme_classic()
+
+ggplot(dfSJ, aes(x = index, y = value, color = measure)) +
+  geom_point() +
+  labs(x = NULL,
+       title='SJH Data v. Fitted States',
+       subtitle="E_AMPr",
+       y=NULL) +
+  theme_classic()
+
 statesE_AMPr <- df
 
 mod <- ssEbeta_DFGr
@@ -94,6 +120,32 @@ names(df)[names(df) == "X.Y1"] <- "SJ.x"
 names(df)[names(df) == "X.Y2"] <- "IR.x"
 names(df)[names(df) == "X"] <- "SJ.y"
 names(df)[names(df) == "X.1"] <- "IR.y"
+
+df$index <- 1:nrow(df)
+df <- df %>% 
+  pivot_longer(
+    cols = c("SJ.x", "IR.x", "SJ.y", "IR.y"),
+    names_to = "measure",
+    values_to = "value"
+  )
+dfSJ <- df %>% filter(!(measure == "IR.x" | measure == "IR.y"))
+dfIR <- df %>% filter(!(measure == "SJ.x" | measure == "SJ.y"))
+
+ggplot(dfIR, aes(x = index, y = value, color = measure)) +
+  geom_point() +
+  labs(x = NULL,
+       title='IR Data v. Fitted States',
+       subtitle="E_DFGr",
+       y=NULL) +
+  theme_classic()
+
+ggplot(dfSJ, aes(x = index, y = value, color = measure)) +
+  geom_point() +
+  labs(x = NULL,
+       title='SJH Data v. Fitted States',
+       subtitle="E_DFGr",
+       y=NULL) +
+  theme_classic()
 
 statesE_DFGr <- df
 
@@ -110,6 +162,32 @@ names(df)[names(df) == "X.Y2"] <- "IR.x"
 names(df)[names(df) == "X"] <- "SJ.y"
 names(df)[names(df) == "X.1"] <- "IR.y"
 
+df$index <- 1:nrow(df)
+df <- df %>% 
+  pivot_longer(
+    cols = c("SJ.x", "IR.x", "SJ.y", "IR.y"),
+    names_to = "measure",
+    values_to = "value"
+  )
+dfSJ <- df %>% filter(!(measure == "IR.x" | measure == "IR.y"))
+dfIR <- df %>% filter(!(measure == "SJ.x" | measure == "SJ.y"))
+
+ggplot(dfIR, aes(x = index, y = value, color = measure)) +
+  geom_point() +
+  labs(x = NULL,
+       title='IR Data v. Fitted States',
+       subtitle="E_DFGe",
+       y=NULL) +
+  theme_classic()
+
+ggplot(dfSJ, aes(x = index, y = value, color = measure)) +
+  geom_point() +
+  labs(x = NULL,
+       title='SJH Data v. Fitted States',
+       subtitle="E_DFGe",
+       y=NULL) +
+  theme_classic()
+
 statesE_DFGe <- df
 
 mod <- ssObeta_AMPr
@@ -124,6 +202,32 @@ names(df)[names(df) == "X.Y1"] <- "SJ.x"
 names(df)[names(df) == "X.Y2"] <- "IR.x"
 names(df)[names(df) == "X"] <- "SJ.y"
 names(df)[names(df) == "X.1"] <- "IR.y"
+
+df$index <- 1:nrow(df)
+df <- df %>% 
+  pivot_longer(
+    cols = c("SJ.x", "IR.x", "SJ.y", "IR.y"),
+    names_to = "measure",
+    values_to = "value"
+  )
+dfSJ <- df %>% filter(!(measure == "IR.x" | measure == "IR.y"))
+dfIR <- df %>% filter(!(measure == "SJ.x" | measure == "SJ.y"))
+
+ggplot(dfIR, aes(x = index, y = value, color = measure)) +
+  geom_point() +
+  labs(x = NULL,
+       title='IR Data v. Fitted States',
+       subtitle="O_AMPr",
+       y=NULL) +
+  theme_classic()
+
+ggplot(dfSJ, aes(x = index, y = value, color = measure)) +
+  geom_point() +
+  labs(x = NULL,
+       title='SJH Data v. Fitted States',
+       subtitle="O_AMPr",
+       y=NULL) +
+  theme_classic()
 
 statesO_AMPr <- df
 
@@ -140,6 +244,32 @@ names(df)[names(df) == "X.Y2"] <- "IR.x"
 names(df)[names(df) == "X"] <- "SJ.y"
 names(df)[names(df) == "X.1"] <- "IR.y"
 
+df$index <- 1:nrow(df)
+df <- df %>% 
+  pivot_longer(
+    cols = c("SJ.x", "IR.x", "SJ.y", "IR.y"),
+    names_to = "measure",
+    values_to = "value"
+  )
+dfSJ <- df %>% filter(!(measure == "IR.x" | measure == "IR.y"))
+dfIR <- df %>% filter(!(measure == "SJ.x" | measure == "SJ.y"))
+
+ggplot(dfIR, aes(x = index, y = value, color = measure)) +
+  geom_point() +
+  labs(x = NULL,
+       title='IR Data v. Fitted States',
+       subtitle="O_DFGr",
+       y=NULL) +
+  theme_classic()
+
+ggplot(dfSJ, aes(x = index, y = value, color = measure)) +
+  geom_point() +
+  labs(x = NULL,
+       title='SJH Data v. Fitted States',
+       subtitle="O_DFGr",
+       y=NULL) +
+  theme_classic()
+
 statesO_DFGr <- df
 
 mod <- ssObeta_DFGe
@@ -154,5 +284,31 @@ names(df)[names(df) == "X.Y1"] <- "SJ.x"
 names(df)[names(df) == "X.Y2"] <- "IR.x"
 names(df)[names(df) == "X"] <- "SJ.y"
 names(df)[names(df) == "X.1"] <- "IR.y"
+
+df$index <- 1:nrow(df)
+df <- df %>% 
+  pivot_longer(
+    cols = c("SJ.x", "IR.x", "SJ.y", "IR.y"),
+    names_to = "measure",
+    values_to = "value"
+  )
+dfSJ <- df %>% filter(!(measure == "IR.x" | measure == "IR.y"))
+dfIR <- df %>% filter(!(measure == "SJ.x" | measure == "SJ.y"))
+
+ggplot(dfIR, aes(x = index, y = value, color = measure)) +
+  geom_point() +
+  labs(x = NULL,
+       title='IR Data v. Fitted States',
+       subtitle="O_DFGe",
+       y=NULL) +
+  theme_classic()
+
+ggplot(dfSJ, aes(x = index, y = value, color = measure)) +
+  geom_point() +
+  labs(x = NULL,
+       title='SJH Data v. Fitted States',
+       subtitle="O_DFGe",
+       y=NULL) +
+  theme_classic()
 
 statesO_DFGe <- df
