@@ -30,7 +30,7 @@ names <- colnames(df)
 mean <- sapply(df, mean)
 sd <- sapply(df, sd)
 pointsE_AMPr <- data.frame(Beta = names, mean = mean, sd = sd)
-quantsE_AMPr <- data.frame(sapply(df, quantile))
+quantsE_AMPr <- data.frame(sapply(df, quantile, probs=c(0.05, .25, .5, .75, 0.95)))
 
 # plots
 bplot <- ggplot(stack(df), aes(x=ind, y=values)) + 
@@ -90,7 +90,7 @@ names <- colnames(df)
 mean <- sapply(df, mean)
 sd <- sapply(df, sd)
 pointsE_DFGr <- data.frame(Beta = names, mean = mean, sd = sd)
-quantsE_DFGr <- data.frame(sapply(df, quantile))
+quantsE_DFGr <- data.frame(sapply(df, quantile, probs=c(0.05, .25, .5, .75, 0.95)))
 
 # plots
 bplot <- ggplot(stack(df), aes(x=ind, y=values)) + 
@@ -125,7 +125,7 @@ names <- colnames(df)
 mean <- sapply(df, mean)
 sd <- sapply(df, sd)
 pointsO_AMPr <- data.frame(Beta = names, mean = mean, sd = sd)
-quantsO_AMPr <- data.frame(sapply(df, quantile))
+quantsO_AMPr <- data.frame(sapply(df, quantile, probs=c(0.05, .25, .5, .75, 0.95)))
 
 # plots
 bplot <- ggplot(stack(df), aes(x=ind, y=values)) + 
@@ -160,7 +160,7 @@ names <- colnames(df)
 mean <- sapply(df, mean)
 sd <- sapply(df, sd)
 pointsO_DFGr <- data.frame(Beta = names, mean = mean, sd = sd)
-quantsO_DFGr <- data.frame(sapply(df, quantile))
+quantsO_DFGr <- data.frame(sapply(df, quantile, probs=c(0.05, .25, .5, .75, 0.95)))
 
 # plots
 bplot <- ggplot(stack(df), aes(x=ind, y=values)) + 

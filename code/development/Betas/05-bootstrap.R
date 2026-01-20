@@ -10,18 +10,18 @@ ssObeta_DFGr <- readRDS(file=here("data", "clean", "ssObeta_DFGr.rds"))
 
 # bootstrap estimates
 if(!file.exists(here("data", "clean", "bootE_AMPr.rds"))){
-  bootE_AMPr <- MARSSboot(ssEbeta_AMPr, nboot=100, output="parameters", sim = "parametric", param.gen="hessian")
+  bootE_AMPr <- MARSSboot(ssEbeta_AMPr, nboot=10000, output="parameters", sim = "parametric", param.gen="hessian")
   saveRDS(bootE_AMPr, file=here("data", "clean", "bootE_AMPr.rds"))
 }
 if(!file.exists(here("data", "clean", "bootE_DFGr.rds"))){
-  bootE_DFGr <- MARSSboot(ssEbeta_DFGr, nboot=100, output="parameters", sim = "parametric", param.gen="hessian")
+  bootE_DFGr <- MARSSboot(ssEbeta_DFGr, nboot=10000, output="parameters", sim = "parametric", param.gen="hessian")
   saveRDS(bootE_DFGr, file=here("data", "clean", "bootE_DFGr.rds"))
 }
 if(!file.exists(here("data", "clean", "bootO_AMPr.rds"))){
-  bootO_AMPr <- MARSSboot(ssObeta_AMPr, nboot=100, output="parameters", sim = "parametric", param.gen="hessian")
+  bootO_AMPr <- MARSSboot(ssObeta_AMPr, nboot=10000, output="parameters", sim = "parametric", param.gen="hessian")
   saveRDS(bootO_AMPr, file=here("data", "clean", "bootO_AMPr.rds"))
 }
 if(!file.exists(here("data", "clean", "bootO_DFGr.rds"))){
-  bootO_DFGr <- MARSSboot(ssObeta_DFGr, nboot=100, output="parameters", sim = "parametric", param.gen="hessian")
+  bootO_DFGr <- MARSSboot(ssObeta_DFGr, nboot=10000, output="parameters", sim = "parametric", param.gen="hessian")
   saveRDS(bootO_DFGr, file=here("data", "clean", "bootO_DFGr.rds"))
 }
