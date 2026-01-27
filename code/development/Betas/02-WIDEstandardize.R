@@ -111,3 +111,13 @@ save(WbetaE_DFGr.df, file=here("data", "clean", "WbetaE_DFGr.Rda"))
 save(WbetaO_DFGr.df, file=here("data", "clean", "WbetaO_DFGr.Rda"))
 save(WbetaE_DFGob.df, file=here("data", "clean", "WbetaE_DFGob.Rda"))
 save(WbetaO_DFGob.df, file=here("data", "clean", "WbetaO_DFGob.Rda"))
+
+# pull in smolt data
+load(here("data", "clean", "SJHsmolts.Rda"))
+
+# release year = year after brood year?
+SJHsmolts.df$`Release Year` <- SJHsmolts.df$`Brood Year` + 1
+
+# filters
+pdo <- pdo %>% filter(Year >= 1959)
+pdo <- pdo %>% filter(Year < 2024)

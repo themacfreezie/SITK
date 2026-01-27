@@ -27,7 +27,7 @@ pdo$annual <- annual
 pdo <- pdo[-c(2:13)]
 
 pdo <- pdo %>% filter(Year >= 1959)
-pdo <- pdo %>% filter(Year < 2023)
+pdo <- pdo %>% filter(Year < 2024)
 
 # create lag (year pinks are at sea)
 pdo$returnYear <- pdo$Year + 1

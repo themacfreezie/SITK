@@ -5,7 +5,7 @@ library(MARSS)
 library(tidyverse)
 
 # set loc
-here::i_am("code/development/Betas/03-modelbuild.R")
+here::i_am("code/development/Betas/03-modelbuildALT.R")
 options(max.print=2000)
 
 # load data 

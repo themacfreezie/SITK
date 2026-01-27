@@ -20,6 +20,11 @@ options(max.print=2000)
 SJHamp.df <- read_csv(here("data", "raw", "sjh_releases.csv"), col_names = TRUE)
 SJHdfg.df <- read_excel(here("data", "raw", "SJHpinkdata.xlsx"), col_names = TRUE)
 
+# SJH smolts
+SJHsmolts.df <- SJHamp.df[-c(2, 3, 5:8)]
+# save smolts
+save(SJHsmolts.df, file=here("data", "clean", "SJHsmolts.Rda"))
+
 # dropping and renaming variables - amp
 SJHamp.df <- SJHamp.df[-c(2, 3, 5:7)]
 names(SJHamp.df)[names(SJHamp.df) == "Brood Year"] <- "brood_year"
@@ -90,6 +95,6 @@ beta_data.df <- merge(returns.df, indianr.df, by="return_year")
 beta_dataE.df <- beta_data.df %>% filter(return_year %% 2 == 0)
 beta_dataO.df <- beta_data.df %>% filter(return_year %% 2 != 0)
 
-# save scaled dataframes
+# save dataframes
 save(beta_dataE.df, file=here("data", "clean", "beta_dataE.Rda"))
 save(beta_dataO.df, file=here("data", "clean", "beta_dataO.Rda"))
