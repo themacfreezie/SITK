@@ -15,14 +15,14 @@ load(here("data", "clean", "beta_dataE.Rda"))
 load(here("data", "clean", "beta_dataO.Rda"))
 
 # split each df into three (for each measure of hatchery returns)
-betaE_AMPr.df <- beta_dataE.df[-c(3,4)]
-betaO_AMPr.df <- beta_dataO.df[-c(3,4)]
+betaE_AMPr.df <- beta_dataE.df[-c(3:5)]
+betaO_AMPr.df <- beta_dataO.df[-c(3:5)]
 
-betaE_DFGr.df <- beta_dataE.df[-c(2,3)]
-betaO_DFGr.df <- beta_dataO.df[-c(2,3)]
+betaE_DFGr.df <- beta_dataE.df[-c(2,3,5)]
+betaO_DFGr.df <- beta_dataO.df[-c(2,3,5)]
 
-betaE_DFGe.df <- beta_dataE.df[-c(2,4)]
-betaO_DFGe.df <- beta_dataO.df[-c(2,4)]
+betaE_DFGob.df <- beta_dataE.df[-c(2:4)]
+betaO_DFGob.df <- beta_dataO.df[-c(2:4)]
 
 # set them all long 
 betaE_AMPr.df <- cbind(
@@ -53,34 +53,34 @@ betaO_DFGr.df <- cbind(
 names(betaO_DFGr.df)[names(betaO_DFGr.df) == "ind"] <- "measure"
 names(betaO_DFGr.df)[names(betaO_DFGr.df) == "values"] <- "ct"
 
-betaE_DFGe.df <- cbind(
-  year = rep(betaE_DFGe.df$return_year, 2),
-  stack(betaE_DFGe.df[, c("DFGescape", "IRpeak_count")])
+betaE_DFGob.df <- cbind(
+  year = rep(betaE_DFGob.df$return_year, 2),
+  stack(betaE_DFGob.df[, c("DFGobserved", "IRpeak_count")])
 )
-names(betaE_DFGe.df)[names(betaE_DFGe.df) == "ind"] <- "measure"
-names(betaE_DFGe.df)[names(betaE_DFGe.df) == "values"] <- "ct"
+names(betaE_DFGob.df)[names(betaE_DFGob.df) == "ind"] <- "measure"
+names(betaE_DFGob.df)[names(betaE_DFGob.df) == "values"] <- "ct"
 
-betaO_DFGe.df <- cbind(
-  year = rep(betaO_DFGe.df$return_year, 2),
-  stack(betaO_DFGe.df[, c("DFGescape", "IRpeak_count")])
+betaO_DFGob.df <- cbind(
+  year = rep(betaO_DFGob.df$return_year, 2),
+  stack(betaO_DFGob.df[, c("DFGobserved", "IRpeak_count")])
 )
-names(betaO_DFGe.df)[names(betaO_DFGe.df) == "ind"] <- "measure"
-names(betaO_DFGe.df)[names(betaO_DFGe.df) == "values"] <- "ct"
+names(betaO_DFGob.df)[names(betaO_DFGob.df) == "ind"] <- "measure"
+names(betaO_DFGob.df)[names(betaO_DFGob.df) == "values"] <- "ct"
 
 # natural log of count variable
 betaE_AMPr.df$ct <- betaE_AMPr.df$ct + 1
 betaO_AMPr.df$ct <- betaO_AMPr.df$ct + 1
 betaE_DFGr.df$ct <- betaE_DFGr.df$ct + 1
 betaO_DFGr.df$ct <- betaO_DFGr.df$ct + 1
-betaE_DFGe.df$ct <- betaE_DFGe.df$ct + 1
-betaO_DFGe.df$ct <- betaO_DFGe.df$ct + 1
+betaE_DFGob.df$ct <- betaE_DFGob.df$ct + 1
+betaO_DFGob.df$ct <- betaO_DFGob.df$ct + 1
 
 betaE_AMPr.df$ct <- log(betaE_AMPr.df$ct)
 betaO_AMPr.df$ct <- log(betaO_AMPr.df$ct)
 betaE_DFGr.df$ct <- log(betaE_DFGr.df$ct)
 betaO_DFGr.df$ct <- log(betaO_DFGr.df$ct)
-betaE_DFGe.df$ct <- log(betaE_DFGe.df$ct)
-betaO_DFGe.df$ct <- log(betaO_DFGe.df$ct)
+betaE_DFGob.df$ct <- log(betaE_DFGob.df$ct)
+betaO_DFGob.df$ct <- log(betaO_DFGob.df$ct)
 
 # should these data be standardized at the level of each state? 
 # they are different measures...
@@ -98,17 +98,16 @@ WbetaE_DFGr.df <- widen_panel(betaE_DFGr.df, separator = "_")
 betaO_DFGr.df <- panel_data(betaO_DFGr.df, id = measure, wave = year)
 WbetaO_DFGr.df <- widen_panel(betaO_DFGr.df, separator = "_")
 
-betaE_DFGe.df <- panel_data(betaE_DFGe.df, id = measure, wave = year)
-WbetaE_DFGe.df <- widen_panel(betaE_DFGe.df, separator = "_")
+betaE_DFGob.df <- panel_data(betaE_DFGob.df, id = measure, wave = year)
+WbetaE_DFGob.df <- widen_panel(betaE_DFGob.df, separator = "_")
 
-betaO_DFGe.df <- panel_data(betaO_DFGe.df, id = measure, wave = year)
-WbetaO_DFGe.df <- widen_panel(betaO_DFGe.df, separator = "_")
+betaO_DFGob.df <- panel_data(betaO_DFGob.df, id = measure, wave = year)
+WbetaO_DFGob.df <- widen_panel(betaO_DFGob.df, separator = "_")
 
 # save wide dataframes
 save(WbetaE_AMPr.df, file=here("data", "clean", "WbetaE_AMPr.Rda"))
 save(WbetaO_AMPr.df, file=here("data", "clean", "WbetaO_AMPr.Rda"))
 save(WbetaE_DFGr.df, file=here("data", "clean", "WbetaE_DFGr.Rda"))
 save(WbetaO_DFGr.df, file=here("data", "clean", "WbetaO_DFGr.Rda"))
-save(WbetaE_DFGe.df, file=here("data", "clean", "WbetaE_DFGe.Rda"))
-save(WbetaO_DFGe.df, file=here("data", "clean", "WbetaO_DFGe.Rda"))
-
+save(WbetaE_DFGob.df, file=here("data", "clean", "WbetaE_DFGob.Rda"))
+save(WbetaO_DFGob.df, file=here("data", "clean", "WbetaO_DFGob.Rda"))

@@ -27,10 +27,33 @@ names(SJHamp.df)[names(SJHamp.df) == "Number Released"] <- "released"
 names(SJHamp.df)[names(SJHamp.df) == "Ocean Survival %"] <- "ocean_surv"
 
 # dropping and renaming variables - adfg
-SJHdfg.df <- SJHdfg.df[-c(1, 2, 4:17, 19:26)]
+## sum to total return
+SJHdfg.df$TOTCOMM2 <- SJHdfg.df$SEINE + SJHdfg.df$GILLNET + SJHdfg.df$TROLL + SJHdfg.df$OTHERCOMM
+    # TOTCOMM is recorded funky
+SJHdfg.df$check <- rowSums(SJHdfg.df[, c("TOTCOMM2",
+                                         "CR_CATCH",
+                                         "SPORT",
+                                         "OTHER",
+                                         "BROOD",
+                                         "ESCAPE",
+                                         "SUBSIS",
+                                         "OTHERNONCOMM")],
+                           na.rm = TRUE)
+SJHdfg.df$check_diff <- SJHdfg.df$`Total return` - SJHdfg.df$check
+SJHdfg.df$observed <- rowSums(SJHdfg.df[, c("TOTCOMM2",
+                                            "CR_CATCH",
+                                            "SPORT",
+                                            "OTHER",
+                                            "BROOD",
+                                            "SUBSIS",
+                                            "OTHERNONCOMM")],
+                              na.rm = TRUE)
+
+SJHdfg.df <- SJHdfg.df[-c(1, 2, 4:17, 19:26, 28:30)]
 names(SJHdfg.df)[names(SJHdfg.df) == "RETURN_YEAR"] <- "return_year"
 names(SJHdfg.df)[names(SJHdfg.df) == "ESCAPE"] <- "DFGescape"
 names(SJHdfg.df)[names(SJHdfg.df) == "Total return"] <- "DFGreturners"
+names(SJHdfg.df)[names(SJHdfg.df) == "observed"] <- "DFGobserved"
 
 # finding returners for amp data
 SJHamp.df$return_year <- SJHamp.df$brood_year + 2
