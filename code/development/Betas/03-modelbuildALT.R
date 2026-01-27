@@ -40,7 +40,7 @@ pdoO <- data.matrix(WpdoO)
 
 # specify matrices for MARSS models - no betas
 # u.model <- matrix(paste0("u", seq(2)))
-u.model <- "zero"
+# u.model <- "zero"
   # what I maybe want is similar to b? a 0 for the hatchery and a parameter for the river?
 # u.model <- matrix(c(0, "Ur"), 2, 1)
 q.model <- "diagonal and unequal"
@@ -51,9 +51,14 @@ x.model <- "unequal"
 v.model <- "zero"
 
 # beta matrix
-b.model <- matrix(c(0, "AB", "BB", "BA"), 2, 2)
-  ## this is reading as a character matrix
-  ## i.e, the 0 is being treated as a character parameter and a value is being estimated
+b.model <- matrix(list(0), 2, 2)
+b.model[1,2] <- "b12"
+b.model[2,1] <- "b21"
+b.model[2,2] <- "b22"
+
+# state trend
+u.model <- matrix(list(0), 2, 1)
+u.model[2,1] <- "u"
 
 ### NEEDS SMOLT RELEASES FROM t-1 in cC_t
 
@@ -79,13 +84,18 @@ model.list <- list(
   # , d = gobbers
 )
 
+# specify initial conditions
+inits.E <- list(x0 = matrix(c(9.938505, 8.5749326), nrow = 2))
+inits.O <- list(x0 = matrix(c(11.7200578, 9.4813332), nrow = 2))
+  ##  average of first 5 obs? - ask mark
+
 # run modelos
 if(!file.exists(here("data", "clean", "ssEbeta_DFGob.rds"))){
-  ssEbeta_DFGob <- MARSS(datE_DFGob, model = model.list, method = "kem")
+  ssEbeta_DFGob <- MARSS(datE_DFGob, model = model.list, inits = inits.E, method = "kem")
   saveRDS(ssEbeta_DFGob, file=here("data", "clean", "ssEbeta_DFGob.rds"))
 }
 
 if(!file.exists(here("data", "clean", "ssObeta_DFGob.rds"))){
-  ssObeta_DFGob <- MARSS(datO_DFGob, model = model.list, method = "kem")
+  ssObeta_DFGob <- MARSS(datO_DFGob, model = model.list, inits = inits.O, method = "kem")
   saveRDS(ssObeta_DFGob, file=here("data", "clean", "ssObeta_DFGob.rds"))
 }
