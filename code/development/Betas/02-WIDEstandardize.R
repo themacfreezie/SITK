@@ -116,8 +116,8 @@ save(WbetaO_DFGob.df, file=here("data", "clean", "WbetaO_DFGob.Rda"))
 load(here("data", "clean", "SJHsmolts.Rda"))
 
 # release year = year after brood year?
-SJHsmolts.df$`Release Year` <- SJHsmolts.df$`Brood Year` + 1
+SJHsmolts.df$releaseYear <- SJHsmolts.df$`Brood Year` + 1
 
-# filters
-pdo <- pdo %>% filter(Year >= 1959)
-pdo <- pdo %>% filter(Year < 2024)
+# data transform - split into odd/even runs
+smoltsE <- SJHsmolts.df %>% filter(releaseYear %% 2 == 0)
+smoltsO <- SJHsmolts.df %>% filter(releaseYear %% 2 != 0)
