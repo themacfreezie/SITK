@@ -116,8 +116,29 @@ save(WbetaO_DFGob.df, file=here("data", "clean", "WbetaO_DFGob.Rda"))
 load(here("data", "clean", "SJHsmolts.Rda"))
 
 # release year = year after brood year?
-SJHsmolts.df$releaseYear <- SJHsmolts.df$`Brood Year` + 1
+SJHsmolts.df$returnYear <- SJHsmolts.df$`Brood Year` + 2
 
 # data transform - split into odd/even runs
-smoltsE <- SJHsmolts.df %>% filter(releaseYear %% 2 == 0)
-smoltsO <- SJHsmolts.df %>% filter(releaseYear %% 2 != 0)
+smoltsE <- SJHsmolts.df %>% filter(returnYear %% 2 == 0)
+smoltsO <- SJHsmolts.df %>% filter(returnYear %% 2 != 0)
+
+save(smoltsE, file=here("data", "clean", "smoltsE.Rda"))
+save(smoltsO, file=here("data", "clean", "smoltsO.Rda"))
+
+# setting wide
+yrsE <- smoltsE$returnYear
+smtE <- smoltsE$`Number Released`
+
+yrsO <- smoltsO$returnYear
+smtO <- smoltsO$`Number Released`
+
+WsmoltsE <- as.data.frame(matrix(smtE, nrow = 1, byrow = TRUE))
+names(WsmoltsE) <- yrsE
+
+WsmoltsO <- as.data.frame(matrix(smtO, nrow = 1, byrow = TRUE))
+names(WsmoltsO) <- yrsO
+
+
+
+save(WsmoltsE, file=here("data", "clean", "WsmoltsE.Rda"))
+save(WsmoltsO, file=here("data", "clean", "WsmoltsO.Rda"))

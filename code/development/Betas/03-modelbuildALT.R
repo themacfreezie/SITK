@@ -16,10 +16,16 @@ load(here("data", "clean", "WbetaO_DFGob.Rda"))
 load(here("data", "clean", "WpdoE.Rda"))
 load(here("data", "clean", "WpdoO.Rda"))
 
+load(here("data", "clean", "WsmoltsE.Rda"))
+load(here("data", "clean", "WsmoltsO.Rda"))
+
 WpdoE <- WpdoE[-c(1:9)]
 WpdoO <- WpdoO[-c(1:8)]
   # needs more data for larger IR time series
   # ignoring for now
+
+WsmoltsE <- WsmoltsE[-c(25)]
+WsmoltsO <- WsmoltsO[-c(25)]
 
 # grab year lists, # of observations, & pure count data
 yearsE <- names(WbetaE_DFGob.df)
@@ -38,11 +44,11 @@ datO_DFGob <- data.matrix(WbetaO_DFGob.df[2:ncol(WbetaO_DFGob.df)])
 pdoE <- data.matrix(WpdoE)
 pdoO <- data.matrix(WpdoO)
 
-# specify matrices for MARSS models - no betas
-# u.model <- matrix(paste0("u", seq(2)))
-# u.model <- "zero"
-  # what I maybe want is similar to b? a 0 for the hatchery and a parameter for the river?
-# u.model <- matrix(c(0, "Ur"), 2, 1)
+# convert smolt data to matrix
+smoltsE <- data.matrix(WsmoltsE)
+smoltsO <- data.matrix(WsmoltsO)
+
+# specify matrices for MARSS models
 q.model <- "diagonal and unequal"
 z.model <- "identity"
 a.model <- "zero"
@@ -50,26 +56,27 @@ r.model <- "diagonal and unequal"
 x.model <- "unequal"
 v.model <- "zero"
 
-# beta matrix
+# autoregressive character - beta matrix
 b.model <- matrix(list(0), 2, 2)
-b.model[1,2] <- "b12"
-b.model[2,1] <- "b21"
-b.model[2,2] <- "b22"
+b.model[1,2] <- "bHt<Rt-1"
+b.model[2,1] <- "bRt<Ht-1"
+b.model[2,2] <- "bRR"
 
-# state trend
-u.model <- matrix(list(0), 2, 1)
-u.model[2,1] <- "u"
+# state trend - u
+# u.model <- matrix(list(0), 2, 1)
+# u.model[2,1] <- "u"
+u.model <- "zero"
 
-### NEEDS SMOLT RELEASES FROM t-1 in cC_t
+# c matrix - for them smolts
+c.model <- matrix(list(0), 2, 1)
+c.model[1,1] <- "smolts"
 
-# # c matrix
-# c.model <- matrix("pdo", 2, 1)
-
-# could also include observers for IR (no such info for hatchery)
+# c could also include pdo for both 
+# d could include observers for IR (no such info for hatchery)
 
 # specify MARSS model
-model.list <- list(
-  B = b.model 
+model.listE <- list(
+    B = b.model 
   , U = u.model
   , Q = q.model
   , Z = z.model 
@@ -78,10 +85,26 @@ model.list <- list(
   , x0 = x.model 
   , V0 = v.model 
   , tinitx = 0
-  # , C = c.model 
-  # , c = pdoE
+  , C = c.model
+  , c = smoltsE
   # , D = d.model
-  # , d = gobbers
+  # , d = IRobserversE
+)
+
+model.listO <- list(
+    B = b.model 
+  , U = u.model
+  , Q = q.model
+  , Z = z.model 
+  , A = a.model 
+  , R = r.model
+  , x0 = x.model 
+  , V0 = v.model 
+  , tinitx = 0
+  , C = c.model
+  , c = smoltsO
+  # , D = d.model
+  # , d = IRobserversO
 )
 
 # specify initial conditions
@@ -91,11 +114,22 @@ inits.O <- list(x0 = matrix(c(11.7200578, 9.4813332), nrow = 2))
 
 # run modelos
 if(!file.exists(here("data", "clean", "ssEbeta_DFGob.rds"))){
-  ssEbeta_DFGob <- MARSS(datE_DFGob, model = model.list, inits = inits.E, method = "kem")
+  ssEbeta_DFGob <- MARSS(datE_DFGob, 
+                         model = model.listE, 
+                         inits = inits.E,
+                         control = list(safe = TRUE, maxit = 1000),
+                         method = "kem")
   saveRDS(ssEbeta_DFGob, file=here("data", "clean", "ssEbeta_DFGob.rds"))
 }
 
 if(!file.exists(here("data", "clean", "ssObeta_DFGob.rds"))){
-  ssObeta_DFGob <- MARSS(datO_DFGob, model = model.list, inits = inits.O, method = "kem")
+  ssObeta_DFGob <- MARSS(datO_DFGob, 
+                         model = model.listO, 
+                         inits = inits.O,
+                         control = list(safe = TRUE, maxit = 1000),
+                         method = "kem")
   saveRDS(ssObeta_DFGob, file=here("data", "clean", "ssObeta_DFGob.rds"))
 }
+
+print(ssEbeta_DFGob)
+print(ssObeta_DFGob)
