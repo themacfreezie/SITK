@@ -2,6 +2,9 @@
 library(here)
 library(MARSS)
 
+# set loc
+here::i_am("code/development/Betas/05-bootstrap.R")
+
 # load in ss models
 ssEbeta_AMPr <- readRDS(file=here("data", "clean", "ssEbeta_AMPr.rds"))
 ssEbeta_DFGr <- readRDS(file=here("data", "clean", "ssEbeta_DFGr.rds"))
@@ -30,12 +33,22 @@ if(!file.exists(here("data", "clean", "bootO_DFGr.rds"))){
 
 # ob ones
 if(!file.exists(here("data", "clean", "bootE_DFGob.rds"))){
-  bootE_DFGob <- MARSSboot(ssEbeta_DFGob, nboot=10000, output="parameters", sim = "parametric", param.gen="hessian")
+  bootE_DFGob <- MARSSboot(ssEbeta_DFGob 
+                           , nboot=1000
+                           , output="parameters"
+                           , sim = "parametric" 
+                           # , param.gen="hessian"
+                           )
   saveRDS(bootE_DFGob, file=here("data", "clean", "bootE_DFGob.rds"))
 }
   # hessian cannot be inverted?
 if(!file.exists(here("data", "clean", "bootO_DFGob.rds"))){
-  bootO_DFGob <- MARSSboot(ssObeta_DFGob, nboot=10000, output="parameters", sim = "parametric", param.gen="hessian")
+  bootO_DFGob <- MARSSboot(ssObeta_DFGob
+                           , nboot=1000
+                           , output="parameters"
+                           , sim = "parametric"
+                           # , param.gen="hessian"
+                           )
   saveRDS(bootO_DFGob, file=here("data", "clean", "bootO_DFGob.rds"))
 }
   # hessian cannot be inverted?

@@ -15,6 +15,9 @@ ssObeta_DFGr <- readRDS(file=here("data", "clean", "ssObeta_DFGr.rds"))
 ssEbeta_DFGob <- readRDS(file=here("data", "clean", "ssEbeta_DFGob.rds"))
 ssObeta_DFGob <- readRDS(file=here("data", "clean", "ssObeta_DFGob.rds"))
 
+print(ssEbeta_DFGob)
+print(ssObeta_DFGob)
+
 # data comparison - modular code
 
 # E_AMPr

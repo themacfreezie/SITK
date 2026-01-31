@@ -1,5 +1,4 @@
 ## SET WORKING DIR & PACKAGES
-
 library(here)
 library(MARSS)
 library(tidyverse)
@@ -117,7 +116,7 @@ if(!file.exists(here("data", "clean", "ssEbeta_DFGob.rds"))){
   ssEbeta_DFGob <- MARSS(datE_DFGob, 
                          model = model.listE, 
                          inits = inits.E,
-                         control = list(safe = TRUE, maxit = 1000),
+                         control = list(safe = TRUE, maxit = 500),
                          method = "kem")
   saveRDS(ssEbeta_DFGob, file=here("data", "clean", "ssEbeta_DFGob.rds"))
 }
@@ -126,10 +125,7 @@ if(!file.exists(here("data", "clean", "ssObeta_DFGob.rds"))){
   ssObeta_DFGob <- MARSS(datO_DFGob, 
                          model = model.listO, 
                          inits = inits.O,
-                         control = list(safe = TRUE, maxit = 1000),
+                         control = list(safe = TRUE, maxit = 500),
                          method = "kem")
   saveRDS(ssObeta_DFGob, file=here("data", "clean", "ssObeta_DFGob.rds"))
 }
-
-print(ssEbeta_DFGob)
-print(ssObeta_DFGob)
