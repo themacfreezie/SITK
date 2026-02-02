@@ -15,10 +15,12 @@ source(here("code", "primary", "05E-NSEout_modelbuild.R"))
 source(here("code", "primary", "06E-NSEout_modeleval.R"))
 source(here("code", "primary", "07E-NSEout_output.R"))
 
-# ir modeling
-source(here("code", "primary", "08a-strayrates_clean.R"))
-source(here("code", "primary", "08b-IR_statetransform.R"))
-source(here("code", "primary", "08c-strayrates_compare.R"))
-source(here("code", "primary", "08d-strayrates_timing.R"))
-source(here("code", "primary", "09a-precip_clean.R"))
-source(here("code", "primary", "09b-temp_clean.R"))
+# betas modeling
+source(here("code", "primary", "08-data_clean.R"))
+source(here("code", "primary", "09-WIDEstandardize.R"))
+source(here("code", "primary", "10-modelbuild.R"))
+source(here("code", "primary", "11-modeleval.R"))
+source(here("code", "primary", "12-bootstrap.R"))
+source(here("code", "primary", "13-boot_output.R"))
+
+# diff-in-diff modeling

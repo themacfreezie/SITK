@@ -3,7 +3,7 @@ library(here)
 library(MARSS)
 
 # set loc
-here::i_am("code/development/Betas/05-bootstrap.R")
+here::i_am("code/primary/12-bootstrap.R")
 
 # load in ss models
 ssEbeta_AMPr <- readRDS(file=here("data", "clean", "ssEbeta_AMPr.rds"))

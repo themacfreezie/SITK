@@ -4,6 +4,9 @@ library(reshape2)
 library(str2str)
 library(tidyverse)
 
+# set loc
+here::i_am("code/primary/13-boot_output.R")
+
 # load model objects
 bootE_AMPr <- readRDS(here("data", "clean", "bootE_AMPr.rds"))
 bootE_DFGr <- readRDS(here("data", "clean", "bootE_DFGr.rds"))
