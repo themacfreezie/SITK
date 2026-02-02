@@ -1,4 +1,4 @@
-library(here) # set workind directory
+library(here) # set working directory
 
 # set loc
 here::i_am("code/development/DD/03-DD_regression.R")
@@ -8,60 +8,58 @@ options(max.print=2000)
 load(here("data", "clean", "DD_E.Rda"))
 load(here("data", "clean", "DD_O.Rda"))
 
-# basic DD regression model
-DDmodE_base <- lm(standard_ct ~ dPost + dIR + dIR*dPost , DD_E)
-DDmodO_base <- lm(standard_ct ~ dPost + dIR + dIR*dPost , DD_O)
+# basic DD regression model 
+# - 1980 
+DDmodE_base1980 <- lm(standard_ct ~ dPost1980 + dIR + dIR*dPost1980, DD_E)
+DDmodO_base1980 <- lm(standard_ct ~ dPost1980 + dIR + dIR*dPost1980, DD_O)
+saveRDS(DDmodE_base1980, file=here("data", "clean", "DDmodE_base1980.rds"))
+saveRDS(DDmodO_base1980, file=here("data", "clean", "DDmodO_base1980.rds"))
+
+
+# - 2010 
+DDmodE_base2010 <- lm(standard_ct ~ dPost2010 + dIR + dIR*dPost2010, DD_E)
+DDmodO_base2010 <- lm(standard_ct ~ dPost2010 + dIR + dIR*dPost2010, DD_O)
+saveRDS(DDmodE_base2010, file=here("data", "clean", "DDmodE_base2010.rds"))
+saveRDS(DDmodO_base2010, file=here("data", "clean", "DDmodO_base2010.rds"))
+
 
 # DD regression model + environmental covariates
-DDmodE_envi <- lm(standard_ct ~ dPost + dIR + dIR*dPost + lagPDO , DD_E)
-DDmodO_envi <- lm(standard_ct ~ dPost + dIR + dIR*dPost + lagPDO , DD_O) 
+# - 1980
+DDmodE_envi1980 <- lm(standard_ct ~ dPost1980 + dIR + dIR*dPost1980 + lagPDO, DD_E)
+DDmodO_envi1980 <- lm(standard_ct ~ dPost1980 + dIR + dIR*dPost1980 + lagPDO, DD_O) 
+saveRDS(DDmodE_envi1980, file=here("data", "clean", "DDmodE_envi1980.rds"))
+saveRDS(DDmodO_envi1980, file=here("data", "clean", "DDmodO_envi1980.rds"))
+
+# - 2010
+DDmodE_envi2010 <- lm(standard_ct ~ dPost2010 + dIR + dIR*dPost2010 + lagPDO, DD_E)
+DDmodO_envi2010 <- lm(standard_ct ~ dPost2010 + dIR + dIR*dPost2010 + lagPDO, DD_O) 
+saveRDS(DDmodE_envi2010, file=here("data", "clean", "DDmodE_envi2010.rds"))
+saveRDS(DDmodO_envi2010, file=here("data", "clean", "DDmodO_envi2010.rds"))
+
 
 # DD regression model + observer covariates
-DDmodE_obsv <- lm(standard_ct ~ dPost + dIR + dIR*dPost + Observer , DD_E)
-DDmodO_obsv <- lm(standard_ct ~ dPost + dIR + dIR*dPost + Observer , DD_O)
+# - 1980
+DDmodE_obsv1980 <- lm(standard_ct ~ dPost1980 + dIR + dIR*dPost1980 + Observer, DD_E)
+DDmodO_obsv1980 <- lm(standard_ct ~ dPost1980 + dIR + dIR*dPost1980 + Observer, DD_O)
+saveRDS(DDmodE_obsv1980, file=here("data", "clean", "DDmodE_obsv1980.rds"))
+saveRDS(DDmodO_obsv1980, file=here("data", "clean", "DDmodO_obsv1980.rds"))
+
+# - 2010
+DDmodE_obsv2010 <- lm(standard_ct ~ dPost2010 + dIR + dIR*dPost2010 + Observer, DD_E)
+DDmodO_obsv2010 <- lm(standard_ct ~ dPost2010 + dIR + dIR*dPost2010 + Observer, DD_O)
+saveRDS(DDmodE_obsv2010, file=here("data", "clean", "DDmodE_obsv2010.rds"))
+saveRDS(DDmodO_obsv2010, file=here("data", "clean", "DDmodO_obsv2010.rds"))
+
 
 # DD regression model + environmental and observer covariates
-DDmodE_both <- lm(standard_ct ~ dPost + dIR + dIR*dPost + lagPDO + Observer , DD_E)
-DDmodO_both <- lm(standard_ct ~ dPost + dIR + dIR*dPost + lagPDO + Observer , DD_O)
+# - 1980
+DDmodE_both1980 <- lm(standard_ct ~ dPost1980 + dIR + dIR*dPost1980 + lagPDO + Observer , DD_E)
+DDmodO_both1980 <- lm(standard_ct ~ dPost1980 + dIR + dIR*dPost1980+ lagPDO + Observer , DD_O)
+saveRDS(DDmodE_both1980, file=here("data", "clean", "DDmodE_both1980.rds"))
+saveRDS(DDmodO_both1980, file=here("data", "clean", "DDmodO_both1980.rds"))
 
-# compare models - even years
-summary(DDmodE_base)
-summary(DDmodE_envi)
-summary(DDmodE_obsv)
-summary(DDmodE_both)
-
-anova(DDmodE_base, DDmodE_envi)
-anova(DDmodE_base, DDmodE_obsv)
-anova(DDmodE_envi, DDmodE_both)
-  # pdo model is stronger than base
-  # observer doesn't seem to make any difference to base model
-  # lagged pdo may be capturing other year-level fixed effects
-
-# compare models - odd years
-summary(DDmodO_base)
-summary(DDmodO_envi)
-summary(DDmodO_obsv)
-summary(DDmodO_both)
-
-anova(DDmodO_base, DDmodO_envi)
-anova(DDmodO_base, DDmodO_obsv)
-anova(DDmodO_envi, DDmodO_both)
-anova(DDmodO_obsv, DDmodO_both)
-  # observer model and pdo model are both stronger than base
-  # combined model is stronger than each single covariate model
-  # lagged pdo may be capturing other year-level fixed effects
-
-# seems like these are best based on anova
-summary(DDmodE_envi)
-summary(DDmodO_both)
-
-# what about aic? 
-AIC(DDmodE_base, k=2)
-AIC(DDmodE_envi, k=2) # best
-AIC(DDmodE_obsv, k=2)
-AIC(DDmodE_both, k=2)
-
-AIC(DDmodO_base, k=2)
-AIC(DDmodO_envi, k=2)
-AIC(DDmodO_obsv, k=2)
-AIC(DDmodO_both, k=2) # best
+# - 2010
+DDmodE_both2010 <- lm(standard_ct ~ dPost2010 + dIR + dIR*dPost2010 + lagPDO + Observer , DD_E)
+DDmodO_both2010 <- lm(standard_ct ~ dPost2010 + dIR + dIR*dPost2010+ lagPDO + Observer , DD_O)
+saveRDS(DDmodE_both2010, file=here("data", "clean", "DDmodE_both2010.rds"))
+saveRDS(DDmodO_both2010, file=here("data", "clean", "DDmodO_both2010.rds"))

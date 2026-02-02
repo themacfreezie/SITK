@@ -9,7 +9,6 @@ library(tidyverse)
 here::i_am("code/development/DD/01-DD_dataclean.R")
 options(max.print=10000)
 
-
 ## DATA FILTERING
 
 # 1) AWC stream length data
@@ -49,17 +48,21 @@ streams.df$LENGTHkm <- (streams.df$LENGTHm/1000)
 
 save(streams.df, file=here("data", "clean", "stream_length.Rda"))
 
-
 # 2) escapement data (IR & ADFG)
 # pull in data
 pinks.df <- read_excel(here("data", "raw", "adfg_pink.xlsx"), col_names = TRUE)
-indianr.df <- read_excel(here("data", "raw", "IndianRiver.xlsx"), sheet = "Stopha 2015 - Table 6", col_names = TRUE)
+indianr.df <- read_excel(here("data", "raw", "SITKA AREA HISTORIC PINK ESCAPEMENTS.xlsx"), sheet = "Sitka Sound", col_names = TRUE)
+
+# drop other streams and extra rows from indianr.df
+indianr.df <- indianr.df[-c(2:13, 15:20)]
+indianr.df <- indianr.df[-c(1, 67:76), ]
 
 # rename vars in indianr.df to match pinks.df
-names(indianr.df)[names(indianr.df) == "Indian River Peak Escapement"] <- "PEAK_COUNT"
+names(indianr.df)[names(indianr.df) == "11341019"] <- "PEAK_COUNT"
+names(indianr.df)[names(indianr.df) == "...1"] <- "YEAR"
 
-# drop run and sitka sound index from indianr.df
-indianr.df <- indianr.df[-c(2, 4)]
+indianr.df$PEAK_COUNT <- as.numeric(indianr.df$PEAK_COUNT)
+indianr.df$YEAR <- as.numeric(indianr.df$YEAR)
 
 # add stream and ID to indianr.df
 indianr.df$STREAM <- "Indian River"
@@ -73,14 +76,12 @@ pinks.df <- pinks.df[-c(5:7, 9)]
 # append pinks.df and indianr.df
 pinks.df <- rbind(pinks.df, indianr.df)
 
-
 # 3) merge stream length data into escapement data by streamID
 # rename stream_no to match streams.df
 names(pinks.df)[names(pinks.df) == "STREAM_NO"] <- "STREAMID"
 
 # merge
 merge.df <- merge(pinks.df, streams.df, by="STREAMID")
-
 
 # 4) create esc/km and split into two runs
 # esc/km
@@ -97,7 +98,7 @@ pinksE_sc.df <- pinksE_sc.df %>% filter(SUB_REGION!="NSE Inside")
 pinksO_sc.df <- pinksO_sc.df %>% filter(SUB_REGION!="SSE")
 pinksO_sc.df <- pinksO_sc.df %>% filter(SUB_REGION!="NSE Inside")
 
-# retaining Indian River and seven nearby streams
+# retaining Indian River and nine nearby streams
 DD_pinksE_sc.df <- pinksE_sc.df %>% filter(STREAMID=="113-41-042" |  
                                            STREAMID=="113-41-032" |
                                            STREAMID=="113-44-003" |
@@ -173,8 +174,11 @@ DD_pinksE_scst.df$dIR <- ifelse(DD_pinksE_scst.df$STREAMID=="113-41-019", 1, 0)
 DD_pinksO_scst.df$dIR <- ifelse(DD_pinksO_scst.df$STREAMID=="113-41-019", 1, 0)
 
 #generating dummy variables for treatment
-DD_pinksE_scst.df$dPost <- ifelse(DD_pinksE_scst.df$YEAR>1980, 1, 0)
-DD_pinksO_scst.df$dPost <- ifelse(DD_pinksO_scst.df$YEAR>1980, 1, 0)
+DD_pinksE_scst.df$dPost1980 <- ifelse(DD_pinksE_scst.df$YEAR>1980, 1, 0)
+DD_pinksO_scst.df$dPost1980 <- ifelse(DD_pinksO_scst.df$YEAR>1980, 1, 0)
+
+DD_pinksE_scst.df$dPost2010 <- ifelse(DD_pinksE_scst.df$YEAR>2010, 1, 0)
+DD_pinksO_scst.df$dPost2010 <- ifelse(DD_pinksO_scst.df$YEAR>2010, 1, 0)
 
 #drop obs with no count (IR)
 DD_pinksE_scst.df <- na.omit(DD_pinksE_scst.df)

@@ -17,6 +17,9 @@ load(here("data", "clean", "pdoO.Rda"))
 load(here("data", "clean", "NSEout_observerE.Rda"))
 load(here("data", "clean", "NSEout_observerO.Rda"))
 
+observerE.df$ID <- as.factor(observerE.df$ID)
+observerO.df$ID <- as.factor(observerO.df$ID)
+
 # quick clean on pdo varnames
 names(pdoE)[names(pdoE) == "returnYear"] <- "YEAR"
 names(pdoE)[names(pdoE) == "annual"] <- "lagPDO"

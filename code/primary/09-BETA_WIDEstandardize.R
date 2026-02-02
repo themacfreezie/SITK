@@ -1,0 +1,144 @@
+## SET WORKING DIR & PACKAGES
+
+# import packages
+library(dplyr, warn.conflicts = FALSE)
+library(here)
+library(panelr)
+library(readxl)
+
+# create working dir and output folder
+here::i_am("code/primary/09-BETA_WIDEstandardize.R")
+options(max.print=10000)
+
+# pull in data
+load(here("data", "clean", "beta_dataE.Rda"))
+load(here("data", "clean", "beta_dataO.Rda"))
+
+# split each df into three (for each measure of hatchery returns)
+betaE_AMPr.df <- beta_dataE.df[-c(3:5)]
+betaO_AMPr.df <- beta_dataO.df[-c(3:5)]
+
+betaE_DFGr.df <- beta_dataE.df[-c(2,3,5)]
+betaO_DFGr.df <- beta_dataO.df[-c(2,3,5)]
+
+betaE_DFGob.df <- beta_dataE.df[-c(2:4)]
+betaO_DFGob.df <- beta_dataO.df[-c(2:4)]
+
+# set them all long 
+betaE_AMPr.df <- cbind(
+  year = rep(betaE_AMPr.df$return_year, 2),
+  stack(betaE_AMPr.df[, c("AMPreturners", "IRpeak_count")])
+)
+names(betaE_AMPr.df)[names(betaE_AMPr.df) == "ind"] <- "measure"
+names(betaE_AMPr.df)[names(betaE_AMPr.df) == "values"] <- "ct"
+
+betaO_AMPr.df <- cbind(
+  year = rep(betaO_AMPr.df$return_year, 2),
+  stack(betaO_AMPr.df[, c("AMPreturners", "IRpeak_count")])
+)
+names(betaO_AMPr.df)[names(betaO_AMPr.df) == "ind"] <- "measure"
+names(betaO_AMPr.df)[names(betaO_AMPr.df) == "values"] <- "ct"
+
+betaE_DFGr.df <- cbind(
+  year = rep(betaE_DFGr.df$return_year, 2),
+  stack(betaE_DFGr.df[, c("DFGreturners", "IRpeak_count")])
+)
+names(betaE_DFGr.df)[names(betaE_DFGr.df) == "ind"] <- "measure"
+names(betaE_DFGr.df)[names(betaE_DFGr.df) == "values"] <- "ct"
+
+betaO_DFGr.df <- cbind(
+  year = rep(betaO_DFGr.df$return_year, 2),
+  stack(betaO_DFGr.df[, c("DFGreturners", "IRpeak_count")])
+)
+names(betaO_DFGr.df)[names(betaO_DFGr.df) == "ind"] <- "measure"
+names(betaO_DFGr.df)[names(betaO_DFGr.df) == "values"] <- "ct"
+
+betaE_DFGob.df <- cbind(
+  year = rep(betaE_DFGob.df$return_year, 2),
+  stack(betaE_DFGob.df[, c("DFGobserved", "IRpeak_count")])
+)
+names(betaE_DFGob.df)[names(betaE_DFGob.df) == "ind"] <- "measure"
+names(betaE_DFGob.df)[names(betaE_DFGob.df) == "values"] <- "ct"
+
+betaO_DFGob.df <- cbind(
+  year = rep(betaO_DFGob.df$return_year, 2),
+  stack(betaO_DFGob.df[, c("DFGobserved", "IRpeak_count")])
+)
+names(betaO_DFGob.df)[names(betaO_DFGob.df) == "ind"] <- "measure"
+names(betaO_DFGob.df)[names(betaO_DFGob.df) == "values"] <- "ct"
+
+# natural log of count variable
+betaE_AMPr.df$ct <- betaE_AMPr.df$ct + 1
+betaO_AMPr.df$ct <- betaO_AMPr.df$ct + 1
+betaE_DFGr.df$ct <- betaE_DFGr.df$ct + 1
+betaO_DFGr.df$ct <- betaO_DFGr.df$ct + 1
+betaE_DFGob.df$ct <- betaE_DFGob.df$ct + 1
+betaO_DFGob.df$ct <- betaO_DFGob.df$ct + 1
+
+betaE_AMPr.df$ct <- log(betaE_AMPr.df$ct)
+betaO_AMPr.df$ct <- log(betaO_AMPr.df$ct)
+betaE_DFGr.df$ct <- log(betaE_DFGr.df$ct)
+betaO_DFGr.df$ct <- log(betaO_DFGr.df$ct)
+betaE_DFGob.df$ct <- log(betaE_DFGob.df$ct)
+betaO_DFGob.df$ct <- log(betaO_DFGob.df$ct)
+
+# should these data be standardized at the level of each state? 
+# they are different measures...
+
+# set data wide (rows = IDs, columns = year)
+betaE_AMPr.df <- panel_data(betaE_AMPr.df, id = measure, wave = year)
+WbetaE_AMPr.df <- widen_panel(betaE_AMPr.df, separator = "_")
+
+betaO_AMPr.df <- panel_data(betaO_AMPr.df, id = measure, wave = year)
+WbetaO_AMPr.df <- widen_panel(betaO_AMPr.df, separator = "_")
+
+betaE_DFGr.df <- panel_data(betaE_DFGr.df, id = measure, wave = year)
+WbetaE_DFGr.df <- widen_panel(betaE_DFGr.df, separator = "_")
+
+betaO_DFGr.df <- panel_data(betaO_DFGr.df, id = measure, wave = year)
+WbetaO_DFGr.df <- widen_panel(betaO_DFGr.df, separator = "_")
+
+betaE_DFGob.df <- panel_data(betaE_DFGob.df, id = measure, wave = year)
+WbetaE_DFGob.df <- widen_panel(betaE_DFGob.df, separator = "_")
+
+betaO_DFGob.df <- panel_data(betaO_DFGob.df, id = measure, wave = year)
+WbetaO_DFGob.df <- widen_panel(betaO_DFGob.df, separator = "_")
+
+# save wide dataframes
+save(WbetaE_AMPr.df, file=here("data", "clean", "WbetaE_AMPr.Rda"))
+save(WbetaO_AMPr.df, file=here("data", "clean", "WbetaO_AMPr.Rda"))
+save(WbetaE_DFGr.df, file=here("data", "clean", "WbetaE_DFGr.Rda"))
+save(WbetaO_DFGr.df, file=here("data", "clean", "WbetaO_DFGr.Rda"))
+save(WbetaE_DFGob.df, file=here("data", "clean", "WbetaE_DFGob.Rda"))
+save(WbetaO_DFGob.df, file=here("data", "clean", "WbetaO_DFGob.Rda"))
+
+# pull in smolt data
+load(here("data", "clean", "SJHsmolts.Rda"))
+
+# release year = year after brood year?
+SJHsmolts.df$returnYear <- SJHsmolts.df$`Brood Year` + 2
+
+# data transform - split into odd/even runs
+smoltsE <- SJHsmolts.df %>% filter(returnYear %% 2 == 0)
+smoltsO <- SJHsmolts.df %>% filter(returnYear %% 2 != 0)
+
+save(smoltsE, file=here("data", "clean", "smoltsE.Rda"))
+save(smoltsO, file=here("data", "clean", "smoltsO.Rda"))
+
+# setting wide
+yrsE <- smoltsE$returnYear
+smtE <- smoltsE$`Number Released`
+
+yrsO <- smoltsO$returnYear
+smtO <- smoltsO$`Number Released`
+
+WsmoltsE <- as.data.frame(matrix(smtE, nrow = 1, byrow = TRUE))
+names(WsmoltsE) <- yrsE
+
+WsmoltsO <- as.data.frame(matrix(smtO, nrow = 1, byrow = TRUE))
+names(WsmoltsO) <- yrsO
+
+
+
+save(WsmoltsE, file=here("data", "clean", "WsmoltsE.Rda"))
+save(WsmoltsO, file=here("data", "clean", "WsmoltsO.Rda"))
