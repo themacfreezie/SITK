@@ -8,10 +8,10 @@ here::i_am("code/primary/11-BETA_modeleval.R")
 options(max.print=2000)
 
 # load in ss models
-ssEbeta_AMPr <- readRDS(file=here("data", "clean", "ssEbeta_AMPr.rds"))
-ssEbeta_DFGr <- readRDS(file=here("data", "clean", "ssEbeta_DFGr.rds"))
-ssObeta_AMPr <- readRDS(file=here("data", "clean", "ssObeta_AMPr.rds"))
-ssObeta_DFGr <- readRDS(file=here("data", "clean", "ssObeta_DFGr.rds"))
+# ssEbeta_AMPr <- readRDS(file=here("data", "clean", "ssEbeta_AMPr.rds"))
+# ssEbeta_DFGr <- readRDS(file=here("data", "clean", "ssEbeta_DFGr.rds"))
+# ssObeta_AMPr <- readRDS(file=here("data", "clean", "ssObeta_AMPr.rds"))
+# ssObeta_DFGr <- readRDS(file=here("data", "clean", "ssObeta_DFGr.rds"))
 ssEbeta_DFGob <- readRDS(file=here("data", "clean", "ssEbeta_DFGob.rds"))
 ssObeta_DFGob <- readRDS(file=here("data", "clean", "ssObeta_DFGob.rds"))
 
@@ -226,8 +226,6 @@ ggplot(dfSJ, aes(x = index, y = value, color = measure)) +
        y=NULL) +
   theme_classic()
 
-statesE_DFGob <- df
-
 # O_DFGob
 mod <- ssObeta_DFGob
 
@@ -268,5 +266,3 @@ ggplot(dfSJ, aes(x = index, y = value, color = measure)) +
        subtitle="O_DFGob",
        y=NULL) +
   theme_classic()
-
-statesO_DFGob <- df
