@@ -2,6 +2,7 @@
 library(here)
 library(MARSS)
 library(tidyverse)
+library(zoo)
 
 # set loc
 here::i_am("code/primary/BETA_modelexplore.R")

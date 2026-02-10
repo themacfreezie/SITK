@@ -32,23 +32,23 @@ ssObeta_DFGob <- readRDS(file=here("data", "clean", "ssObeta_DFGob.rds"))
 # }
 
 # ob ones
-if(!file.exists(here("data", "clean", "bootE_DFGob1.rds"))){
+if(!file.exists(here("data", "clean", "bootE_DFGobTEST.rds"))){
   bootE_DFGob <- MARSSboot(ssEbeta_DFGob 
                            , nboot=1000
                            , output="parameters"
                            , sim = "parametric" 
                            , param.gen="hessian"
                            )
-  saveRDS(bootE_DFGob, file=here("data", "clean", "bootE_DFGob1.rds"))
+  saveRDS(bootE_DFGob, file=here("data", "clean", "bootE_DFGobTEST.rds"))
 }
   # hessian cannot be inverted?
-if(!file.exists(here("data", "clean", "bootO_DFGob1.rds"))){
+if(!file.exists(here("data", "clean", "bootO_DFGobTEST.rds"))){
   bootO_DFGob <- MARSSboot(ssObeta_DFGob
                            , nboot=1000
                            , output="parameters"
                            , sim = "parametric"
-                           # , param.gen="hessian"
+                           , param.gen="hessian"
                            )
-  saveRDS(bootO_DFGob, file=here("data", "clean", "bootO_DFGob1.rds"))
+  saveRDS(bootO_DFGob, file=here("data", "clean", "bootO_DFGobTEST.rds"))
 }
   # hessian cannot be inverted?
