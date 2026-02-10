@@ -99,30 +99,27 @@ model.listO <- list(
   , R = r.model
   , x0 = x.model 
   , V0 = v.model 
-  , tinitx = 0
+  , tinitx = 1
   , C = c.model
   , c = smoltsO
   # , D = d.model
   # , d = IRobserversO
 )
 
-# specify initial conditions
-inits.E <- list(x0 = matrix(c(9.938505, 8.5749326), nrow = 2))
-inits.O <- list(x0 = matrix(c(11.7200578, 9.4813332), nrow = 2))
-##  average of first 5 obs? - ask mark
+# # specify initial conditions
+# inits.E <- list(x0 = matrix(c(9.938505, 8.5749326), nrow = 2))
+# inits.O <- list(x0 = matrix(c(11.7200578, 9.4813332), nrow = 2))
+# ##  average of first 5 obs? - ask mark
 
 # run modelos
 ssEbeta_DFGob <- MARSS(datE_DFGob, 
                          model = model.listE, 
-                         # inits = inits.E,
-                         # control = list(safe = TRUE, maxit = 5000),
                          method = "kem")
 saveRDS(ssEbeta_DFGob, file=here("data", "clean", "ssEbeta_DFGob.rds"))
 
 
 ssObeta_DFGob <- MARSS(datO_DFGob, 
                          model = model.listO, 
-                         # inits = inits.O,
-                         # control = list(safe = TRUE, maxit = 5000),
+                         control = list(maxit = 1000),
                          method = "kem")
 saveRDS(ssObeta_DFGob, file=here("data", "clean", "ssObeta_DFGob.rds"))
