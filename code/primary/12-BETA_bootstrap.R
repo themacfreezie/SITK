@@ -44,7 +44,7 @@ if(!file.exists(here("data", "clean", "bootE_DFGob1.rds"))){
   # hessian cannot be inverted?
 if(!file.exists(here("data", "clean", "bootO_DFGob1.rds"))){
   bootO_DFGob <- MARSSboot(ssObeta_DFGob
-                           , nboot=100
+                           , nboot=1000
                            , output="parameters"
                            , sim = "parametric"
                            # , param.gen="hessian"
