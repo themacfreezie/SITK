@@ -6,11 +6,11 @@ library(MARSS)
 here::i_am("code/primary/12-BETA_bootstrap.R")
 
 # load in ss models
-ssEbeta_AMPr <- readRDS(file=here("data", "clean", "ssEbeta_AMPr.rds"))
-ssEbeta_DFGr <- readRDS(file=here("data", "clean", "ssEbeta_DFGr.rds"))
+# ssEbeta_AMPr <- readRDS(file=here("data", "clean", "ssEbeta_AMPr.rds"))
+# ssEbeta_DFGr <- readRDS(file=here("data", "clean", "ssEbeta_DFGr.rds"))
 ssEbeta_DFGob <- readRDS(file=here("data", "clean", "ssEbeta_DFGob.rds"))
-ssObeta_AMPr <- readRDS(file=here("data", "clean", "ssObeta_AMPr.rds"))
-ssObeta_DFGr <- readRDS(file=here("data", "clean", "ssObeta_DFGr.rds"))
+# ssObeta_AMPr <- readRDS(file=here("data", "clean", "ssObeta_AMPr.rds"))
+# ssObeta_DFGr <- readRDS(file=here("data", "clean", "ssObeta_DFGr.rds"))
 ssObeta_DFGob <- readRDS(file=here("data", "clean", "ssObeta_DFGob.rds"))
 
 # # bootstrap estimates
@@ -31,7 +31,7 @@ ssObeta_DFGob <- readRDS(file=here("data", "clean", "ssObeta_DFGob.rds"))
 #   saveRDS(bootO_DFGr, file=here("data", "clean", "bootO_DFGr.rds"))
 # }
 
-# ob ones
+# ob ones - even
 if(!file.exists(here("data", "clean", "bootE_DFGobTEST.rds"))){
   bootE_DFGob <- MARSSboot(ssEbeta_DFGob 
                            , nboot=1000
@@ -41,13 +41,14 @@ if(!file.exists(here("data", "clean", "bootE_DFGobTEST.rds"))){
                            )
   saveRDS(bootE_DFGob, file=here("data", "clean", "bootE_DFGobTEST.rds"))
 }
-  # hessian cannot be inverted?
+
+# ob ones - odd
 if(!file.exists(here("data", "clean", "bootO_DFGobTEST.rds"))){
   bootO_DFGob <- MARSSboot(ssObeta_DFGob
                            , nboot=1000
                            , output="parameters"
                            , sim = "parametric"
-                           , param.gen="hessian"
+                           # , param.gen="hessian"
                            )
   saveRDS(bootO_DFGob, file=here("data", "clean", "bootO_DFGobTEST.rds"))
 }

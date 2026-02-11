@@ -21,8 +21,6 @@ load(here("data", "clean", "WsmoltsO.Rda"))
 
 WpdoE <- WpdoE[-c(1:9)]
 WpdoO <- WpdoO[-c(1:8)]
-# needs more data for larger IR time series
-# ignoring for now
 
 WsmoltsE <- WsmoltsE[-c(25)]
 WsmoltsO <- WsmoltsO[-c(25)]
@@ -35,6 +33,9 @@ yearsE <- substring(yearsE, first=4, last=7)
 yearsO <- names(WbetaO_DFGob.df)
 yearsO <- yearsO[-1]
 yearsO <- substring(yearsO, first=4, last=7)
+
+# test
+# WbetaO_DFGob.df[is.na(WbetaO_DFGob.df)] <- 7.5
 
 # convert counts to matrix
 datE_DFGob <- data.matrix(WbetaE_DFGob.df[2:ncol(WbetaE_DFGob.df)])
@@ -72,7 +73,6 @@ c.model <- matrix(list(0), 2, 1)
 c.model[1,1] <- "smolts"
 
 # c could also include pdo for both 
-# d could include observers for IR (no such info for hatchery)
 
 # specify MARSS model
 model.listE <- list(
@@ -87,8 +87,6 @@ model.listE <- list(
   , tinitx = 1
   , C = c.model
   , c = smoltsE
-  # , D = d.model
-  # , d = IRobserversE
 )
 
 model.listO <- list(
@@ -103,13 +101,11 @@ model.listO <- list(
   , tinitx = 1
   , C = c.model
   , c = smoltsO
-  # , D = d.model
-  # , d = IRobserversO
 )
 
 # # specify initial conditions
 # inits.E <- list(x0 = matrix(c(9.938505, 8.5749326), nrow = 2))
-# inits.O <- list(x0 = matrix(c(11.7200578, 9.4813332), nrow = 2))
+inits.O <- list(x0 = matrix(c(11.7200578, 9.4813332), nrow = 2))
 # ##  average of first 5 obs? - ask mark
 
 # run modelos
@@ -120,7 +116,11 @@ saveRDS(ssEbeta_DFGob, file=here("data", "clean", "ssEbeta_DFGob.rds"))
 
 
 ssObeta_DFGob <- MARSS(datO_DFGob, 
-                         model = model.listO, 
-                         control = list(maxit = 1000),
+                         model = model.listO,
+                         # inits = inits.O,
+                         control = list(
+                                        # safe=TRUE,
+                                        maxit = 1000
+                                        ),
                          method = "kem")
 saveRDS(ssObeta_DFGob, file=here("data", "clean", "ssObeta_DFGob.rds"))
