@@ -179,10 +179,10 @@ c.model[3,2] <- "sO"
 
 # run level observation error
 q.model <- matrix(list(0), 4, 4)
-r.model[1,1] <- "qE"
-r.model[2,2] <- "qE"
-r.model[3,3] <- "qO"
-r.model[4,4] <- "qO"
+q.model[1,1] <- "qE"
+q.model[2,2] <- "qE"
+q.model[3,3] <- "qO"
+q.model[4,4] <- "qO"
 
 model.list <- list(
   B = b.model 
@@ -193,9 +193,9 @@ model.list <- list(
   , R = r.model
   , x0 = x.model 
   , V0 = v.model 
-  , tinitx = 0
+  , tinitx = 1
   , C = c.model
-  , c = smoltsO
+  , c = smolts
 )
 
 # run modelos
