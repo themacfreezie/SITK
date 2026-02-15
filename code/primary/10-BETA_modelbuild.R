@@ -2,9 +2,10 @@
 library(here)
 library(MARSS)
 library(tidyverse)
+library(zoo)
 
 # set loc
-here::i_am("code/primary/10-BETA_modelbuild.R")
+here::i_am("code/primary/BETA_modelexplore.R")
 options(max.print=2000)
 
 # load data 
@@ -20,8 +21,6 @@ load(here("data", "clean", "WsmoltsO.Rda"))
 
 WpdoE <- WpdoE[-c(1:9)]
 WpdoO <- WpdoO[-c(1:8)]
-  # needs more data for larger IR time series
-  # ignoring for now
 
 WsmoltsE <- WsmoltsE[-c(25)]
 WsmoltsO <- WsmoltsO[-c(25)]
@@ -35,6 +34,9 @@ yearsO <- names(WbetaO_DFGob.df)
 yearsO <- yearsO[-1]
 yearsO <- substring(yearsO, first=4, last=7)
 
+# test
+# WbetaO_DFGob.df[is.na(WbetaO_DFGob.df)] <- 7.5
+
 # convert counts to matrix
 datE_DFGob <- data.matrix(WbetaE_DFGob.df[2:ncol(WbetaE_DFGob.df)])
 datO_DFGob <- data.matrix(WbetaO_DFGob.df[2:ncol(WbetaO_DFGob.df)])
@@ -47,35 +49,67 @@ pdoO <- data.matrix(WpdoO)
 smoltsE <- data.matrix(WsmoltsE)
 smoltsO <- data.matrix(WsmoltsO)
 
-# specify matrices for MARSS models
-q.model <- "diagonal and unequal"
+# combining datasets into one model
+# dat
+new_names <- c("site_run", 
+               "ct_1", "ct_2", "ct_3", "ct_4", "ct_5", "ct_6",
+               "ct_7", "ct_8", "ct_9", "ct_10", "ct_11", "ct_12",
+               "ct_13", "ct_14", "ct_15", "ct_16", "ct_17", "ct_18",
+               "ct_19", "ct_20", "ct_21", "ct_22", "ct_23", "ct_24")
+names(WbetaE_DFGob.df) <- new_names
+names(WbetaO_DFGob.df) <- new_names
+WbetaE_DFGob.df$site_run <- c("SJ_E", "IR_E")
+WbetaO_DFGob.df$site_run <- c("SJ_O", "IR_O")
+beta_DFGob.df <- bind_rows(WbetaE_DFGob.df, WbetaO_DFGob.df)
+dat_DFGob <- data.matrix(beta_DFGob.df[2:ncol(beta_DFGob.df)])
+
+# smolts
+new_names <- c("ct_1", "ct_2", "ct_3", "ct_4", "ct_5", "ct_6",
+               "ct_7", "ct_8", "ct_9", "ct_10", "ct_11", "ct_12",
+               "ct_13", "ct_14", "ct_15", "ct_16", "ct_17", "ct_18",
+               "ct_19", "ct_20", "ct_21", "ct_22", "ct_23", "ct_24")
+names(WsmoltsE) <- new_names
+names(WsmoltsO) <- new_names
+smolts <- bind_rows(WsmoltsE, WsmoltsO)
+smolts <- data.matrix(smolts)
+
+# model list
 z.model <- "identity"
+u.model <- "zero"
 a.model <- "zero"
-r.model <- "diagonal and unequal"
 x.model <- "unequal"
 v.model <- "zero"
 
-# autoregressive character - beta matrix
-b.model <- matrix(list(0), 2, 2)
-b.model[1,2] <- "bHt<Rt-1"
-b.model[2,1] <- "bRt<Ht-1"
-b.model[2,2] <- "bRR"
+# site level observation error
+r.model <- matrix(list(0), 4, 4)
+r.model[1,1] <- "rH"
+r.model[2,2] <- "rR"
+r.model[3,3] <- "rH"
+r.model[4,4] <- "rR"
 
-# state trend - u
-# u.model <- matrix(list(0), 2, 1)
-# u.model[2,1] <- "u"
-u.model <- "zero"
+# autoregressive character - beta matrix
+b.model <- matrix(list(0), 4, 4)
+b.model[1,2] <- "bE_Ht<Rt-1"
+b.model[2,1] <- "bE_Rt<Ht-1"
+b.model[2,2] <- "bE_RR"
+b.model[3,4] <- "bO_Ht<Rt-1"
+b.model[4,3] <- "bO_Rt<Ht-1"
+b.model[4,4] <- "bO_RR"
 
 # c matrix - for them smolts
-c.model <- matrix(list(0), 2, 1)
-c.model[1,1] <- "smolts"
+c.model <- matrix(list(0), 4, 2)
+c.model[1,1] <- "sE"
+c.model[3,2] <- "sO"
 
-# c could also include pdo for both 
-# d could include observers for IR (no such info for hatchery)
+# run level observation error
+q.model <- matrix(list(0), 4, 4)
+q.model[1,1] <- "qE"
+q.model[2,2] <- "qE"
+q.model[3,3] <- "qO"
+q.model[4,4] <- "qO"
 
-# specify MARSS model
-model.listE <- list(
-    B = b.model 
+model.list <- list(
+  B = b.model 
   , U = u.model
   , Q = q.model
   , Z = z.model 
@@ -83,49 +117,15 @@ model.listE <- list(
   , R = r.model
   , x0 = x.model 
   , V0 = v.model 
-  , tinitx = 0
+  , tinitx = 1
   , C = c.model
-  , c = smoltsE
-  # , D = d.model
-  # , d = IRobserversE
+  , c = smolts
 )
-
-model.listO <- list(
-    B = b.model 
-  , U = u.model
-  , Q = q.model
-  , Z = z.model 
-  , A = a.model 
-  , R = r.model
-  , x0 = x.model 
-  , V0 = v.model 
-  , tinitx = 0
-  , C = c.model
-  , c = smoltsO
-  # , D = d.model
-  # , d = IRobserversO
-)
-
-# specify initial conditions
-inits.E <- list(x0 = matrix(c(9.938505, 8.5749326), nrow = 2))
-inits.O <- list(x0 = matrix(c(11.7200578, 9.4813332), nrow = 2))
-  ##  average of first 5 obs? - ask mark
 
 # run modelos
-if(!file.exists(here("data", "clean", "ssEbeta_DFGob.rds"))){
-  ssEbeta_DFGob <- MARSS(datE_DFGob, 
-                         model = model.listE, 
-                         inits = inits.E,
-                         control = list(safe = TRUE, maxit = 5000),
-                         method = "kem")
-  saveRDS(ssEbeta_DFGob, file=here("data", "clean", "ssEbeta_DFGob.rds"))
-}
-
-if(!file.exists(here("data", "clean", "ssObeta_DFGob.rds"))){
-  ssObeta_DFGob <- MARSS(datO_DFGob, 
-                         model = model.listO, 
-                         inits = inits.O,
-                         control = list(safe = TRUE, maxit = 5000),
-                         method = "kem")
-  saveRDS(ssObeta_DFGob, file=here("data", "clean", "ssObeta_DFGob.rds"))
+if(!file.exists(here("data", "clean", "ssbeta_DFGob.rds"))){
+  ssbeta_DFGob <- MARSS(dat_DFGob,
+                        model = model.list,
+                        method = "kem")
+  saveRDS(ssbeta_DFGob, file=here("data", "clean", "ssbeta_DFGob.rds"))
 }

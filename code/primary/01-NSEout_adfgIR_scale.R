@@ -93,9 +93,11 @@ merge.df$ESCbyKM <- (merge.df$PEAK_COUNT/merge.df$LENGTHkm)
 pinks.df <- merge.df
 
 # data transform - split into odd/even runs
+pinks_sc.df <- pinks.df
 pinksE_sc.df <- pinks.df %>% filter(YEAR %% 2 == 0)
 pinksO_sc.df <- pinks.df %>% filter(YEAR %% 2 != 0)
 
 # save scaled dataframes
+save(pinks_sc.df, file=here("data", "clean", "pinks_sc.Rda")) 
 save(pinksE_sc.df, file=here("data", "clean", "pinksE_sc.Rda"))
 save(pinksO_sc.df, file=here("data", "clean", "pinksO_sc.Rda"))

@@ -65,6 +65,9 @@ merge.df <- merge.df %>%
   mutate(ID = cur_group_id())
 mergeID.df <- merge.df[-c(3, 4)]
 
+observer.df <- mergeID.df
+save(observer.df, file=here("data", "clean", "NSEout_observer.Rda"))
+
 # data transform - split into odd/even runs
 observerE.df <- mergeID.df %>% filter(YEAR %% 2 == 0)
 observerO.df <- mergeID.df %>% filter(YEAR %% 2 != 0)
@@ -74,6 +77,9 @@ save(observerE.df, file=here("data", "clean", "NSEout_observerE.Rda"))
 save(observerO.df, file=here("data", "clean", "NSEout_observerO.Rda"))
 
 # set data wide (rows = IDs, columns = year)
+wobserver.df <- panel_data(observer.df, id = STREAMID, wave = YEAR)
+wobserver.df <- widen_panel(wobserver.df, separator = "_")
+
 wobserverE.df <- panel_data(observerE.df, id = STREAMID, wave = YEAR)
 wobserverE.df <- widen_panel(wobserverE.df, separator = "_")
 
@@ -81,5 +87,6 @@ wobserverO.df <- panel_data(observerO.df, id = STREAMID, wave = YEAR)
 wobserverO.df <- widen_panel(wobserverO.df, separator = "_")
 
 # save wide dataframes
+save(wobserver.df, file=here("data", "clean", "NSEout_wobserver.Rda"))
 save(wobserverE.df, file=here("data", "clean", "NSEout_wobserverE.Rda"))
 save(wobserverO.df, file=here("data", "clean", "NSEout_wobserverO.Rda"))

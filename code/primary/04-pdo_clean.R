@@ -27,7 +27,7 @@ pdo$annual <- annual
 pdo <- pdo[-c(2:13)]
 
 pdo <- pdo %>% filter(Year >= 1959)
-pdo <- pdo %>% filter(Year < 2024)
+pdo <- pdo %>% filter(Year < 2025)
 
 # create lag (year pinks are at sea)
 pdo$returnYear <- pdo$Year + 1
@@ -36,15 +36,22 @@ pdo$returnYear <- pdo$Year + 1
 pdoE <- pdo %>% filter(returnYear %% 2 == 0)
 pdoO <- pdo %>% filter(returnYear %% 2 != 0)
 
+save(pdo, file=here("data", "clean", "pdo.Rda"))
 save(pdoE, file=here("data", "clean", "pdoE.Rda"))
 save(pdoO, file=here("data", "clean", "pdoO.Rda"))
 
 # setting wide
+yrs <- pdo$returnYear
+idx <- pdo$annual
+
 yrsE <- pdoE$returnYear
 idxE <- pdoE$annual
 
 yrsO <- pdoO$returnYear
 idxO <- pdoO$annual
+
+Wpdo <- as.data.frame(matrix(idx, nrow = 1, byrow = TRUE))
+names(Wpdo) <- yrs
 
 WpdoE <- as.data.frame(matrix(idxE, nrow = 1, byrow = TRUE))
 names(WpdoE) <- yrsE
@@ -52,9 +59,10 @@ names(WpdoE) <- yrsE
 WpdoO <- as.data.frame(matrix(idxO, nrow = 1, byrow = TRUE))
 names(WpdoO) <- yrsO
 
+save(Wpdo, file=here("data", "clean", "Wpdo.Rda"))
 save(WpdoE, file=here("data", "clean", "WpdoE.Rda"))
 save(WpdoO, file=here("data", "clean", "WpdoO.Rda"))
 
-pdoEplot <- ggplot() +
-  geom_line(data = pdoE, aes(y=annual, x=Year, color=annual))
-pdoEplot
+pdoplot <- ggplot() +
+  geom_line(data = pdo, aes(y=annual, x=Year, color=annual))
+pdoplot

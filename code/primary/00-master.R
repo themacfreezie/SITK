@@ -15,6 +15,8 @@ source(here("code", "primary", "05E-NSEout_modelbuild.R"))
 source(here("code", "primary", "06E-NSEout_modeleval.R"))
 source(here("code", "primary", "07E-NSEout_output.R"))
 
+# difference-in-difference
+
 # betas modeling
 source(here("code", "primary", "08-BETA_data_clean.R"))
 source(here("code", "primary", "09-BETA_WIDEstandardize.R"))
