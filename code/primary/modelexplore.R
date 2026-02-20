@@ -79,6 +79,23 @@ dat <- data.matrix(STACKwpinks_scst.df[2:ncol(STACKwpinks_scst.df)])
 obs <- data.matrix(STACKwobs.df[2:ncol(STACKwobs.df)])
 pdo <- data.matrix(STACKwpdo.df)
 
+levels <- sort(unique(as.vector(obs)))
+result <- do.call(rbind, lapply(1:nrow(obs), 
+                                function(i) t(sapply(levels, 
+                                                     function(x) as.integer(obs[i,] == x)))))
+obD <- result
+
+
+# binary_matrices <- lapply(levels, function(level) {
+#   # Create a logical matrix: 1 if TRUE, 0 if FALSE
+#   +(obs == level)
+# })
+
+# df <- STACKwobs.df[2:ncol(STACKwobs.df)]
+# df[sapply(df, is.numeric)] <- lapply(df[sapply(df, is.numeric)],
+#                                        as.factor)
+# binary_df <- dummy_cols(df, remove_first_dummy = FALSE)
+
 # grab IR data for output
 IRdata <- as.numeric(as.vector(dat[6,]))
 saveRDS(IRdata, file=here("data", "clean", "oIRdata.rds"))
@@ -96,6 +113,97 @@ saveRDS(IRdata, file=here("data", "clean", "eIRdata.rds"))
 # d_mat1 <- t(model.matrix(~ POP1_obs - 1)) # Remove intercept
 # d_mat2 <- t(model.matrix(~ POP2_obs - 1))
 
+# setting up MARSS model inputs
+# easy ones
+b.model <- "identity"
+a.model <- "zero"
+x.model <- "unequal"
+v.model <- "zero"
+
+# U (underlying trend in process)
+uZERO.model <- "zero"
+uTREND.model <- matrix(paste0("u", seq(4)))
+
+# Z (underlying states)
+z.model <- matrix(
+  c(1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0),
+  nrow = 72,
+  ncol = 4,
+  byrow = TRUE
+)
+
+# D (control for observer)
 d.model <- matrix(list(0), 2*n, (2*11)*n)
 num_rowsD <- nrow(d.model)
 
@@ -115,3 +223,52 @@ for (i in 1:num_rowsD) {
   cc <- 11*i - 10
   d.model[i, cc:(cc+10)] <- obs_vector
 }
+
+# C (effect of pdo)
+c.model <- matrix(list(0), 4, 2)
+c.model[1,1] <- "pE"
+c.model[2,1] <- "pE"
+c.model[3,2] <- "pO"
+c.model[4,2] <- "pO"
+
+# Q (process error)
+qEO.model <- matrix(list(0), 4, 4)
+qEO.model[1,1] <- "qE"
+qEO.model[2,2] <- "qE"
+qEO.model[3,3] <- "qO"
+qEO.model[4,4] <- "qO"
+
+qALL.model <- matrix(list(0), 4, 4)
+qALL.model[1,1] <- "qEregion"
+qALL.model[2,2] <- "qEir"
+qALL.model[3,3] <- "qOregrion"
+qALL.model[4,4] <- "qOir"
+
+# R (site level observation error)
+r.model <- matrix(list(0), 72, 72)
+for (i in 1:36) {
+  r.model[i,i] <- paste0("r",i)
+}
+for (i in 1:36) {
+  r.model[i+36,i+36] <- paste0("r",i)
+}
+r.model[6,6] <- "rIndianRiver"
+r.model[42,42] <- "rIndianRiver"
+
+# model build
+model.list <- list(
+  B = b.model, U = uZERO.model, Q = qALL.model,
+  Z = z.model, A = a.model, R = r.model,
+  x0 = x.model, V0 = v.model, tinitx = 0,
+  C= c.model, c = pdo, D = d.model, d = obD)
+
+# run MARSS model
+ptm <- proc.time()
+if(!file.exists(here("data", "clean", "ssNSE.rds"))){
+  ssNSE <- MARSS(dat, 
+                 model = model.list, 
+                 method = "kem",
+                 control = list(maxit = 10000))
+  saveRDS(ssNSE, file=here("data", "clean", "ssNSE.rds"))
+}
+proc.time()[3] - ptm

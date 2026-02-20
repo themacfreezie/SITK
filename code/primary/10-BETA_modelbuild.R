@@ -101,7 +101,7 @@ c.model <- matrix(list(0), 4, 2)
 c.model[1,1] <- "sE"
 c.model[3,2] <- "sO"
 
-# run level observation error
+# run level process error
 q.model <- matrix(list(0), 4, 4)
 q.model[1,1] <- "qE"
 q.model[2,2] <- "qE"
