@@ -1,5 +1,6 @@
 ## SET WORKING DIR & PACKAGES
 library(here)
+library(patchwork)
 library(reshape2)
 library(str2str)
 library(tidyverse)
@@ -38,7 +39,7 @@ pointsE_DFGob <- data.frame(Beta = names, mean = mean, sd = sd)
 quantsE_DFGob <- data.frame(sapply(df, quantile, probs=c(0.05, .25, .5, .75, 0.95)))
 
 # plots
-bplot <- ggplot(stack(df), aes(x=ind, y=values)) + 
+bplotE <- ggplot(stack(df), aes(x=ind, y=values)) + 
   geom_boxplot() +
   labs(x = NULL,
        title='Indian River/Sheldon Jackson Hatchery interactions',
@@ -46,9 +47,9 @@ bplot <- ggplot(stack(df), aes(x=ind, y=values)) +
        y=NULL) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   theme_classic()
-bplot
+bplotE
 
-ggsave(here("output", "figures", "E_DFGob_bplot.png"), plot=bplot, device="png", dpi=300)
+ggsave(here("output", "figures", "E_DFGob_bplot.png"), plot=bplotE, device="png", dpi=300)
 
 # modular - odd
 df <- df_O
@@ -61,7 +62,7 @@ pointsO_DFGob <- data.frame(Beta = names, mean = mean, sd = sd)
 quantsO_DFGob <- data.frame(sapply(df, quantile, probs=c(0.05, .25, .5, .75, 0.95)))
 
 # plots
-bplot <- ggplot(stack(df), aes(x=ind, y=values)) + 
+bplotO <- ggplot(stack(df), aes(x=ind, y=values)) + 
   geom_boxplot() +
   labs(x = NULL,
        title='Indian River/Sheldon Jackson Hatchery interactions',
@@ -69,6 +70,27 @@ bplot <- ggplot(stack(df), aes(x=ind, y=values)) +
        y=NULL) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   theme_classic()
+bplotO
+
+ggsave(here("output", "figures", "O_DFGob_bplot.png"), plot=bplotO, device="png", dpi=300)
+
+bplotE <- bplotE +
+  theme(axis.text.x=element_blank())
+bplotE
+
+bplotO <- bplotO +
+  labs(x = NULL,
+       title= NULL,
+       subtitle="Odd year runs",
+       y=NULL) +
+  scale_x_discrete(labels=c("River(t)<<Hatchery(t-1)" = "Effect of prior brood year (t-1) hatchery \n returns on current brood year (t) Indian \n River abundance", 
+                            "Hatchery(t)<<River(t-1)" = "Effect of prior brood year (t-1) Indian \n River abundance on current brood \n year (t) hatchery returns",
+                            "River(t)<<River(t-1)" = "Effect of prior brood year (t-1) Indian River \n abundance on current brood year (t) \n Indian River abundance"))
+bplotO
+
+bplotE/bplotO
+bplot <- bplotE/bplotO
 bplot
 
-ggsave(here("output", "figures", "O_DFGob_bplot.png"), plot=bplot, device="png", dpi=300)
+ggsave(here("output", "figures", "DFGob_bplot.png"), plot=bplot, device="png", dpi=300)
+
