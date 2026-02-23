@@ -43,3 +43,20 @@ names(DD_O)[names(DD_O) == "ID"] <- "Observer"
 save(DD_E, file=here("data", "clean", "DD_E.Rda"))
 save(DD_O, file=here("data", "clean", "DD_O.Rda"))
 
+# split data
+DD_E1980 <- DD_E[-c(6)]
+DD_O1980 <- DD_O[-c(6)]
+DD_E2010 <- DD_E[-c(5)]
+DD_O2010 <- DD_O[-c(5)]
+
+names(DD_E1980)[names(DD_E1980) == "dPost1980"] <- "dPost"
+names(DD_O1980)[names(DD_O1980) == "dPost1980"] <- "dPost"
+names(DD_E2010)[names(DD_E2010) == "dPost2010"] <- "dPost"
+names(DD_O2010)[names(DD_O2010) == "dPost2010"] <- "dPost"
+
+# save merged and split data
+save(DD_E1980, file=here("data", "clean", "DD_E1980.Rda"))
+save(DD_O1980, file=here("data", "clean", "DD_O1980.Rda"))
+save(DD_E2010, file=here("data", "clean", "DD_E2010.Rda"))
+save(DD_O2010, file=here("data", "clean", "DD_O2010.Rda"))
+

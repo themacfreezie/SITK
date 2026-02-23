@@ -123,6 +123,6 @@ AIC(DDmodO_both2010, k=2) # 2nd best
 
 # seems like these are best based on aic
 summary(DDmodE_obsv1980) 
-summary(DDmodO_both2010)
-summary(DDmodE_obsv1980) # deltAIC < 2 & simpler model
+summary(DDmodE_both2010)
+summary(DDmodO_obsv1980) # deltAIC < 2 & simpler model
 summary(DDmodO_obsv2010)

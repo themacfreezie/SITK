@@ -41,7 +41,7 @@ quantsE_DFGob <- data.frame(sapply(df, quantile, probs=c(0.05, .25, .5, .75, 0.9
 bplot <- ggplot(stack(df), aes(x=ind, y=values)) + 
   geom_boxplot() +
   labs(x = NULL,
-       title='IR/SJH interactions',
+       title='Indian River/Sheldon Jackson Hatchery interactions',
        subtitle="Even year runs",
        y=NULL) +
   geom_hline(yintercept = 0, linetype = "dashed") +
@@ -64,7 +64,7 @@ quantsO_DFGob <- data.frame(sapply(df, quantile, probs=c(0.05, .25, .5, .75, 0.9
 bplot <- ggplot(stack(df), aes(x=ind, y=values)) + 
   geom_boxplot() +
   labs(x = NULL,
-       title='IR/SJH interactions',
+       title='Indian River/Sheldon Jackson Hatchery interactions',
        subtitle="Odd year runs",
        y=NULL) +
   geom_hline(yintercept = 0, linetype = "dashed") +
