@@ -42,24 +42,59 @@ IR_o <- ts(df_O$IR_o,
            start = 1961, end = 2023,
            frequency = 0.5)
 
-# stationarity tests - looking good
+# stationarity tests - confirm non-stationary
 adf.test(NS_e)
-  # stationary
+  # non-stationary
 adf.test(IR_e)
-  # stationary
+  # non-stationary
 adf.test(NS_o)
-  # stationary
+  # non-stationary
 adf.test(IR_o)
-  # stationary
+  # non-stationary
 
 kpss.test(NS_e)
-  # stationary
+  # non-stationary
 kpss.test(IR_e)
-  # stationary
+  # non-stationary
 kpss.test(NS_o)
-  # stationary
+  # non-stationary
 kpss.test(IR_o)
+  # non-stationary
+
+# differencing data to remove linear trends
+# differences?
+diffNS_e <- diff(NS_e,
+                 lag = 1,
+                 differences = 1)
+diffIR_e <- diff(IR_e,
+                 lag = 1,
+                 differences = 1)
+diffNS_o <- diff(NS_o,
+                 lag = 1,
+                 differences = 1)
+diffIR_o <- diff(IR_o,
+                 lag = 1,
+                 differences = 1)
+
+# stationarity tests for differenced data - confirm
+adf.test(diffNS_e)
   # stationary
+adf.test(diffIR_e)
+  # non-stationary
+adf.test(diffNS_o)
+  # non-stationary
+adf.test(diffIR_o)
+  # non-stationary
+
+kpss.test(diffNS_e)
+  # stationary
+kpss.test(diffIR_e)
+  # stationary
+kpss.test(diffNS_o)
+  # stationary
+kpss.test(diffIR_o)
+  # stationary
+
 
 # if stationary, let's check mean and variance
 mean(NS_e) # -0.2301661

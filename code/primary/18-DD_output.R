@@ -30,3 +30,15 @@ modelsummary(models,
              title = "Indian River pink salmon difference-in-difference models",
              output = here("output", "figures", "DD_table.png")
              )
+
+# # build results tabls
+# modelsummary(models,
+#              coef_omit = c(1, 4:13, 15),
+#              coef_rename = c("dPost" = "Treatment Effect", 
+#                              "dIR" = "Indian River Effect", 
+#                              "dPost:dIR" = "Interaction Effect"),
+#              stars = c("*" = 0.05, "**" = 0.01, "***" = 0.001),
+#              gof_omit = 'DF|Deviance|AIC|BIC|Log.Lik|RMSE|F',
+#              title = "Indian River pink salmon difference-in-difference models",
+#              output = "latex"
+# )
