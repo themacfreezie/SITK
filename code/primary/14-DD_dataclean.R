@@ -92,34 +92,37 @@ pinks.df <- merge.df
 pinksE_sc.df <- pinks.df %>% filter(YEAR %% 2 == 0)
 pinksO_sc.df <- pinks.df %>% filter(YEAR %% 2 != 0)
 
-## if desired, drop extraneous regions from pinks.df
+## drop extraneous regions from pinks.df
 pinksE_sc.df <- pinksE_sc.df %>% filter(SUB_REGION!="SSE")
 pinksE_sc.df <- pinksE_sc.df %>% filter(SUB_REGION!="NSE Inside")
 pinksO_sc.df <- pinksO_sc.df %>% filter(SUB_REGION!="SSE")
 pinksO_sc.df <- pinksO_sc.df %>% filter(SUB_REGION!="NSE Inside")
 
-# retaining Indian River and nine nearby streams
-DD_pinksE_sc.df <- pinksE_sc.df %>% filter(STREAMID=="113-41-042" |  
-                                           STREAMID=="113-41-032" |
-                                           STREAMID=="113-44-003" |
-                                           STREAMID=="113-41-019" |
-                                           STREAMID=="113-41-034" |  
-                                           STREAMID=="113-42-002" |
-                                           STREAMID=="113-42-003" |
-                                           STREAMID=="113-43-002" |
-                                           STREAMID=="113-43-005" |
-                                           STREAMID=="113-44-005" )
+DD_pinksE_sc.df <- pinksE_sc.df 
+DD_pinksO_sc.df <- pinksO_sc.df
 
-DD_pinksO_sc.df <- pinksO_sc.df %>% filter(STREAMID=="113-41-042" |  
-                                           STREAMID=="113-41-032" |
-                                           STREAMID=="113-44-003" |
-                                           STREAMID=="113-41-019" |
-                                           STREAMID=="113-41-034" |  
-                                           STREAMID=="113-42-002" |
-                                           STREAMID=="113-42-003" |
-                                           STREAMID=="113-43-002" |
-                                           STREAMID=="113-43-005" |
-                                           STREAMID=="113-44-005" )
+# # retaining Indian River and nine nearby streams
+# DD_pinksE_sc.df <- pinksE_sc.df %>% filter(STREAMID=="113-41-042" |  
+#                                            STREAMID=="113-41-032" |
+#                                            STREAMID=="113-44-003" |
+#                                            STREAMID=="113-41-019" |
+#                                            STREAMID=="113-41-034" |  
+#                                            STREAMID=="113-42-002" |
+#                                            STREAMID=="113-42-003" |
+#                                            STREAMID=="113-43-002" |
+#                                            STREAMID=="113-43-005" |
+#                                            STREAMID=="113-44-005" )
+# 
+# DD_pinksO_sc.df <- pinksO_sc.df %>% filter(STREAMID=="113-41-042" |  
+#                                            STREAMID=="113-41-032" |
+#                                            STREAMID=="113-44-003" |
+#                                            STREAMID=="113-41-019" |
+#                                            STREAMID=="113-41-034" |  
+#                                            STREAMID=="113-42-002" |
+#                                            STREAMID=="113-42-003" |
+#                                            STREAMID=="113-43-002" |
+#                                            STREAMID=="113-43-005" |
+#                                            STREAMID=="113-44-005" )
 
 # drop extraneous variables from pinks.df
 DD_pinksE_sc.df <- DD_pinksE_sc.df[-c(3:8)]
@@ -183,11 +186,6 @@ DD_pinksO_scst.df$dPost2010 <- ifelse(DD_pinksO_scst.df$YEAR>2010, 1, 0)
 #drop obs with no count (IR)
 DD_pinksE_scst.df <- na.omit(DD_pinksE_scst.df)
 DD_pinksO_scst.df <- na.omit(DD_pinksO_scst.df)
-
-#drop obs after last IR observation
-# DD_pinksE_scst.df <- DD_pinksE_scst.df %>% filter(YEAR<=2016)
-# DD_pinksO_scst.df <- DD_pinksO_scst.df %>% filter(YEAR<=2015)
-  # not sure if this is necessary
 
 # save scaled dataframes
 save(DD_pinksE_scst.df, file=here("data", "clean", "DD_pinksE_scst.Rda"))

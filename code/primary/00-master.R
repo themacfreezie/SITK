@@ -3,6 +3,9 @@ library(here)
 # set loc
 here::i_am("code/primary/00-master.R")
 
+# descriptive stats and figures
+source(here("code", "primary", "19-IRmultiline_scaled.R"))
+
 # nse outside modeling
 source(here("code", "primary", "01-NSEout_adfgIR_scale.R"))
 source(here("code", "primary", "02-NSEout_WIDEstandardize.R"))
@@ -24,10 +27,7 @@ source(here("code", "primary", "13-BETA_boot_output.R"))
 # diff-in-diff modeling
 source(here("code", "primary", "14-DD_dataclean.R"))
 source(here("code", "primary", "15-DD_covariates.R"))
-source(here("code", "primary", "21-DD_eventstudies.R"))
 source(here("code", "primary", "16-DD_regression.R"))
 source(here("code", "primary", "17-DD_modeleval.R"))
+source(here("code", "primary", "21-DD_eventstudies.R"))
 source(here("code", "primary", "18-DD_output.R"))
-
-# descriptive stats and figures
-source(here("code", "primary", "19-IRmultiline_scaled.R"))

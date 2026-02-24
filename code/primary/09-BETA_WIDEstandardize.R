@@ -138,7 +138,5 @@ names(WsmoltsE) <- yrsE
 WsmoltsO <- as.data.frame(matrix(smtO, nrow = 1, byrow = TRUE))
 names(WsmoltsO) <- yrsO
 
-
-
 save(WsmoltsE, file=here("data", "clean", "WsmoltsE.Rda"))
 save(WsmoltsO, file=here("data", "clean", "WsmoltsO.Rda"))
