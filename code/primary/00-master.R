@@ -11,6 +11,7 @@ source(here("code", "primary", "04-pdo_clean.R"))
 source(here("code", "primary", "05-NSEout_modelbuild.R"))
 source(here("code", "primary", "06-NSEout_modeleval.R"))
 source(here("code", "primary", "07-NSEout_output.R"))
+source(here("code", "primary", "20-NSEout_comaprison.R"))
 
 # betas modeling
 source(here("code", "primary", "08-BETA_data_clean.R"))
@@ -23,6 +24,10 @@ source(here("code", "primary", "13-BETA_boot_output.R"))
 # diff-in-diff modeling
 source(here("code", "primary", "14-DD_dataclean.R"))
 source(here("code", "primary", "15-DD_covariates.R"))
+source(here("code", "primary", "21-DD_eventstudies.R"))
 source(here("code", "primary", "16-DD_regression.R"))
 source(here("code", "primary", "17-DD_modeleval.R"))
 source(here("code", "primary", "18-DD_output.R"))
+
+# descriptive stats and figures
+source(here("code", "primary", "19-IRmultiline_scaled.R"))

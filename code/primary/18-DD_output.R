@@ -26,7 +26,7 @@ modelsummary(models,
                              "dIR" = "Indian River Effect", 
                              "dPost:dIR" = "Interaction Effect"),
              stars = c("*" = 0.05, "**" = 0.01, "***" = 0.001),
-             gof_omit = 'DF|Deviance|AIC|BIC|Log.Lik|RMSE',
+             gof_omit = 'DF|Deviance|AIC|BIC|Log.Lik|RMSE|F',
              title = "Indian River pink salmon difference-in-difference models",
              output = here("output", "figures", "DD_table.png")
              )

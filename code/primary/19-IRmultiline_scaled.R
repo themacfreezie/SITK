@@ -16,7 +16,7 @@ library(tidyverse)
 # library(tseries)
 
 # create working dir and output folder
-here::i_am("code/defunct/IRmultiline_scaled.R")
+here::i_am("code/primary/19-IRmultiline_scaled.R")
 options(max.print=10000)
 
 
@@ -26,6 +26,9 @@ options(max.print=10000)
 # load data
 load(here("data", "clean", "pinksE_sc.Rda"))
 load(here("data", "clean", "pinksO_sc.Rda"))
+
+pinksO_sc.df <- pinksO_sc.df[pinksO_sc.df$YEAR < 2024, ]
+pinksE_sc.df <- pinksE_sc.df[pinksE_sc.df$YEAR < 2024, ]
 
 # highlight Indian River on charts of escapement
 print(ggplot(pinksE_sc.df, aes(x=YEAR, y=ESCbyKM, group=STREAM)) +
@@ -45,13 +48,13 @@ pinksE_nseO.df <- pinksE_sc.df %>% filter(SUB_REGION=="NSE Outside")
 pinksO_nseO.df <- pinksO_sc.df %>% filter(SUB_REGION=="NSE Outside")
 
 ggplot(pinksE_nseO.df, aes(x=YEAR, y=ESCbyKM, group=STREAM)) +
-  ggtitle("Northern Southeast Alaska, Outside - Even Year Runs") +
+  ggtitle("Northern Southeast Alaska (Outside) - Even Year Runs") +
   xlab("Year") + ylab("Peak Count/km") +
   geom_line() +
   theme_minimal()
 
 ggplot(pinksO_nseO.df, aes(x=YEAR, y=ESCbyKM, group=STREAM)) +
-        ggtitle("Northern Southeast Alaska, Outside - Odd Year Runs") +
+        ggtitle("Northern Southeast Alaska (Outside) - Odd Year Runs") +
         xlab("Year") + ylab("Peak Count/km") +
         geom_line() +
         theme_minimal()
@@ -72,19 +75,19 @@ pinksE_nseO_noIR.df <- pinksE_nseO.df %>% filter(STREAMID!="113-41-019")
 pinksO_nseO_noIR.df <- pinksO_nseO.df %>% filter(STREAMID!="113-41-019")
 
 ggplot(pinksE_nseO_noIR.df, aes(x=YEAR, y=ESCbyKM, group=STREAM)) +
-  ggtitle("Northern Southeast Alaska, Outside - Even Year Runs") +
+  ggtitle("Northern Southeast Alaska (Outside) - Even Year Runs") +
   xlab("Year") + ylab("Peak count per kilometer") +
   geom_line() +
   theme_classic()
 
 ggplot(pinksO_nseO_noIR.df, aes(x=YEAR, y=ESCbyKM, group=STREAM)) +
-  ggtitle("Northern Southeast Alaska, Outside - Odd Year Runs") +
+  ggtitle("Northern Southeast Alaska (Outside) - Odd Year Runs") +
   xlab("Year") + ylab("Peak Count per kilometer") +
   geom_line() +
   theme_classic()
 
 ggplot(pinksO_nseO_noIR.df, aes(x=YEAR, y=ESCbyKM, group=STREAM)) +
-  ggtitle("Northern Southeast Alaska, Outside") +
+  ggtitle("Northern Southeast Alaska (Outside)") +
   xlab("Year") + ylab("Peak Count per kilometer") +
   geom_line() +
   theme_classic() +
@@ -92,7 +95,7 @@ ggplot(pinksO_nseO_noIR.df, aes(x=YEAR, y=ESCbyKM, group=STREAM)) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
 
 ggplot(pinksO_nseO_noIR.df, aes(x=YEAR, y=ESCbyKM, group=STREAM)) +
-  ggtitle("Northern Southeast Alaska, Outside") +
+  ggtitle("Northern Southeast Alaska (Outside)") +
   xlab("Year") + ylab("Peak Count per kilometer") +
   geom_area() +
   facet_wrap(~STREAM) +
@@ -101,7 +104,7 @@ ggplot(pinksO_nseO_noIR.df, aes(x=YEAR, y=ESCbyKM, group=STREAM)) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
 
 ggplot(pinksO_nseO.df, aes(x=YEAR, y=ESCbyKM, group=STREAM, color = STREAM)) +
-  ggtitle("Indian River among Northern Southeast Alaska, Outside") +
+  ggtitle("Indian River among Northern Southeast Alaska (Outside)") +
   xlab("Year") + ylab("Peak Count per kilometer") +
   geom_line(show.legend = FALSE, linewidth = 1.4) +
   theme_classic() +
@@ -110,7 +113,7 @@ ggplot(pinksO_nseO.df, aes(x=YEAR, y=ESCbyKM, group=STREAM, color = STREAM)) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
 
 ggplot(pinksO_nseO.df, aes(x=YEAR, y=ESCbyKM, group=STREAM)) +
-  ggtitle("Indian River among Northern Southeast Alaska, Outside") +
+  ggtitle("Indian River among Northern Southeast Alaska (Outside)") +
   xlab("Year") + ylab("Peak Count per kilometer") +
   geom_area() +
   facet_wrap(~STREAM) +
@@ -119,7 +122,7 @@ ggplot(pinksO_nseO.df, aes(x=YEAR, y=ESCbyKM, group=STREAM)) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
 
 ggplot(pinksO_nseO.df, aes(x=YEAR, y=ESCbyKM, group=STREAM)) +
-  ggtitle("Indian River among Northern Southeast Alaska, Outside") +
+  ggtitle("Indian River among Northern Southeast Alaska (Outside)") +
   xlab("Year") + ylab("Peak Count per kilometer") +
   geom_line() +
   facet_wrap(~STREAM) +
@@ -128,9 +131,8 @@ ggplot(pinksO_nseO.df, aes(x=YEAR, y=ESCbyKM, group=STREAM)) +
   scale_x_continuous(expand = c(0, 0)) + 
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
 
-
 nseO_rawE <- ggplot(pinksE_nseO.df, aes(x=YEAR, y=ESCbyKM, group=STREAM)) +
-  ggtitle("Northern Southeast Alaska, Outside") +
+  ggtitle("Northern Southeast Alaska (Outside)") +
   xlab("Year") + ylab("Peak escapement per km") +
   geom_line(color = "grey50") +
   theme_classic() +
@@ -140,7 +142,7 @@ nseO_rawE <- ggplot(pinksE_nseO.df, aes(x=YEAR, y=ESCbyKM, group=STREAM)) +
 ggsave(here("output", "figures", "nseO_rawE.png"), plot=nseO_rawE, device="png", dpi=300)
 
 ggplot(pinksE_nseO.df, aes(x=YEAR, y=ESCbyKM, group=STREAM, color = STREAM)) +
-  ggtitle("Indian River among Northern Southeast Alaska, Outside") +
+  ggtitle("Indian River among Northern Southeast Alaska (Outside)") +
   xlab("Year") + ylab("Peak Count per kilometer") +
   geom_line(show.legend = FALSE, linewidth = 1.4) +
   theme_classic() +
@@ -155,26 +157,61 @@ pinksE_nseO.df <- pinksE_nseO.df %>%
   group_by(STREAMID) %>% 
   mutate(e=scale(d))
 
-nseOsc_noIR <- ggplot(pinksE_nseO.df, aes(x=YEAR, y=e, group=STREAM)) +
-  ggtitle("Northern Southeast Alaska, Outside") +
-  xlab("Year") + ylab("Ln peak esc. per km (scaled)") +
+pinksO_nseO.df$c <- pinksO_nseO.df$ESCbyKM + 1
+pinksO_nseO.df$d <- log(pinksO_nseO.df$c)
+pinksO_nseO.df <- pinksO_nseO.df %>% 
+  group_by(STREAMID) %>% 
+  mutate(e=scale(d))
+
+eNSEsc_noIR <- ggplot(pinksE_nseO.df, aes(x=YEAR, y=e, group=STREAM)) +
+  labs(x = NULL,
+       title="ADFG 'Northern Southeast (Outside)' pink salmon index streams",
+       subtitle="Even year runs",
+       y="Ln peak esc. per km (scaled)") +
   geom_line(color = "grey50") +
   theme_classic() +
   scale_x_continuous(expand = c(0, 0)) + 
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
-nseOsc_noIR
+eNSEsc_noIR
 
-nseOsc_IR <- ggplot(pinksE_nseO.df, aes(x=YEAR, y=e, group=STREAM, color = STREAM)) +
-  ggtitle("Indian River among Northern Southeast Alaska, Outside") +
-  xlab("Year") + ylab("Ln peak esc. per km (scaled)") +
+eNSEsc_IR <- ggplot(pinksE_nseO.df, aes(x=YEAR, y=e, group=STREAM, color = STREAM)) +
+  labs(x = NULL,
+       title="Indian River among ADFG 'Northern Southeast (Outside)' pink salmon index streams",
+       subtitle="Even year runs",
+       y="Ln peak esc. per km (scaled)") +
   geom_line(show.legend = FALSE, linewidth = 1.4) +
   theme_classic() +
   gghighlight(STREAM == "Indian River", use_direct_label = FALSE, unhighlighted_params = list(linewidth = 0.5, color ="gray50")) +
   scale_x_continuous(expand = c(0, 0)) + 
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
-nseOsc_IR
+eNSEsc_IR
+
+oNSEsc_noIR <- ggplot(pinksO_nseO.df, aes(x=YEAR, y=e, group=STREAM)) +
+  labs(x = NULL,
+       title="ADFG 'Northern Southeast (Outside)' pink salmon index streams",
+       subtitle="Odd year runs",
+       y="Ln peak esc. per km (scaled)") +
+  geom_line(color = "grey50") +
+  theme_classic() +
+  scale_x_continuous(expand = c(0, 0)) + 
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
+oNSEsc_noIR
+
+oNSEsc_IR <- ggplot(pinksO_nseO.df, aes(x=YEAR, y=e, group=STREAM, color = STREAM)) +
+  labs(x = NULL,
+       title="Indian River among ADFG 'Northern Southeast (Outside)' pink salmon index streams",
+       subtitle="Odd year runs",
+       y="Ln peak esc. per km (scaled)") +
+  geom_line(show.legend = FALSE, linewidth = 1.4) +
+  theme_classic() +
+  gghighlight(STREAM == "Indian River", use_direct_label = FALSE, unhighlighted_params = list(linewidth = 0.5, color ="gray50")) +
+  scale_x_continuous(expand = c(0, 0)) + 
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
+oNSEsc_IR
 
 # svae output
-ggsave(here("output", "figures", "nseOsc_noIR.png"), plot=nseOsc_noIR, device="png", dpi=300)
-ggsave(here("output", "figures", "nseOsc_IR.png"), plot=nseOsc_IR, device="png", dpi=300)
+ggsave(here("output", "figures", "eNSEsc_noIR.png"), plot=eNSEsc_noIR, device="png", dpi=300)
+ggsave(here("output", "figures", "eNSEsc_IR.png"), plot=eNSEsc_IR, device="png", dpi=300)
+ggsave(here("output", "figures", "oNSEsc_noIR.png"), plot=oNSEsc_noIR, device="png", dpi=300)
+ggsave(here("output", "figures", "oNSEsc_IR.png"), plot=oNSEsc_IR, device="png", dpi=300)
 
