@@ -1,3 +1,5 @@
+update.packages(ask = FALSE, checkBuilt = TRUE)
+
 library(here)
 
 # set loc
