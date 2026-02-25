@@ -150,6 +150,19 @@ summary(testNS_o)
 summary(testIR_o)
   # non-stationary (close)
 
+# p-values for failed odd-year runs?
+test_statistic <- testNS_o@teststat[1]
+critical_values <- testNS_o@cval[1,]
+print(test_statistic)
+print(critical_values)
+  # test stat within 15% of critical value
+
+test_statistic <- testIR_o@teststat[1]
+critical_values <- testIR_o@cval[1,]
+print(test_statistic)
+print(critical_values)
+  # test stat within 17% of critical value
+
 # test diff2 for odd years?
 dif2NS_o <- diff(diffNS_o)
 dif2IR_o <- diff(diffIR_o)
