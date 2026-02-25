@@ -4,6 +4,7 @@ library(here)
 library(lmtest)
 library(tidyverse)
 library(tseries)
+library(urca)
 
 # set loc
 here::i_am("code/primary/20-NSEout_comparison.R")
@@ -26,21 +27,21 @@ df_E <- df[-c(3,4)]
 df_O <- df[-c(1,2)]
 
 NS_e <- ts(df_E$NS_e,
-           start = 1960, end = 2022,
-           frequency = 0.5)
+           start = 1, end = 32,
+           frequency = 1)
 plot.ts(NS_e)
 
 IR_e <- ts(df_E$IR_e,
-           start = 1960, end = 2022,
-           frequency = 0.5)
+           start = 1, end = 32,
+           frequency = 1)
 
 NS_o <- ts(df_O$NS_o,
-           start = 1961, end = 2023,
-           frequency = 0.5)
+           start = 1, end = 32,
+           frequency = 1)
 
 IR_o <- ts(df_O$IR_o,
-           start = 1961, end = 2023,
-           frequency = 0.5)
+           start = 1, end = 32,
+           frequency = 1)
 
 # stationarity tests - confirm non-stationary
 adf.test(NS_e)
@@ -53,16 +54,31 @@ adf.test(IR_o)
   # non-stationary
 
 kpss.test(NS_e)
-  # non-stationary
+kpss.test(NS_e, null = "Trend")
+  # suggests trend-stationary
 kpss.test(IR_e)
-  # non-stationary
+kpss.test(IR_e, null = "Trend")
+  # suggests trend-stationary
 kpss.test(NS_o)
-  # non-stationary
+kpss.test(NS_o, null = "Trend")
+  # suggests trend-stationary
 kpss.test(IR_o)
-  # non-stationary
+kpss.test(IR_o, null = "Trend")
+  # suggests trend-stationary
 
-# differencing data to remove linear trends
-# differences?
+# auto.ARIMA to identify necessary amount of differencing
+ARIMA.NS_e <- auto.arima(NS_e)
+ARIMA.IR_e <- auto.arima(IR_e)
+ARIMA.NS_o <- auto.arima(NS_o)
+ARIMA.IR_o <- auto.arima(IR_o)
+
+summary(ARIMA.NS_e)
+summary(ARIMA.IR_e)
+summary(ARIMA.NS_o)
+summary(ARIMA.IR_o)
+  # all four models are ARIMA(0,1,0) -> random walk model, 1st order differencing
+
+# differencing data to remove linear trends - per ARIMA models
 diffNS_e <- diff(NS_e,
                  lag = 1,
                  differences = 1)
@@ -94,6 +110,139 @@ kpss.test(diffNS_o)
   # stationary
 kpss.test(diffIR_o)
   # stationary
+
+# more differences needed? let's look at forecast::ndiff
+forecast::ndiffs(NS_e, test= "adf")
+forecast::ndiffs(IR_e, test= "adf")
+forecast::ndiffs(NS_o, test= "adf")
+forecast::ndiffs(IR_e, test= "adf")
+
+forecast::ndiffs(NS_e, test= "kpss")
+forecast::ndiffs(IR_e, test= "kpss")
+forecast::ndiffs(NS_o, test= "kpss")
+forecast::ndiffs(IR_e, test= "kpss")
+
+# applied time series analysis textbook suggests that "The null hypothesis of a 
+# random walk is now rejected so you might think that a 2nd difference is needed 
+# for the anchovy data. However the actual problem is that the default for 
+# adf.test() includes a trend but we removed the trend with our first difference. 
+# Thus we included an unneeded trend parameter in our test. Our data are not that 
+# long and this affects the result.
+# 
+# Let’s repeat without the trend and we’ll see that the null hypothesis is 
+# rejected. The number of lags is set to be what would be used by adf.test(). 
+# See ?adf.test."
+#
+# let's try and apply this...
+
+k <- trunc((length(diffNS_e) - 1)^(1/3))
+testNS_e <- urca::ur.df(diffNS_e, type = "drift", lags = k)
+
+k <- trunc((length(diffIR_e) - 1)^(1/3))
+testIR_e <- urca::ur.df(diffIR_e, type = "drift", lags = k)
+
+k <- trunc((length(diffNS_e) - 1)^(1/3))
+testNS_o <- urca::ur.df(diffNS_o, type = "drift", lags = k)
+
+k <- trunc((length(diffIR_e) - 1)^(1/3))
+testIR_o <- urca::ur.df(diffIR_o, type = "drift", lags = k)
+
+summary(testNS_e)
+  # stationary
+summary(testIR_e)
+  # stationary
+summary(testNS_o)
+  # non-stationary (close)
+summary(testIR_o)
+  # non-stationary (close)
+
+
+
+
+# Box-Jenkins method suggests taking a second difference...
+dif2NS_e <- diff(diffNS_e)
+dif2IR_e <- diff(diffIR_e)
+dif2NS_o <- diff(diffNS_o)
+dif2IR_o <- diff(diffIR_o)
+
+# stationarity tests for double-differenced data - confirm
+adf.test(dif2NS_e)
+  # stationary
+adf.test(dif2IR_e)
+  # stationary
+adf.test(dif2NS_o)
+  # non-stationary
+adf.test(dif2IR_o)
+  # non-stationary
+
+kpss.test(dif2NS_e)
+  # stationary
+kpss.test(dif2IR_e)
+  # stationary
+kpss.test(dif2NS_o)
+  # stationary
+kpss.test(dif2IR_o)
+  # stationary
+
+
+
+# differenced time series are 'trend stationary' (i.e. passing kpss but not adf)
+# except differenced NS_e which is stationary
+
+# what about detrending data?
+time_index <- seq_along(diffNS_e)
+lmNS_e <- lm(diffNS_e ~ time_index)
+lmIR_e <- lm(diffIR_e ~ time_index)
+lmNS_o <- lm(diffNS_o ~ time_index)
+lmIR_o <- lm(diffIR_o ~ time_index)
+
+detrendedNS_e <- residuals(lmNS_e)
+detrendedIR_e <- residuals(lmIR_e)
+detrendedNS_o <- residuals(lmNS_o)
+detrendedIR_o <- residuals(lmIR_o)
+
+# stationarity tests for differenced data - confirm
+adf.test(detrendedNS_e)
+   # stationary
+adf.test(detrendedIR_e)
+   # non-stationary
+adf.test(detrendedNS_o)
+  # non-stationary
+adf.test(detrendedIR_o)
+  # non-stationary
+
+kpss.test(detrendedNS_e)
+   # stationary
+kpss.test(detrendedIR_e)
+   # stationary
+kpss.test(detrendedNS_o)
+  # stationary
+kpss.test(detrendedIR_o)
+  # stationary
+
+# why would detrended data have the exact same result in an adf or kpss test as before detrending?
+# possible because of high-order autocorrelation
+
+# autocorrelation
+acf(NS_e)
+acf(IR_e)
+acf(NS_o)
+acf(IR_o)
+  # high-order for sure, all time series have at least 4 significant lags
+  # this makes sense given that these are generations of fish
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # if stationary, let's check mean and variance
