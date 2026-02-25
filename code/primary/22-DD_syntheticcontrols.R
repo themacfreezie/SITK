@@ -5,7 +5,7 @@ library(here) # set working directory
 library(tidysynth)
 
 # set loc
-here::i_am("code/primary/21-DD_eventstudies.R")
+here::i_am("code/primary/22-DD_syntheticcontrols.R")
 options(max.print=2000)
 
 # load data 
@@ -101,7 +101,23 @@ new_ob1976 <- data.frame(YEAR = 1976,
                          Observer_8 = 0,
                          Observer_9 = 0,
                          Observer_10 = 0)
-DD_E1980 <- rbind(DD_E1980, new_ob1960, new_ob1968, new_ob1970, new_ob1974, new_ob1976)
+new_ob1992 <- data.frame(YEAR = 1992, 
+                         STREAMID = "113-41-019", 
+                         standard_ct = NA, 
+                         dIR = 1,
+                         dPost = 0,
+                         lagPDO = NA,
+                         Observer_1 = 0,
+                         Observer_2 = 0, 
+                         Observer_3 = 0,
+                         Observer_4 = 0,
+                         Observer_5 = 0,
+                         Observer_6 = 0,
+                         Observer_7 = 0,
+                         Observer_8 = 0,
+                         Observer_9 = 0,
+                         Observer_10 = 0)
+DD_E1980 <- rbind(DD_E1980, new_ob1960, new_ob1968, new_ob1970, new_ob1974, new_ob1976, new_ob1992)
 
 # filter IR
 DD_IR <- DD_E1980 %>%
@@ -123,19 +139,22 @@ DD_E1980 <- rbind(DD_E1980, DD_IR)
 # 1, 2, 4, 6, 8, 10
 DD_E1980 <- DD_E1980[-c(7, 8, 10, 12, 14, 16)]
 
+# generate index
+DD_E1980$index <- ((DD_E1980$YEAR - 1960)/2)+1
+
 # set up synthetic control
 synth_out <- DD_E1980 %>% 
   # 1. Initiate: Define outcome, treatment unit/time
   synthetic_control(
     outcome = standard_ct,
     unit = STREAMID,
-    time = YEAR,
+    time = index,
     i_unit = "113-41-019",
-    i_time = 1980,
+    i_time = 11,
     generate_placebos = TRUE
   ) %>% 
   # 2. Predictors: Generate covariates for pre-intervention
-  generate_predictor(time_window = 1960:1980,
+  generate_predictor(time_window = 1:11,
                      # lagPDO = mean(lagPDO),
                      Observer_3 = mean(Observer_3),
                      Observer_5 = mean(Observer_5),
@@ -143,5 +162,5 @@ synth_out <- DD_E1980 %>%
                      Observer_9 = mean(Observer_9)
   ) %>% 
   # 3. Weights: Optimize donor unit weights  
-  generate_weights(optimization_window = 1960:1980) %>% 
+  generate_weights(optimization_window = 1:11) %>% 
   generate_control()

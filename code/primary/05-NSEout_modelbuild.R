@@ -53,6 +53,7 @@ STACKwpinks_scst.df <- rbind(eveCol_wpinks, oddCol_wpinks)
 
 # observers
 streamID <- wobserver.df[, 1]
+wobserver.df <- wobserver.df[-c(66)]
 oddCol_wobs <- wobserver.df[, seq(ncol(wobserver.df)) %% 2 == 1]
 oddCol_wobs <- oddCol_wobs[, -c(1)]
 eveCol_wobs <- wobserver.df[, seq(ncol(wobserver.df)) %% 2 != 1]

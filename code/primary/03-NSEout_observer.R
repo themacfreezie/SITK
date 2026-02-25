@@ -13,14 +13,32 @@ options(max.print=10000)
 # escapement data (IR & ADFG)
 # pull in data
 pinks.df <- read_excel(here("data", "raw", "adfg_pink.xlsx"), col_names = TRUE)
-indianr.df <- read_excel(here("data", "raw", "IndianRiver.xlsx"), sheet = "Stopha 2015 - Table 6", col_names = TRUE)
+# indianr.df <- read_excel(here("data", "raw", "IndianRiver.xlsx"), sheet = "Stopha 2015 - Table 6", col_names = TRUE)
+indianr.df <- read_excel(here("data", "raw", "SITKA AREA HISTORIC PINK ESCAPEMENTS.xlsx"), sheet = "Sitka Sound", col_names = TRUE)
+
+# # rename vars in indianr.df to match pinks.df
+# # names(indianr.df)[names(indianr.df) == "Indian River Peak Escapement"] <- "PEAK_COUNT"
+# names(indianr.df)[names(indianr.df) == "PinkRUN"] <- "RUN"
+# 
+# # drop run and sitka sound index from indianr.df
+# indianr.df <- indianr.df[-c(2, 4)]
+# 
+# # add stream and ID to indianr.df
+# indianr.df$STREAM <- "Indian River"
+# indianr.df$STREAM_NO <- "113-41-019"
+# indianr.df$District <- "113"
+# indianr.df$SUB_REGION <- "NSE Outside"
+
+# drop other streams and extra rows from indianr.df
+indianr.df <- indianr.df[-c(2:13, 15:20)]
+indianr.df <- indianr.df[-c(1, 67:76), ]
 
 # rename vars in indianr.df to match pinks.df
-names(indianr.df)[names(indianr.df) == "Indian River Peak Escapement"] <- "PEAK_COUNT"
-names(indianr.df)[names(indianr.df) == "PinkRUN"] <- "RUN"
+names(indianr.df)[names(indianr.df) == "11341019"] <- "PEAK_COUNT"
+names(indianr.df)[names(indianr.df) == "...1"] <- "YEAR"
 
-# drop run and sitka sound index from indianr.df
-indianr.df <- indianr.df[-c(2, 4)]
+indianr.df$PEAK_COUNT <- as.numeric(indianr.df$PEAK_COUNT)
+indianr.df$YEAR <- as.numeric(indianr.df$YEAR)
 
 # add stream and ID to indianr.df
 indianr.df$STREAM <- "Indian River"
