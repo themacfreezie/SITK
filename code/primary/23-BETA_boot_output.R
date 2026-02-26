@@ -6,7 +6,7 @@ library(str2str)
 library(tidyverse)
 
 # set loc
-here::i_am("code/primary/13-BETA_boot_output.R")
+here::i_am("code/primary/23-BETA_boot_output.R")
 
 # pull in bootstrap data
 boot_DFGob <- readRDS(file=here("data", "clean", "boot_DFGob.rds"))

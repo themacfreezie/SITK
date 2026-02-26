@@ -4,7 +4,7 @@ library(MARSS)
 library(tidyverse)
 
 # set loc
-here::i_am("code/primary/11-BETA_modeleval.R")
+here::i_am("code/primary/21-BETA_modeleval.R")
 options(max.print=2000)
 
 # load in ss model

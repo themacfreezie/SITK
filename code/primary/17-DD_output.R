@@ -4,29 +4,29 @@ library(modelsummary)
 library(webshot2)
 
 # set loc
-here::i_am("code/primary/18-DD_output.R")
+here::i_am("code/primary/17-DD_output.R")
 options(max.print=2000)
 
 # load in ss models
-DDmodE_obsv1980 <- readRDS(file=here("data", "clean", "DDmodE_obsv1980.rds"))
+DDmodE_base1980synth <- readRDS(file=here("data", "clean", "DDmodE_base1980synth.rds"))
 DDmodO_both1980 <- readRDS(file=here("data", "clean", "DDmodO_both1980.rds"))
 DDmodE_both2010 <- readRDS(file=here("data", "clean", "DDmodE_both2010.rds"))
 DDmodO_obsv2010 <- readRDS(file=here("data", "clean", "DDmodO_obsv2010.rds"))
 
-summary(DDmodE_obsv1980) 
+summary(DDmodE_base1980synth) 
 summary(DDmodE_both2010)
 summary(DDmodO_both1980) 
 summary(DDmodO_obsv2010)
 
 # model list
-models <- list("Even, 1980" = DDmodE_obsv1980, 
+models <- list("Even, 1980" = DDmodE_base1980synth, 
                "Odd, 1980" = DDmodO_both1980,
                "Even, 2010" = DDmodE_both2010,
                "Odd, 2010" = DDmodO_obsv2010)
 
 # build results tabls
 modelsummary(models,
-             coef_omit = c(1, 4:13, 15),
+             coef_omit = c(1, 5:15),
              coef_rename = c("dPost" = "Time Effect", 
                              "dIR" = "Indian River Effect", 
                              "dPost:dIR" = "Treatment Effect"),

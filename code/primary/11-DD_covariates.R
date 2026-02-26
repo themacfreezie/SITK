@@ -1,6 +1,6 @@
 library(here) 
 # set loc
-here::i_am("code/primary/15-DD_covariates.R")
+here::i_am("code/primary/11-DD_covariates.R")
 options(max.print=2000)
 
 # load data 

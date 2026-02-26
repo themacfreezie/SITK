@@ -3,7 +3,7 @@ library(here)
 library(tidyverse)
 
 # set loc
-here::i_am("code/primary/07-NSEout_output.R")
+here::i_am("code/primary/08-NSEout_output.R")
 options(max.print=2000)
 
 # load in ssE (from 05E)

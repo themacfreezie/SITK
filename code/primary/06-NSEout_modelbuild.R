@@ -3,7 +3,7 @@ library(MARSS)
 library(tidyverse)
 
 # set loc
-here::i_am("code/primary/05-NSEout_modelbuild.R")
+here::i_am("code/primary/06-NSEout_modelbuild.R")
 options(max.print=2000)
 
 # load data 

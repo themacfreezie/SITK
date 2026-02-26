@@ -7,7 +7,7 @@ library(tseries)
 library(urca)
 
 # set loc
-here::i_am("code/primary/20-NSEout_comparison.R")
+here::i_am("code/primary/09-NSEout_comparison.R")
 options(max.print=2000)
 
 # load in ssE (from 05E)

@@ -2,7 +2,7 @@ library(here)
 library(MARSS)
 
 # set loc
-here::i_am("code/primary/06-NSEout_modeleval.R")
+here::i_am("code/primary/07-NSEout_modeleval.R")
 options(max.print=2000)
 
 # load models

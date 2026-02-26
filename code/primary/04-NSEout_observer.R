@@ -7,7 +7,7 @@ library(readxl)
 library(tidyverse)
 
 # create working dir and output folder
-here::i_am("code/primary/03-NSEout_observer.R")
+here::i_am("code/primary/04-NSEout_observer.R")
 options(max.print=10000)
 
 # escapement data (IR & ADFG)

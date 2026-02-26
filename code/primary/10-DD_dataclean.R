@@ -6,7 +6,7 @@ library(readxl)
 library(tidyverse)
 
 # create working dir and output folder
-here::i_am("code/primary/14-DD_dataclean.R")
+here::i_am("code/primary/10-DD_dataclean.R")
 options(max.print=10000)
 
 ## DATA FILTERING

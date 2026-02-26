@@ -1,7 +1,7 @@
 library(here) # set working directory
 
 # set loc
-here::i_am("code/primary/16-DD_regression.R")
+here::i_am("code/primary/12-DD_regression.R")
 options(max.print=2000)
 
 # load data 

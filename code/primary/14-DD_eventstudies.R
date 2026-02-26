@@ -4,7 +4,7 @@ library(tidyverse)
 library(webshot2)
 
 # set loc
-here::i_am("code/primary/21-DD_eventstudies.R")
+here::i_am("code/primary/14-DD_eventstudies.R")
 options(max.print=2000)
 
 # load data 

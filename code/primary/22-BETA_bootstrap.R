@@ -3,7 +3,7 @@ library(here)
 library(MARSS)
 
 # set loc
-here::i_am("code/primary/12-BETA_bootstrap.R")
+here::i_am("code/primary/22-BETA_bootstrap.R")
 
 # load in ss model
 ssbeta_DFGob <- readRDS(file=here("data", "clean", "ssbeta_DFGob.rds"))

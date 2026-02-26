@@ -7,7 +7,7 @@ library(panelr)
 library(readxl)
 
 # create working dir and output folder
-here::i_am("code/primary/09-BETA_WIDEstandardize.R")
+here::i_am("code/primary/19-BETA_WIDEstandardize.R")
 options(max.print=10000)
 
 # pull in data

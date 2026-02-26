@@ -5,7 +5,7 @@ library(tidyverse)
 library(zoo)
 
 # set loc
-here::i_am("code/primary/10-BETA_modelbuild.R")
+here::i_am("code/primary/20-BETA_modelbuild.R")
 options(max.print=2000)
 
 # load data 

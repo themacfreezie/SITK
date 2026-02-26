@@ -16,7 +16,7 @@ library(tidyverse)
 # library(tseries)
 
 # create working dir and output folder
-here::i_am("code/primary/19-IRmultiline_scaled.R")
+here::i_am("code/primary/01-IRmultiline_scaled.R")
 options(max.print=10000)
 
 

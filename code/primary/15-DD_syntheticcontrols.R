@@ -1,11 +1,11 @@
 library(dplyr)
 library(fastDummies)
-library(imputeTS)
 library(here) # set working directory
+library(imputeTS)
 library(tidysynth)
 
 # set loc
-here::i_am("code/primary/22-DD_syntheticcontrols.R")
+here::i_am("code/primary/15-DD_syntheticcontrols.R")
 options(max.print=2000)
 
 # load data 
@@ -18,7 +18,7 @@ DD_E1980test <- dummy_cols(
 DD_E1980 <- DD_E1980test[-c(7:43, 54)]
 
 # missing data for Indian River
-  # 1960, 1968, 1970, 1974, 1976 (oy)
+  # 1960, 1968, 1970, 1974, 1976, 1992 (oy)
 
 # add missing rows
 new_ob1960 <- data.frame(YEAR = 1960, 
@@ -139,9 +139,14 @@ DD_E1980 <- rbind(DD_E1980, DD_IR)
 # 1, 2, 4, 6, 8, 10
 DD_E1980 <- DD_E1980[-c(7, 8, 10, 12, 14, 16)]
 
+# drop years greater than 2022
+DD_E1980 <- DD_E1980 %>%
+  filter(YEAR != 2024)
+
 # generate index
 DD_E1980$index <- ((DD_E1980$YEAR - 1960)/2)+1
 
+if(!file.exists(file=here("data", "clean", "synthcontrol_E1980.Rda"))){
 # set up synthetic control
 synth_out <- DD_E1980 %>% 
   # 1. Initiate: Define outcome, treatment unit/time
@@ -164,3 +169,22 @@ synth_out <- DD_E1980 %>%
   # 3. Weights: Optimize donor unit weights  
   generate_weights(optimization_window = 1:11) %>% 
   generate_control()
+
+# check it out
+plot_trends(synth_out)
+plot_differences(synth_out)
+plot_weights(synth_out)
+
+# synth_out seems best
+synth_control <- synth_out %>%
+  grab_synthetic_control()
+
+# generate year and dummies and rename count
+synth_control$YEAR <- (synth_control$time_unit - 1)*2 + 1960
+synthcontrol_E1980 <- synth_control[-c(1,2)]
+synthcontrol_E1980$dPost <- ifelse(synthcontrol_E1980$YEAR>1980, 1, 0)
+synthcontrol_E1980$dIR <- 0
+names(synthcontrol_E1980)[names(synthcontrol_E1980) == "synth_y"] <- "standard_ct"
+
+save(synthcontrol_E1980, file=here("data", "clean", "synthcontrol_E1980.Rda"))
+}
