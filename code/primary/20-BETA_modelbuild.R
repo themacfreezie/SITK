@@ -126,6 +126,7 @@ model.list <- list(
 if(!file.exists(here("data", "clean", "ssbeta_DFGob.rds"))){
   ssbeta_DFGob <- MARSS(dat_DFGob,
                         model = model.list,
+                        control=list(maxit=1000),
                         method = "kem")
   saveRDS(ssbeta_DFGob, file=here("data", "clean", "ssbeta_DFGob.rds"))
 }

@@ -19,14 +19,13 @@ df_E <- df[-c(4:6)]
 df_O <- df[-c(1:3)]
 
 # rename columns
-names(df_E)[names(df_E) == "B.bE_Ht.Rt.1"] <- "Hatchery(t)<<River(t-1)"
-names(df_E)[names(df_E) == "B.bE_Rt.Ht.1"] <- "River(t)<<Hatchery(t-1)" # parameter of interest
-names(df_E)[names(df_E) == "B.bE_RR"] <- "River(t)<<River(t-1)"
+names(df_E)[names(df_E) == "B.bE_Ht.Rt.1"] <- "River(t-1)>>Hatchery(t)"
+names(df_E)[names(df_E) == "B.bE_Rt.Ht.1"] <- "Hatchery(t-1)>>River(t)" # parameter of interest
+names(df_E)[names(df_E) == "B.bE_RR"] <- "River(t-1)>>River(t)"
 
-names(df_O)[names(df_O) == "B.bO_Ht.Rt.1"] <- "Hatchery(t)<<River(t-1)"
-names(df_O)[names(df_O) == "B.bO_Rt.Ht.1"] <- "River(t)<<Hatchery(t-1)" # parameter of interest
-names(df_O)[names(df_O) == "B.bO_RR"] <- "River(t)<<River(t-1)"
-# let's doulbe check with mark and make sure I'm assigning these correctly
+names(df_O)[names(df_O) == "B.bO_Ht.Rt.1"] <- "River(t-1)>>Hatchery(t)"
+names(df_O)[names(df_O) == "B.bO_Rt.Ht.1"] <- "Hatchery(t-1)>>River(t)" # parameter of interest
+names(df_O)[names(df_O) == "B.bO_RR"] <- "River(t-1)>>River(t)"
 
 # modular - even
 df <- df_E
@@ -83,9 +82,9 @@ bplotO <- bplotO +
        title= NULL,
        subtitle="Odd year runs",
        y=NULL) +
-  scale_x_discrete(labels=c("River(t)<<Hatchery(t-1)" = "Effect of prior brood year (t-1) hatchery \n returns on current brood year (t) Indian \n River abundance", 
-                            "Hatchery(t)<<River(t-1)" = "Effect of prior brood year (t-1) Indian \n River abundance on current brood \n year (t) hatchery returns",
-                            "River(t)<<River(t-1)" = "Effect of prior brood year (t-1) Indian River \n abundance on current brood year (t) \n Indian River abundance"))
+  scale_x_discrete(labels=c("Hatchery(t-1)>>River(t)" = "Effect of prior brood year (t-1) hatchery \n returns on current brood year (t) Indian \n River abundance", 
+                            "River(t-1)>>Hatchery(t)" = "Effect of prior brood year (t-1) Indian \n River abundance on current brood \n year (t) hatchery returns",
+                            "River(t-1)>>River(t)" = "Effect of prior brood year (t-1) Indian River \n abundance on current brood year (t) \n Indian River abundance"))
 bplotO
 
 bplotE/bplotO

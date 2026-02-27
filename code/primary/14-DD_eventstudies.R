@@ -41,5 +41,5 @@ modelsummary(models,
              stars = c("*" = 0.05, "**" = 0.01, "***" = 0.001),
              gof_omit = 'DF|Deviance|AIC|BIC|Log.Lik|RMSE|F',
              title = "Event studies: Indian River pink salmon difference-in-difference models"
-             , output = here("output", "figures", "eventstudies_table.png")
+             # , output = here("output", "figures", "eventstudies_table.png")
 )

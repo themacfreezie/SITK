@@ -11,10 +11,10 @@ ssbeta_DFGob <- readRDS(file=here("data", "clean", "ssbeta_DFGob.rds"))
 # # bootstrap model
 if(!file.exists(here("data", "clean", "boot_DFGob.rds"))){
   bootO_DFGob <- MARSSboot(ssbeta_DFGob
-                           , nboot=10000
+                           , nboot=50
                            , output="parameters"
                            , sim = "parametric"
-                           , param.gen="hessian"
+                           # , param.gen="hessian"
   )
   saveRDS(bootO_DFGob, file=here("data", "clean", "boot_DFGob.rds"))
 }

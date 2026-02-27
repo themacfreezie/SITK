@@ -118,6 +118,10 @@ load(here("data", "clean", "SJHsmolts.Rda"))
 # release year = year after brood year?
 SJHsmolts.df$returnYear <- SJHsmolts.df$`Brood Year` + 2
 
+# natural log of smolts
+SJHsmolts.df$`Number Released` <- SJHsmolts.df$`Number Released` + 1
+SJHsmolts.df$`Number Released` <- log(SJHsmolts.df$`Number Released`)
+
 # data transform - split into odd/even runs
 smoltsE <- SJHsmolts.df %>% filter(returnYear %% 2 == 0)
 smoltsO <- SJHsmolts.df %>% filter(returnYear %% 2 != 0)
