@@ -12,6 +12,29 @@ options(max.print=2000)
 load(here("data", "clean", "WbetaE_DFGob.Rda"))
 load(here("data", "clean", "WbetaO_DFGob.Rda"))
 
+# quick dirty line plots
+dfE <- t(WbetaE_DFGob.df)
+plot(dfE[,1],
+     type = "l",        # Plot as a line
+     col = "blue",      # Set line color to blue
+     ylim = range(c(6, 15)), # Set y-axis limits to fit both lines
+     main = "Even, hatchery blue - river red" # Add a title
+)
+lines(dfE[,2],
+      col = "red"       # Set the second line color to red
+)
+
+dfO <- t(WbetaO_DFGob.df)
+plot(dfO[,1],
+     type = "l",        # Plot as a line
+     col = "blue",      # Set line color to blue
+     ylim = range(c(6, 15)), # Set y-axis limits to fit both lines
+     main = "Odd, hatchery blue - river red" # Add a title
+)
+lines(dfO[,2],
+      col = "red"       # Set the second line color to red
+)
+
 # pdo data - from pdo_clean
 load(here("data", "clean", "WpdoE.Rda"))
 load(here("data", "clean", "WpdoO.Rda"))
