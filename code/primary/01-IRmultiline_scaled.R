@@ -8,8 +8,10 @@ library(geomtextpath)
 library(gghighlight)
 # library(ggplot2)
 # library(gplots)
+library(grid)
 library(here)
 # library(lmtest)
+library(patchwork)
 # library(plm)
 library(readxl)
 library(tidyverse)
@@ -176,12 +178,16 @@ eNSEsc_noIR
 
 eNSEsc_IR <- ggplot(pinksE_nseO.df, aes(x=YEAR, y=e, group=STREAM, color = STREAM)) +
   labs(x = NULL,
-       title="Indian River among ADFG 'Northern Southeast (Outside)' pink salmon index streams",
-       subtitle="Even year runs",
+       title=NULL,
+       subtitle=NULL,
        y="Ln peak esc. per km (scaled)") +
-  geom_line(show.legend = FALSE, linewidth = 1.4) +
+  geom_line(show.legend = FALSE, linewidth = 2) +
   theme_classic() +
+  theme(axis.title.y = element_text(margin=margin(r = 15, unit = "pt"))) +
+  theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 14)) +
   gghighlight(STREAM == "Indian River", use_direct_label = FALSE, unhighlighted_params = list(linewidth = 0.5, color ="gray50")) +
+  # scale_color_manual(values = c("Indian River" = "orange")) +
   scale_x_continuous(expand = c(0, 0)) + 
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
 eNSEsc_IR
@@ -199,12 +205,18 @@ oNSEsc_noIR
 
 oNSEsc_IR <- ggplot(pinksO_nseO.df, aes(x=YEAR, y=e, group=STREAM, color = STREAM)) +
   labs(x = NULL,
-       title="Indian River among ADFG 'Northern Southeast (Outside)' pink salmon index streams",
-       subtitle="Odd year runs",
+       title=NULL,
+       subtitle=NULL,
        y="Ln peak esc. per km (scaled)") +
-  geom_line(show.legend = FALSE, linewidth = 1.4) +
+  geom_line(show.legend = FALSE, linewidth = 2) +
   theme_classic() +
-  gghighlight(STREAM == "Indian River", use_direct_label = FALSE, unhighlighted_params = list(linewidth = 0.5, color ="gray50")) +
+  theme(axis.title.y = element_text(margin=margin(r = 15, unit = "pt"))) +
+  theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 14)) +
+  gghighlight(STREAM == "Indian River", 
+              use_direct_label = FALSE, 
+              unhighlighted_params = list(linewidth = 0.5, color ="gray50")) +
+  # scale_color_manual(values = c("Indian River" = "orange")) +
   scale_x_continuous(expand = c(0, 0)) + 
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
 oNSEsc_IR
@@ -215,3 +227,59 @@ ggsave(here("output", "figures", "eNSEsc_IR.png"), plot=eNSEsc_IR, device="png",
 ggsave(here("output", "figures", "oNSEsc_noIR.png"), plot=oNSEsc_noIR, device="png", dpi=300)
 ggsave(here("output", "figures", "oNSEsc_IR.png"), plot=oNSEsc_IR, device="png", dpi=300)
 
+# stacked figure
+eNSEsc_IR <- ggplot(pinksE_nseO.df, aes(x=YEAR, y=e, group=STREAM, color = STREAM)) +
+  labs(x = NULL,
+       title=NULL,
+       subtitle="Even",
+       y="Ln peak esc. per km (scaled)") +
+  geom_line(show.legend = FALSE, linewidth = 2) +
+  theme_classic() +
+  theme(axis.title.y = element_text(margin=margin(r = 15, unit = "pt"))) +
+  theme(plot.subtitle = element_text(size = 16)) +
+  theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 14)) +
+  theme(axis.text.x=element_blank()) +
+  gghighlight(STREAM == "Indian River", use_direct_label = FALSE, unhighlighted_params = list(linewidth = 0.5, color ="gray50")) +
+  # scale_color_manual(values = c("Indian River" = "orange")) +
+  scale_x_continuous(expand = c(0, 0)) + 
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
+eNSEsc_IR
+
+oNSEsc_IR <- ggplot(pinksO_nseO.df, aes(x=YEAR, y=e, group=STREAM, color = STREAM)) +
+  labs(x = NULL,
+       title=NULL,
+       subtitle="Odd",
+       y="Ln peak esc. per km (scaled)") +
+  geom_line(show.legend = FALSE, linewidth = 2) +
+  theme_classic() +
+  theme(plot.subtitle = element_text(size = 16)) +
+  theme(axis.title.y = element_text(margin=margin(r = 15, unit = "pt"))) +
+  theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 14)) +
+  gghighlight(STREAM == "Indian River", 
+              use_direct_label = FALSE, 
+              unhighlighted_params = list(linewidth = 0.5, color ="gray50")) +
+  # scale_color_manual(values = c("Indian River" = "orange")) +
+  scale_x_continuous(expand = c(0, 0)) + 
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
+oNSEsc_IR
+
+oNSEsc_IR$labels$y <- eNSEsc_IR$labels$y <- " "
+ylab <- textGrob("Ln peak esc. per km (scaled)", 
+                 rot = 90, 
+                 gp = gpar(fontsize = 18),
+                 x = 0.6)
+
+# NSEsc_IR <- eNSEsc_IR/oNSEsc_IR +
+#             plot_annotation(
+#               theme = theme(
+#                 plot.margin= margin(l = 40)
+#               )
+#             ) &
+#   theme(axis.title.y = element_blank())
+
+NSEsc_IR <- wrap_elements(full = ylab) | (eNSEsc_IR/oNSEsc_IR)
+NSEsc_IR <- NSEsc_IR + plot_layout(widths = c(0.02, 1))
+
+ggsave(here("output", "figures", "NSEsc_IR.png"), plot=NSEsc_IR, device="png", dpi=300)
