@@ -281,5 +281,6 @@ ylab <- textGrob("Ln peak esc. per km (scaled)",
 
 NSEsc_IR <- wrap_elements(full = ylab) | (eNSEsc_IR/oNSEsc_IR)
 NSEsc_IR <- NSEsc_IR + plot_layout(widths = c(0.02, 1))
+NSEsc_IR
 
 ggsave(here("output", "figures", "NSEsc_IR.png"), plot=NSEsc_IR, device="png", dpi=300)
