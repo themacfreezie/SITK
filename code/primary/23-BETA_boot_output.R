@@ -91,7 +91,7 @@ bplotE/bplotO
 bplot <- bplotE/bplotO
 bplot
 
-ggsave(here("output", "figures", "DFGob_bplot.png"), plot=bplot, device="png", dpi=300)
+ggsave(here("output", "figures", "DFGob_bplotPANEL.png"), plot=bplot, device="png", dpi=300)
 
 # what about all info in one figure?
 # set data real long
@@ -109,20 +109,20 @@ wdf_O <- df_O |>
     values_to = "value"
   )
 
-wdf_E$run <- "Even"
-wdf_O$run <- "Odd"
+wdf_E$run <- "Even-year"
+wdf_O$run <- "Odd-year"
 
 df <- bind_rows(wdf_E, wdf_O)
 
 # plot
-ggplot(df, aes(x = effect, y = value, fill = run)) +
-  geom_boxplot(position = position_dodge(width = 0.75), width = 0.6) +
+bplot <- ggplot(df, aes(x = effect, y = value, fill = run)) +
+  geom_boxplot(position = position_dodge(width = 0.75), width = 0.7) +
   geom_hline(yintercept = 0, linetype = "dashed") +
-  scale_fill_manual(values = c("Even" = "#1f78b4", "Odd" = "#e31a1c")) +
+  scale_fill_manual(values = c("Even-year" = "#0072B2", "Odd-year" = "#E69F00")) +
   labs(
     x = NULL,
-    y = "Effect size",
-    fill = "Run type"
+    y = NULL,
+    fill = "Run"
   ) +
   theme_classic() +
   theme(axis.title = element_text(size = 18),
@@ -130,3 +130,6 @@ ggplot(df, aes(x = effect, y = value, fill = run)) +
   scale_x_discrete(labels=c("Hatchery(t-1)>>River(t)" = "Effect of prior brood year (t-1) hatchery \n returns on current brood year (t) Indian \n River abundance", 
                             "River(t-1)>>Hatchery(t)" = "Effect of prior brood year (t-1) Indian \n River abundance on current brood \n year (t) hatchery returns",
                             "River(t-1)>>River(t)" = "Effect of prior brood year (t-1) Indian River \n abundance on current brood year (t) \n Indian River abundance"))
+bplot
+
+ggsave(here("output", "figures", "DFGob_bplot.png"), plot=bplot, device="png", dpi=300) 

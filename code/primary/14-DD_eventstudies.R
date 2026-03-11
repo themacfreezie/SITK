@@ -38,8 +38,8 @@ models <- list("Even, 1980" = eventE_1980,
 modelsummary(models,
              coef_omit = c(1, 3:10),
              coef_rename = c("dIR" = "Indian River Effect"),
-             stars = c("*" = 0.05, "**" = 0.01, "***" = 0.001),
+             stars = c("*" = 0.05),
              gof_omit = 'DF|Deviance|AIC|BIC|Log.Lik|RMSE|F',
              title = "Event studies: Indian River pink salmon difference-in-difference models"
-             # , output = here("output", "figures", "eventstudies_table.png")
+             , output = here("output", "figures", "eventstudies_table.png")
 )
