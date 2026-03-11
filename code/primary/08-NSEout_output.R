@@ -1,5 +1,7 @@
 library(gghighlight)
+library(grid)
 library(here)
+library(patchwork)
 library(tidyverse)
 
 # set loc
@@ -126,11 +128,16 @@ STKsteNSE_E <- ggplot(data = statesLongNSE_E, aes(y=fitted, x=Year, color = stat
   geom_ribbon(aes(ymin=lb, ymax=ub, fill=state), alpha=0.35, linetype=0) +
   geom_line(show.legend = FALSE) +
   theme_classic() +  
-  gghighlight(state == "Indian River", use_direct_label = FALSE, unhighlighted_params = list(color="grey70")) +
+  theme(axis.title.y = element_text(margin=margin(r = 15, unit = "pt"))) +
+  theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 14)) +
+  gghighlight(state == "Indian River", 
+              use_direct_label = FALSE, 
+              unhighlighted_params = list(color="grey70")) +
   labs(x = "", 
        y="State Estimate (standardized)",
-       title='Estimates of even-year pink salmon peak returns in 36 Southeast Alaska streams',
-       subtitle='Indian River highlighted') +
+       title=NULL,
+       subtitle=NULL) +
   theme(legend.position="none") +
   scale_x_continuous(expand = c(0, 0)) + 
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
@@ -140,11 +147,16 @@ STKsteNSE_O <- ggplot(data = statesLongNSE_O, aes(y=fitted, x=Year, color = stat
   geom_ribbon(aes(ymin=lb, ymax=ub, fill=state), alpha=0.35, linetype=0) +
   geom_line(show.legend = FALSE) +
   theme_classic() +  
-  gghighlight(state == "Indian River", use_direct_label = FALSE, unhighlighted_params = list(color="grey70")) +
+  theme(axis.title.y = element_text(margin=margin(r = 15, unit = "pt"))) +
+  theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 14)) +
+  gghighlight(state == "Indian River", 
+              use_direct_label = FALSE, 
+              unhighlighted_params = list(color="grey70")) +
   labs(x = "", 
        y="State Estimate (standardized)",
-       title='Estimates of odd-year pink salmon peak returns in 36 Southeast Alaska streams',
-       subtitle='Indian River highlighted') +
+       title=NULL,
+       subtitle=NULL) +
   theme(legend.position="none") +
   scale_x_continuous(expand = c(0, 0)) + 
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
@@ -196,3 +208,63 @@ IRresid_O
 
 ggsave(here("output", "figures", "IRresid_E.png"), plot=IRresid_E, device="png", dpi=300)
 ggsave(here("output", "figures", "IRresid_O.png"), plot=IRresid_O, device="png", dpi=300)
+
+# stacked figure
+STKsteNSE_E <- ggplot(data = statesLongNSE_E, aes(y=fitted, x=Year, color = state)) +
+  geom_ribbon(aes(ymin=lb, ymax=ub, fill=state), alpha=0.35, linetype=0) +
+  geom_line(show.legend = FALSE) +
+  theme_classic() +  
+  theme(plot.subtitle = element_text(size = 16)) +
+  theme(axis.title.y = element_text(margin=margin(r = 15, unit = "pt"))) +
+  theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 14)) +
+  theme(axis.text.x=element_blank()) +
+  gghighlight(state == "Indian River", 
+              use_direct_label = FALSE, 
+              unhighlighted_params = list(color="grey70")) +
+  labs(x = "", 
+       y="State Estimate (standardized)",
+       title=NULL,
+       subtitle="Even") +
+  theme(legend.position="none") +
+  scale_x_continuous(expand = c(0, 0)) + 
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
+STKsteNSE_E
+
+STKsteNSE_O <- ggplot(data = statesLongNSE_O, aes(y=fitted, x=Year, color = state)) +
+  geom_ribbon(aes(ymin=lb, ymax=ub, fill=state), alpha=0.35, linetype=0) +
+  geom_line(show.legend = FALSE) +
+  theme_classic() +  
+  theme(plot.subtitle = element_text(size = 16)) +
+  theme(axis.title.y = element_text(margin=margin(r = 15, unit = "pt"))) +
+  theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 14)) +
+  gghighlight(state == "Indian River", 
+              use_direct_label = FALSE, 
+              unhighlighted_params = list(color="grey70")) +
+  labs(x = "", 
+       y="State Estimate (standardized)",
+       title=NULL,
+       subtitle="Odd") +
+  theme(legend.position="none") +
+  scale_x_continuous(expand = c(0, 0)) + 
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
+STKsteNSE_O
+
+# stacking figs
+# Shared label
+STKsteNSE_O$labels$y <- STKsteNSE_E$labels$y <- " "
+ylab <- wrap_elements(
+  full = textGrob(
+    "State Estimate (standardized)",
+    rot = 90,
+    gp = gpar(fontsize = 18)
+  )
+)
+
+# combine
+STKsteNSE <- (ylab | (STKsteNSE_E / STKsteNSE_O)) +
+  plot_layout(widths = c(0.01, 1))
+STKsteNSE
+
+ggsave(here("output", "figures", "STKsteNSE.png"), plot=STKsteNSE, device="png", dpi=300)
