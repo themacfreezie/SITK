@@ -126,7 +126,10 @@ bplot <- ggplot(df, aes(x = effect, y = value, fill = run)) +
   ) +
   theme_classic() +
   theme(axis.title = element_text(size = 18),
-        axis.text = element_text(size = 12)) + 
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 18),
+        legend.text = element_text(size = 16),
+        legend.title = element_blank()) + 
   scale_x_discrete(labels=c("Hatchery(t-1)>>River(t)" = "Effect of prior brood year (t-1) hatchery \n returns on current brood year (t) Indian \n River abundance", 
                             "River(t-1)>>Hatchery(t)" = "Effect of prior brood year (t-1) Indian \n River abundance on current brood \n year (t) hatchery returns",
                             "River(t-1)>>River(t)" = "Effect of prior brood year (t-1) Indian River \n abundance on current brood year (t) \n Indian River abundance"))
