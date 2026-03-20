@@ -320,3 +320,5 @@ ssNSE_1state <- MARSS(dat,
                       method = "kem",
                       control = list(maxit = 1000))
 saveRDS(ssNSE_1state, file=here("data", "clean", "ssNSE_1state.rds"))
+
+# will have to be odds and evens - that means reruning the 2 state model as well
