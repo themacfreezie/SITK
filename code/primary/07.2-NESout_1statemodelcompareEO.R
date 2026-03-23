@@ -230,8 +230,8 @@ ssNSE <- readRDS(file=here("data", "clean", "ssNSE.rds"))
 ssNSE
 
 # Assuming 'fit' is your MARSS fit object
-ssNSE_R <- coef(ssNSE, type = "vector")[grepl("^R", names(coef(ssNSE, type = "vector")))]
-r.model_2run <- diag(ssNSE_R)
+R_ssNSE <- coef(ssNSE, type = "vector")[grepl("^R", names(coef(ssNSE, type = "vector")))]
+r.model_2run <- diag(R_ssNSE)
 
 # model lists including forced 2run R matrix
 # 1state, even
@@ -304,4 +304,13 @@ ssNSE_2stOr$AICc
     # according to mark's paper re: info theory, evidence ratio >3 million 
 
 #### I DON'T KNOW IF THIS APPROACH IS VALID AT ALL ####
-  # I kind of don't think so...
+  # I kind of don't think so?
+
+# let's compare the R matrix from each model and ssNSE..
+R_1stE <- coef(ssNSE_1stE, type = "vector")[grepl("^R", names(coef(ssNSE_1stE, type = "vector")))]
+R_2stE <- coef(ssNSE_2stE, type = "vector")[grepl("^R", names(coef(ssNSE_2stE, type = "vector")))]
+R_1stO <- coef(ssNSE_1stO, type = "vector")[grepl("^R", names(coef(ssNSE_1stO, type = "vector")))]
+R_2stO <- coef(ssNSE_2stO, type = "vector")[grepl("^R", names(coef(ssNSE_2stO, type = "vector")))]
+
+R_estimates <- data.frame(R_ssNSE, R_1stE, R_2stE, R_1stO, R_2stO)
+
