@@ -77,89 +77,15 @@ v.model <- "zero"
 #   **mark always says 'trend' isn't a good way to think about this
 u.model <- "zero"
 
-z.model_2state <- matrix(
-  c(1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    0, 1,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0,
-    1, 0),
-  nrow = 36,
-  ncol = 2,
-  byrow = TRUE
-)
+# Z models 
+# 2-states (IR and region)
+region_row <- c(1, 0)
+indriv_row <- c(0, 1)
+z.model_2state <- matrix(rep(region_row, 36), ncol = 2, byrow = TRUE)
+z.model_2state[6, ] <- indriv_row
 
-z.model_1state <- matrix(
-  c(1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1),
-  nrow = 36,
-  ncol = 1,
-  byrow = TRUE
-)
+# 1-state
+z.model_1state <- matrix(1, 36, 1)
 
 # D (control for observer)
 # even
@@ -220,13 +146,6 @@ r.model <- "diagonal and unequal"
   # therefore probably weaker than the all years model
 
 # model lists 
-# 2state, even
-model.list_2stE <- list(
-  B = b.model, U = u.model, Q = q.model,
-  Z = z.model_2state, A = a.model, R = r.model,
-  x0 = x.model, V0 = v.model, tinitx = 0,
-  C= c.model_2state, c = pdoE, D = dE.model, d = obE)
-
 # 1state, even
 model.list_1stE <- list(
   B = b.model, U = u.model, Q = q.model,
@@ -234,12 +153,12 @@ model.list_1stE <- list(
   x0 = x.model, V0 = v.model, tinitx = 0,
   C= c.model_1state, c = pdoE, D = dE.model, d = obE)
 
-# 2state, odd
-model.list_2stO <- list(
+# 2state, even
+model.list_2stE <- list(
   B = b.model, U = u.model, Q = q.model,
   Z = z.model_2state, A = a.model, R = r.model,
   x0 = x.model, V0 = v.model, tinitx = 0,
-  C= c.model_2state, c = pdoO, D = dO.model, d = obO)
+  C= c.model_2state, c = pdoE, D = dE.model, d = obE)
 
 # 1state, odd
 model.list_1stO <- list(
@@ -247,6 +166,13 @@ model.list_1stO <- list(
   Z = z.model_1state, A = a.model, R = r.model,
   x0 = x.model, V0 = v.model, tinitx = 0,
   C= c.model_1state, c = pdoO, D = dO.model, d = obO)
+
+# 2state, odd
+model.list_2stO <- list(
+  B = b.model, U = u.model, Q = q.model,
+  Z = z.model_2state, A = a.model, R = r.model,
+  x0 = x.model, V0 = v.model, tinitx = 0,
+  C= c.model_2state, c = pdoO, D = dO.model, d = obO)
 
 # run models
 # 1state, even
@@ -276,3 +202,106 @@ ssNSE_2stO <- MARSS(datO,
                     method = "kem",
                     control = list(maxit = 1000))
 saveRDS(ssNSE_2stO, file=here("data", "clean", "ssNSE_2stO.rds"))
+
+# AICc comparison
+ssNSE_1stE$AICc
+  # 1678.991
+ssNSE_2stE$AICc
+  # 1669.17 - significantly better fit than 1-state
+    # according to mark's paper re: info theory, ~148.4 evidence ratio
+ssNSE_1stO$AICc
+  # 2150.515
+ssNSE_2stO$AICc
+  # 2160.245 - significantly worse fit than 1-state
+    # similar difference between models as even-runs, except running the other way
+    # according to mark's paper re: info theory, ~148.4 evidence ratio
+
+#####
+# I don't necessarily trust these results because of the degenerate observation 
+# variance associated with Indian River in the 2-state models
+# I ran into this issue before with the observation variance, which prompted
+# me to set up the double-run model
+# can I pull the variance terms for IR from that model and "plug them in" to
+# this one? do the other variance terms generally match up?
+# or force the whole observation matrix from the two-run model into these models?
+# it should have much more complete information.. is this appropriate?
+
+ssNSE <- readRDS(file=here("data", "clean", "ssNSE.rds"))
+ssNSE
+
+# Assuming 'fit' is your MARSS fit object
+ssNSE_R <- coef(ssNSE, type = "vector")[grepl("^R", names(coef(ssNSE, type = "vector")))]
+r.model_2run <- diag(ssNSE_R)
+
+# model lists including forced 2run R matrix
+# 1state, even
+model.list_1stE <- list(
+  B = b.model, U = u.model, Q = q.model,
+  Z = z.model_1state, A = a.model, R = r.model_2run,
+  x0 = x.model, V0 = v.model, tinitx = 0,
+  C= c.model_1state, c = pdoE, D = dE.model, d = obE)
+
+# 2state, even
+model.list_2stE <- list(
+  B = b.model, U = u.model, Q = q.model,
+  Z = z.model_2state, A = a.model, R = r.model_2run,
+  x0 = x.model, V0 = v.model, tinitx = 0,
+  C= c.model_2state, c = pdoE, D = dE.model, d = obE)
+
+# 1state, odd
+model.list_1stO <- list(
+  B = b.model, U = u.model, Q = q.model,
+  Z = z.model_1state, A = a.model, R = r.model_2run,
+  x0 = x.model, V0 = v.model, tinitx = 0,
+  C= c.model_1state, c = pdoO, D = dO.model, d = obO)
+
+# 2state, odd
+model.list_2stO <- list(
+  B = b.model, U = u.model, Q = q.model,
+  Z = z.model_2state, A = a.model, R = r.model_2run,
+  x0 = x.model, V0 = v.model, tinitx = 0,
+  C= c.model_2state, c = pdoO, D = dO.model, d = obO)
+
+# run models
+# 1state, even
+ssNSE_1stEr <- MARSS(datE, 
+                    model = model.list_1stE, 
+                    method = "kem",
+                    control = list(maxit = 1000))
+saveRDS(ssNSE_1stEr, file=here("data", "clean", "ssNSE_1stEr.rds"))
+
+# 2state, even
+ssNSE_2stEr <- MARSS(datE, 
+                    model = model.list_2stE, 
+                    method = "kem",
+                    control = list(maxit = 1000))
+saveRDS(ssNSE_2stEr, file=here("data", "clean", "ssNSE_2stEr.rds"))
+
+# 1state, odd
+ssNSE_1stOr <- MARSS(datO, 
+                    model = model.list_1stO, 
+                    method = "kem",
+                    control = list(maxit = 1000))
+saveRDS(ssNSE_1stOr, file=here("data", "clean", "ssNSE_1stOr.rds"))
+
+# 2state, odd
+ssNSE_2stOr <- MARSS(datO, 
+                    model = model.list_2stO, 
+                    method = "kem",
+                    control = list(maxit = 1000))
+saveRDS(ssNSE_2stOr, file=here("data", "clean", "ssNSE_2stOr.rds"))
+
+# AICc comparison
+ssNSE_1stEr$AICc
+  # 1855.757
+ssNSE_2stEr$AICc
+  # 1652.238 - significantly better fit than 1-state
+    # according to mark's paper re: info theory, evidence ratio >3 million 
+ssNSE_1stOr$AICc
+  # 2283.299
+ssNSE_2stOr$AICc
+  # 2154.305 - significantly better fit than 1-state
+    # according to mark's paper re: info theory, evidence ratio >3 million 
+
+#### I DON'T KNOW IF THIS APPROACH IS VALID AT ALL ####
+  # I kind of don't think so...
