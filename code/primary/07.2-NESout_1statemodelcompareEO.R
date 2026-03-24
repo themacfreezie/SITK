@@ -229,7 +229,7 @@ ssNSE_2stO$AICc
 ssNSE <- readRDS(file=here("data", "clean", "ssNSE.rds"))
 ssNSE
 
-# Assuming 'fit' is your MARSS fit object
+# grab R matrix from 2-run model 
 R_ssNSE <- coef(ssNSE, type = "vector")[grepl("^R", names(coef(ssNSE, type = "vector")))]
 r.model_2run <- diag(R_ssNSE)
 
@@ -313,4 +313,84 @@ R_1stO <- coef(ssNSE_1stO, type = "vector")[grepl("^R", names(coef(ssNSE_1stO, t
 R_2stO <- coef(ssNSE_2stO, type = "vector")[grepl("^R", names(coef(ssNSE_2stO, type = "vector")))]
 
 R_estimates <- data.frame(R_ssNSE, R_1stE, R_2stE, R_1stO, R_2stO)
+  # some of these are fairly dissimilar...
 
+## what about just plugging in a value for Indian River and not the whole matrix
+# set up r matrix to be fit except for Indian River
+r.model_2runIR <- matrix(list(0), 36, 36)
+for (i in 1:36) {
+  r.model_2runIR[i,i] <- paste0("r",i)
+}
+r.model_2runIR[6, 6] <- R_ssNSE[6]
+
+# model lists including forced 2run R matrix
+# 1state, even
+model.list_1stE <- list(
+  B = b.model, U = u.model, Q = q.model,
+  Z = z.model_1state, A = a.model, R = r.model_2runIR,
+  x0 = x.model, V0 = v.model, tinitx = 0,
+  C= c.model_1state, c = pdoE, D = dE.model, d = obE)
+
+# 2state, even
+model.list_2stE <- list(
+  B = b.model, U = u.model, Q = q.model,
+  Z = z.model_2state, A = a.model, R = r.model_2runIR,
+  x0 = x.model, V0 = v.model, tinitx = 0,
+  C= c.model_2state, c = pdoE, D = dE.model, d = obE)
+
+# 1state, odd
+model.list_1stO <- list(
+  B = b.model, U = u.model, Q = q.model,
+  Z = z.model_1state, A = a.model, R = r.model_2runIR,
+  x0 = x.model, V0 = v.model, tinitx = 0,
+  C= c.model_1state, c = pdoO, D = dO.model, d = obO)
+
+# 2state, odd
+model.list_2stO <- list(
+  B = b.model, U = u.model, Q = q.model,
+  Z = z.model_2state, A = a.model, R = r.model_2runIR,
+  x0 = x.model, V0 = v.model, tinitx = 0,
+  C= c.model_2state, c = pdoO, D = dO.model, d = obO)
+
+# run models
+# 1state, even
+ssNSE_1stErIR <- MARSS(datE, 
+                     model = model.list_1stE, 
+                     method = "kem",
+                     control = list(maxit = 1000))
+saveRDS(ssNSE_1stErIR, file=here("data", "clean", "ssNSE_1stErIR.rds"))
+
+# 2state, even
+ssNSE_2stErIR <- MARSS(datE, 
+                     model = model.list_2stE, 
+                     method = "kem",
+                     control = list(maxit = 1000))
+saveRDS(ssNSE_2stErIR, file=here("data", "clean", "ssNSE_2stErIR.rds"))
+
+# 1state, odd
+ssNSE_1stOrIR <- MARSS(datO, 
+                     model = model.list_1stO, 
+                     method = "kem",
+                     control = list(maxit = 1000))
+saveRDS(ssNSE_1stOrIR, file=here("data", "clean", "ssNSE_1stOrIR.rds"))
+
+# 2state, odd
+ssNSE_2stOrIR <- MARSS(datO, 
+                     model = model.list_2stO, 
+                     method = "kem",
+                     control = list(maxit = 1000))
+saveRDS(ssNSE_2stOrIR, file=here("data", "clean", "ssNSE_2stOrIR.rds"))
+
+# AICc comparison
+ssNSE_1stErIR$AICc
+  # 1890.877
+ssNSE_2stErIR$AICc
+  # 1667.203 - significantly better fit than 1-state
+    # according to mark's paper re: info theory, evidence ratio >3 million 
+ssNSE_1stOrIR$AICc
+  # 2245.14
+ssNSE_2stOrIR$AICc
+  # 2158.24 - significantly better fit than 1-state
+    # according to mark's paper re: info theory, evidence ratio >3 million
+    # these are really similar to the AICc behavior with the full R-matrix
+    # from the 2-run model
