@@ -243,7 +243,8 @@ eNSEsc_IR <- ggplot(pinksE_nseO.df, aes(x=YEAR, y=e, group=STREAM, color = STREA
   gghighlight(STREAM == "Indian River", use_direct_label = FALSE, unhighlighted_params = list(linewidth = 0.5, color ="gray50")) +
   # scale_color_manual(values = c("Indian River" = "orange")) +
   scale_x_continuous(expand = c(0, 0)) + 
-  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+  geom_hline(yintercept = 0, linetype = "dashed")
 eNSEsc_IR
 
 oNSEsc_IR <- ggplot(pinksO_nseO.df, aes(x=YEAR, y=e, group=STREAM, color = STREAM)) +
@@ -262,7 +263,8 @@ oNSEsc_IR <- ggplot(pinksO_nseO.df, aes(x=YEAR, y=e, group=STREAM, color = STREA
               unhighlighted_params = list(linewidth = 0.5, color ="gray50")) +
   # scale_color_manual(values = c("Indian River" = "orange")) +
   scale_x_continuous(expand = c(0, 0)) + 
-  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) + 
+  geom_hline(yintercept = 0, linetype = "dashed")
 oNSEsc_IR
 
 oNSEsc_IR$labels$y <- eNSEsc_IR$labels$y <- " "

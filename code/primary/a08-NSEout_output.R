@@ -228,7 +228,8 @@ STKsteNSE_E <- ggplot(data = statesLongNSE_E, aes(y=fitted, x=Year, color = stat
        subtitle="Even") +
   theme(legend.position="none") +
   scale_x_continuous(expand = c(0, 0)) + 
-  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) + 
+  geom_hline(yintercept = 0, linetype = "dashed")
 STKsteNSE_E
 
 STKsteNSE_O <- ggplot(data = statesLongNSE_O, aes(y=fitted, x=Year, color = state)) +
@@ -248,7 +249,8 @@ STKsteNSE_O <- ggplot(data = statesLongNSE_O, aes(y=fitted, x=Year, color = stat
        subtitle="Odd") +
   theme(legend.position="none") +
   scale_x_continuous(expand = c(0, 0)) + 
-  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) + 
+  geom_hline(yintercept = 0, linetype = "dashed")
 STKsteNSE_O
 
 # stacking figs
