@@ -442,4 +442,38 @@ if(!file.exists(here("data", "clean", "boot_ssNSE_DD2010.rds"))){
   )
   saveRDS(boot_ssNSE_DD2010, file=here("data", "clean", "boot_ssNSE_DD2010.rds"))
 }
+
+boot_ssNSE_DD1980 <- readRDS(file=here("data", "clean", "boot_ssNSE_DD1980.rds"))
+boot_ssNSE_DD2010 <- readRDS(file=here("data", "clean", "boot_ssNSE_DD2010.rds"))
+
 proc.time()[3] - ptm
+
+# grab bootstrap parameter estimates for interaction term
+df1980 <- boot_ssNSE_DD1980$boot.params
+df1980 <- data.frame(t(df1980))
+df1980 <- df1980[, -c(1:47, 54:59)]
+df1980_E <- df1980[-c(2,4,6)]
+df1980_O <- df1980[-c(1,3,5)]
+
+df2010 <- boot_ssNSE_DD2010$boot.params
+df2010 <- data.frame(t(df2010))
+df2010 <- df2010[, -c(1:47, 54:59)]
+df2010_E <- df2010[-c(2,4,6)]
+df2010_O <- df2010[-c(1,3,5)]
+
+# rename columns
+names(df1980_E)[names(df1980_E) == "U.postE"] <- "Post-1980"
+names(df1980_E)[names(df1980_E) == "U.treaE"] <- "Treatment group" 
+names(df1980_E)[names(df1980_E) == "U.intrE"] <- "Interaction effect" # parameter of interest
+
+names(df1980_O)[names(df1980_O) == "U.postO"] <- "Post-1980"
+names(df1980_O)[names(df1980_O) == "U.treaO"] <- "Treatment group" 
+names(df1980_O)[names(df1980_O) == "U.intrO"] <- "Interaction effect" # parameter of interest
+
+names(df2010_E)[names(df2010_E) == "U.postE"] <- "Post-2010"
+names(df2010_E)[names(df2010_E) == "U.treaE"] <- "Treatment group" 
+names(df2010_E)[names(df2010_E) == "U.intrE"] <- "Interaction effect" # parameter of interest
+
+names(df2010_O)[names(df2010_O) == "U.postO"] <- "Post-2010"
+names(df2010_O)[names(df2010_O) == "U.treaO"] <- "Treatment group" 
+names(df2010_O)[names(df2010_O) == "U.intrO"] <- "Interaction effect" # parameter of interest
