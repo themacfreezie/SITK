@@ -329,6 +329,7 @@ model.list_DD2010ful <- list(
   x0 = x.model, V0 = v.model, tinitx = 0,
   C= cPDO.model, c = c2010PDO.data, D = d.model, d = obD)
 
+if(!file.exists(here("data", "clean", "ssNSE_DD1980.rds"))){
 # model run - 1980
 ssNSE_DD1980nul <- MARSS(dat, 
                       model = model.list_DD1980nul, 
@@ -354,6 +355,30 @@ ssNSE_DD1980ful <- MARSS(dat,
                       control = list(maxit = 1000))
 saveRDS(ssNSE_DD1980ful, file=here("data", "clean", "ssNSE_DD1980ful.rds"))
 
+# AICc comparison
+ssNSE_DD1980obs$AICc
+  # 3792.056
+    # best fit
+ssNSE_DD1980ful$AICc
+  # 3796.116
+    # deltAICc = 4.06, evidence ratio = 7.614
+    # equivalent to 88.39% confidence this model is a worse fit
+ssNSE_DD1980nul$AICc
+  # 3857.415
+    # deltAICc = 65.36, evidence ratio =  > 6*e^15
+    # equivalent to 99.999999% confidence this model is a worse fit
+ssNSE_DD1980pdo$AICc
+  # 3861.515
+    # deltAICc = 69.46, evidence ratio =  > 8*e^16
+    # equivalent to 99.999999% confidence this model is a worse fit
+
+# for now we'll proceed with best-fit models
+ssNSE_DD1980 <- ssNSE_DD1980obs
+saveRDS(ssNSE_DD1980, file=here("data", "clean", "ssNSE_DD1980.rds"))
+}
+ssNSE_DD1980 <- readRDS(file=here("data", "clean", "ssNSE_DD1980.rds"))
+
+if(!file.exists(here("data", "clean", "ssNSE_DD2010.rds"))){
 # model run - 2010
 ssNSE_DD2010nul <- MARSS(dat, 
                       model = model.list_DD2010nul, 
@@ -380,22 +405,6 @@ ssNSE_DD2010ful <- MARSS(dat,
 saveRDS(ssNSE_DD2010ful, file=here("data", "clean", "ssNSE_DD2010ful.rds"))
 
 # AICc comparison
-ssNSE_DD1980obs$AICc
-  # 3792.056
-    # best fit
-ssNSE_DD1980ful$AICc
-  # 3796.116
-    # deltAICc = 4.06, evidence ratio = 7.614
-    # equivalent to 88.39% confidence this model is a worse fit
-ssNSE_DD1980nul$AICc
-  # 3857.415
-    # deltAICc = 65.36, evidence ratio =  > 6*e^15
-    # equivalent to 99.999999% confidence this model is a worse fit
-ssNSE_DD1980pdo$AICc
-  # 3861.515
-    # deltAICc = 69.46, evidence ratio =  > 8*e^16
-    # equivalent to 99.999999% confidence this model is a worse fit
-
 ssNSE_DD2010obs$AICc
   # 3792.188
     # best fit
@@ -412,12 +421,11 @@ ssNSE_DD2010pdo$AICc
     # deltAICc = 68.78, evidence ratio =  > 1*e^16
     # equivalent to 99.999999% confidence this model is a worse fit
 
-# for now we'll proceed with best-fit models
-ssNSE_DD1980 <- ssNSE_DD1980obs
+# proceed with best-fit models
 ssNSE_DD2010 <- ssNSE_DD2010obs
-
-saveRDS(ssNSE_DD1980, file=here("data", "clean", "ssNSE_DD1980.rds"))
 saveRDS(ssNSE_DD2010, file=here("data", "clean", "ssNSE_DD2010.rds"))
+}
+ssNSE_DD2010 <- readRDS(file=here("data", "clean", "ssNSE_DD2010.rds"))
 
 # bootstrap for confidence intervals
 ptm <- proc.time()
@@ -477,3 +485,412 @@ names(df2010_E)[names(df2010_E) == "U.intrE"] <- "Interaction effect" # paramete
 names(df2010_O)[names(df2010_O) == "U.postO"] <- "Post-2010"
 names(df2010_O)[names(df2010_O) == "U.treaO"] <- "Treatment group" 
 names(df2010_O)[names(df2010_O) == "U.intrO"] <- "Interaction effect" # parameter of interest
+
+# plotting results
+# set data real long - 1980 
+wdf1980_E <- df1980_E |>
+  pivot_longer(
+    cols = c(colnames(df1980_E)),
+    names_to = "effect",
+    values_to = "value"
+  )
+
+wdf1980_O <- df1980_O |>
+  pivot_longer(
+    cols = c(colnames(df1980_O)),
+    names_to = "effect",
+    values_to = "value"
+  )
+
+wdf1980_E$run <- "Even-year"
+wdf1980_O$run <- "Odd-year"
+
+df1980 <- bind_rows(wdf1980_E, wdf1980_O)
+
+# set data real long - 2010
+wdf2010_E <- df2010_E |>
+  pivot_longer(
+    cols = c(colnames(df2010_E)),
+    names_to = "effect",
+    values_to = "value"
+  )
+
+wdf2010_O <- df2010_O |>
+  pivot_longer(
+    cols = c(colnames(df2010_O)),
+    names_to = "effect",
+    values_to = "value"
+  )
+
+wdf2010_E$run <- "Even-year"
+wdf2010_O$run <- "Odd-year"
+
+df2010 <- bind_rows(wdf2010_E, wdf2010_O)
+
+# plot - 1980
+bplot1980 <- ggplot(df1980, aes(x = effect, y = value, fill = run)) +
+  geom_boxplot(position = position_dodge(width = 0.75), width = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_fill_manual(values = c("Even-year" = "#0072B2", "Odd-year" = "#E69F00")) +
+  labs(
+    x = NULL,
+    y = NULL,
+    fill = "Run"
+  ) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 18),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 18),
+        legend.text = element_text(size = 16),
+        legend.title = element_blank()) 
+bplot1980
+
+# plot - 2010
+bplot2010 <- ggplot(df2010, aes(x = effect, y = value, fill = run)) +
+  geom_boxplot(position = position_dodge(width = 0.75), width = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_fill_manual(values = c("Even-year" = "#0072B2", "Odd-year" = "#E69F00")) +
+  labs(
+    x = NULL,
+    y = NULL,
+    fill = "Run"
+  ) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 18),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 18),
+        legend.text = element_text(size = 16),
+        legend.title = element_blank())
+bplot2010
+
+# necessary to undertake event studies here
+# augment data to drop post treatment period
+dat1980 <- dat[, -c(11:32)]
+dat2010 <- dat[, -c(26:32)]
+
+obs1980 <- obs[, -c(11:32)]
+levels <- sort(unique(as.vector(obs1980)))
+result <- do.call(rbind, lapply(1:nrow(obs1980), 
+                                function(i) t(sapply(levels, 
+                                                     function(x) as.integer(obs1980[i,] == x)))))
+obD1980 <- result
+
+obs2010 <- obs[, -c(26:32)]
+levels <- sort(unique(as.vector(obs2010)))
+result <- do.call(rbind, lapply(1:nrow(obs2010), 
+                                function(i) t(sapply(levels, 
+                                                     function(x) as.integer(obs2010[i,] == x)))))
+obD2010 <- result
+
+# speficy model params
+# matrix for treatment/control groups
+treat1980 <- matrix(0, nrow = 4, ncol = 10)
+treat1980[c(2, 4), ] <- 1
+
+treat2010 <- matrix(0, nrow = 4, ncol = 25)
+treat2010[c(2, 4), ] <- 1
+
+# stack c_t covariate data
+c1980.data <- treat1980
+c2010.data <- treat2010
+
+# setting up MARSS model inputs
+# easy ones
+b.model <- "identity"
+a.model <- "zero"
+x.model <- "unequal"
+v.model <- "zero"
+u.model <- "zero"
+
+# Z (underlying states)
+z.model <- matrix(
+  c(1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    1, 0, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0,
+    0, 0, 1, 0),
+  nrow = 72,
+  ncol = 4,
+  byrow = TRUE
+)
+
+# D (control for observer)
+d1980.model <- matrix(list(0), 2*n, (2*4)*n)
+num_rowsD <- nrow(d1980.model)
+
+obs_vector <- c("obs05",
+                "obs07",
+                "obs09",
+                "obs11")
+
+for (i in 1:num_rowsD) {
+  cc <- 4*i - 3
+  d1980.model[i, cc:(cc+3)] <- obs_vector
+}
+
+d2010.model <- matrix(list(0), 2*n, (2*8)*n)
+num_rowsD <- nrow(d2010.model)
+
+obs_vector <- c("obs01",
+                "obs02",
+                "obs03",
+                "obs05",
+                "obs06",
+                "obs07",
+                "obs09",
+                "obs11")
+
+for (i in 1:num_rowsD) {
+  cc <- 8*i - 7
+  d2010.model[i, cc:(cc+7)] <- obs_vector
+}
+
+# C (effect of covariates)
+c.model <- matrix(list(0), 4, 4)
+c.model[1,1] <- "treaE"
+c.model[2,2] <- "treaE"
+c.model[3,3] <- "treaO"
+c.model[4,4] <- "treaO"
+
+# Q (process error)
+q.model <- matrix(list(0), 4, 4)
+q.model[1,1] <- "qE"
+q.model[2,2] <- "qE"
+q.model[3,3] <- "qO"
+q.model[4,4] <- "qO"
+
+# R (site level observation error)
+r.model <- matrix(list(0), 72, 72)
+for (i in 1:36) {
+  r.model[i,i] <- paste0("r",i)
+}
+for (i in 1:36) {
+  r.model[i+36,i+36] <- paste0("r",i)
+}
+r.model[6,6] <- "rIndianRiver"
+r.model[42,42] <- "rIndianRiver"
+
+# model lists
+# 1980 observer, no PDO
+model.list_DD1980event <- list(
+  B = b.model, U = u.model, Q = q.model,
+  Z = z.model, A = a.model, R = r.model,
+  x0 = x.model, V0 = v.model, tinitx = 0,
+  C= c.model, c = c1980.data, D = d1980.model, d = obD1980)
+
+# 2010 observer, no PDO
+model.list_DD2010event <- list(
+  B = b.model, U = u.model, Q = q.model,
+  Z = z.model, A = a.model, R = r.model,
+  x0 = x.model, V0 = v.model, tinitx = 0,
+  C= c.model, c = c2010.data, D = d2010.model, d = obD2010)
+
+# models
+if(!file.exists(here("data", "clean", "ssNSE_DD1980event.rds"))){
+ssNSE_DD1980event <- MARSS(dat1980, 
+                         model = model.list_DD1980event, 
+                         method = "kem",
+                         control = list(maxit = 1000))
+saveRDS(ssNSE_DD1980event, file=here("data", "clean", "ssNSE_DD1980event.rds"))
+}
+
+if(!file.exists(here("data", "clean", "ssNSE_DD2010event.rds"))){
+ssNSE_DD2010event <- MARSS(dat2010, 
+                         model = model.list_DD2010event, 
+                         method = "kem",
+                         control = list(maxit = 1000))
+saveRDS(ssNSE_DD2010event, file=here("data", "clean", "ssNSE_DD2010event.rds"))
+}
+
+ssNSE_DD1980event <- readRDS(file=here("data", "clean", "ssNSE_DD1980event.rds"))
+ssNSE_DD2010event <- readRDS(file=here("data", "clean", "ssNSE_DD2010event.rds"))
+
+# bootstrap for treatment effect
+ptm <- proc.time()
+# bootstrap parameter estimation - 1980
+if(!file.exists(here("data", "clean", "boot_ssNSE_DD1980event.rds"))){
+  boot_ssNSE_DD1980event <- MARSSboot(ssNSE_DD1980event
+                                 , nboot=100
+                                 , output="parameters"
+                                 , sim = "parametric"
+                                 # , param.gen="hessian"
+  )
+  saveRDS(boot_ssNSE_DD1980event, file=here("data", "clean", "boot_ssNSE_DD1980event.rds"))
+}
+
+# bootstrap parameter estimation - 2010
+if(!file.exists(here("data", "clean", "boot_ssNSE_DD2010event.rds"))){
+  boot_ssNSE_DD2010event <- MARSSboot(ssNSE_DD2010event
+                                 , nboot=100
+                                 , output="parameters"
+                                 , sim = "parametric"
+                                 # , param.gen="hessian"
+  )
+  saveRDS(boot_ssNSE_DD2010event, file=here("data", "clean", "boot_ssNSE_DD2010event.rds"))
+}
+boot_ssNSE_DD1980event <- readRDS(file=here("data", "clean", "boot_ssNSE_DD1980event.rds"))
+boot_ssNSE_DD2010event <- readRDS(file=here("data", "clean", "boot_ssNSE_DD2010event.rds"))
+proc.time()[3] - ptm
+
+# grab bootstrap parameter estimates for treatment term
+df1980 <- boot_ssNSE_DD1980event$boot.params
+df1980 <- data.frame(t(df1980))
+df1980 <- df1980[, -c(1:40, 43:48)]
+df1980_E <- df1980[-c(2)]
+df1980_O <- df1980[-c(1)]
+
+df2010 <- boot_ssNSE_DD2010event$boot.params
+df2010 <- data.frame(t(df2010))
+df2010 <- df2010[, -c(1:44, 47:52)]
+df2010_E <- df2010[-c(2)]
+df2010_O <- df2010[-c(1)]
+
+# rename columns
+names(df1980_E)[names(df1980_E) == "U.treaE"] <- "Treatment group" 
+names(df1980_O)[names(df1980_O) == "U.treaO"] <- "Treatment group" 
+names(df2010_E)[names(df2010_E) == "U.treaE"] <- "Treatment group" 
+names(df2010_O)[names(df2010_O) == "U.treaO"] <- "Treatment group" 
+
+# plotting results
+# set data real long - 1980 
+wdf1980_E <- df1980_E |>
+  pivot_longer(
+    cols = c(colnames(df1980_E)),
+    names_to = "effect",
+    values_to = "value"
+  )
+
+wdf1980_O <- df1980_O |>
+  pivot_longer(
+    cols = c(colnames(df1980_O)),
+    names_to = "effect",
+    values_to = "value"
+  )
+
+wdf1980_E$run <- "Even-year"
+wdf1980_O$run <- "Odd-year"
+
+df1980 <- bind_rows(wdf1980_E, wdf1980_O)
+
+# set data real long - 2010
+wdf2010_E <- df2010_E |>
+  pivot_longer(
+    cols = c(colnames(df2010_E)),
+    names_to = "effect",
+    values_to = "value"
+  )
+
+wdf2010_O <- df2010_O |>
+  pivot_longer(
+    cols = c(colnames(df2010_O)),
+    names_to = "effect",
+    values_to = "value"
+  )
+
+wdf2010_E$run <- "Even-year"
+wdf2010_O$run <- "Odd-year"
+
+df2010 <- bind_rows(wdf2010_E, wdf2010_O)
+
+# plot - 1980
+bplot1980 <- ggplot(df1980, aes(x = effect, y = value, fill = run)) +
+  geom_boxplot(position = position_dodge(width = 0.75), width = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_fill_manual(values = c("Even-year" = "#0072B2", "Odd-year" = "#E69F00")) +
+  labs(
+    x = NULL,
+    y = NULL,
+    fill = "Run"
+  ) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 18),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 18),
+        legend.text = element_text(size = 16),
+        legend.title = element_blank()) 
+bplot1980
+
+# plot - 2010
+bplot2010 <- ggplot(df2010, aes(x = effect, y = value, fill = run)) +
+  geom_boxplot(position = position_dodge(width = 0.75), width = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_fill_manual(values = c("Even-year" = "#0072B2", "Odd-year" = "#E69F00")) +
+  labs(
+    x = NULL,
+    y = NULL,
+    fill = "Run"
+  ) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 18),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 18),
+        legend.text = element_text(size = 16),
+        legend.title = element_blank())
+bplot2010

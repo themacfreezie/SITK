@@ -22,10 +22,12 @@ DD_O2010 <- DD_O2010 %>% filter(dPost == 0)
 # regression model evaluating dIR (covariates based on best model evaluation)
 # - 1980 
 eventE_1980 <- lm(standard_ct ~ dIR + Observer, DD_E1980)
-eventO_1980 <- lm(standard_ct ~ dIR + lagPDO + Observer, DD_O1980)
+# eventO_1980 <- lm(standard_ct ~ dIR + lagPDO + Observer, DD_O1980)
+eventO_1980 <- lm(standard_ct ~ dIR + Observer, DD_O1980)
 
 # - 2010 
-eventE_2010 <- lm(standard_ct ~ dIR + lagPDO + Observer , DD_E2010)
+# eventE_2010 <- lm(standard_ct ~ dIR + lagPDO + Observer , DD_E2010)
+eventE_2010 <- lm(standard_ct ~ dIR + Observer , DD_E2010)
 eventO_2010 <- lm(standard_ct ~ dIR + Observer, DD_O2010)
 
 # check mods
@@ -36,10 +38,10 @@ models <- list("Even, 1980" = eventE_1980,
 
 # build results tabls
 modelsummary(models,
-             coef_omit = c(1, 3:10),
+             coef_omit = c(1, 3:9),
              coef_rename = c("dIR" = "Indian River Effect"),
              stars = c("*" = 0.05),
              gof_omit = 'DF|Deviance|AIC|BIC|Log.Lik|RMSE|F',
              title = "Event studies: Indian River pink salmon difference-in-difference models"
-             , output = here("output", "figures", "eventstudies_table.png")
+             # , output = here("output", "figures", "eventstudies_table.png")
 )
