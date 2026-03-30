@@ -1,6 +1,8 @@
 # packages
+library(grid)
 library(here)
 library(MARSS)
+library(patchwork)
 library(tidyverse)
 
 # set loc
@@ -470,20 +472,20 @@ df2010_E <- df2010[-c(2,4,6)]
 df2010_O <- df2010[-c(1,3,5)]
 
 # rename columns
-names(df1980_E)[names(df1980_E) == "U.postE"] <- "Post-1980"
-names(df1980_E)[names(df1980_E) == "U.treaE"] <- "Treatment group" 
+names(df1980_E)[names(df1980_E) == "U.postE"] <- "Effect of treatment period"
+names(df1980_E)[names(df1980_E) == "U.treaE"] <- "Effect of treatment group"
 names(df1980_E)[names(df1980_E) == "U.intrE"] <- "Interaction effect" # parameter of interest
 
-names(df1980_O)[names(df1980_O) == "U.postO"] <- "Post-1980"
-names(df1980_O)[names(df1980_O) == "U.treaO"] <- "Treatment group" 
+names(df1980_O)[names(df1980_O) == "U.postO"] <- "Effect of treatment period"
+names(df1980_O)[names(df1980_O) == "U.treaO"] <- "Effect of treatment group"
 names(df1980_O)[names(df1980_O) == "U.intrO"] <- "Interaction effect" # parameter of interest
 
-names(df2010_E)[names(df2010_E) == "U.postE"] <- "Post-2010"
-names(df2010_E)[names(df2010_E) == "U.treaE"] <- "Treatment group" 
+names(df2010_E)[names(df2010_E) == "U.postE"] <- "Effect of treatment period"
+names(df2010_E)[names(df2010_E) == "U.treaE"] <- "Effect of treatment group" 
 names(df2010_E)[names(df2010_E) == "U.intrE"] <- "Interaction effect" # parameter of interest
 
-names(df2010_O)[names(df2010_O) == "U.postO"] <- "Post-2010"
-names(df2010_O)[names(df2010_O) == "U.treaO"] <- "Treatment group" 
+names(df2010_O)[names(df2010_O) == "U.postO"] <- "Effect of treatment period"
+names(df2010_O)[names(df2010_O) == "U.treaO"] <- "Effect of treatment group"
 names(df2010_O)[names(df2010_O) == "U.intrO"] <- "Interaction effect" # parameter of interest
 
 # plotting results
@@ -534,15 +536,17 @@ bplot1980 <- ggplot(df1980, aes(x = effect, y = value, fill = run)) +
   scale_fill_manual(values = c("Even-year" = "#0072B2", "Odd-year" = "#E69F00")) +
   labs(
     x = NULL,
-    y = NULL,
+    y = "1980",
     fill = "Run"
   ) +
   theme_classic() +
   theme(axis.title = element_text(size = 18),
-        axis.text.x = element_text(size = 12),
+        axis.text.x = element_blank(),
         axis.text.y = element_text(size = 18),
         legend.text = element_text(size = 16),
-        legend.title = element_blank()) 
+        legend.title = element_blank()) + 
+  annotate("text", x = Inf, y = Inf, label = "1980", 
+            hjust = 1, vjust = 1, size = 10) 
 bplot1980
 
 # plot - 2010
@@ -552,15 +556,17 @@ bplot2010 <- ggplot(df2010, aes(x = effect, y = value, fill = run)) +
   scale_fill_manual(values = c("Even-year" = "#0072B2", "Odd-year" = "#E69F00")) +
   labs(
     x = NULL,
-    y = NULL,
+    y = "2010",
     fill = "Run"
   ) +
   theme_classic() +
   theme(axis.title = element_text(size = 18),
-        axis.text.x = element_text(size = 12),
+        axis.text.x = element_text(size = 14),
         axis.text.y = element_text(size = 18),
         legend.text = element_text(size = 16),
-        legend.title = element_blank())
+        legend.title = element_blank()) + 
+  annotate("text", x = Inf, y = Inf, label = "2010", 
+           hjust = 1, vjust = 1, size = 10) 
 bplot2010
 
 # necessary to undertake event studies here
@@ -813,10 +819,10 @@ df2010_E <- df2010[-c(2)]
 df2010_O <- df2010[-c(1)]
 
 # rename columns
-names(df1980_E)[names(df1980_E) == "U.treaE"] <- "Treatment group" 
-names(df1980_O)[names(df1980_O) == "U.treaO"] <- "Treatment group" 
-names(df2010_E)[names(df2010_E) == "U.treaE"] <- "Treatment group" 
-names(df2010_O)[names(df2010_O) == "U.treaO"] <- "Treatment group" 
+names(df1980_E)[names(df1980_E) == "U.treaE"] <- "Pre-1980" 
+names(df1980_O)[names(df1980_O) == "U.treaO"] <- "Pre-1980" 
+names(df2010_E)[names(df2010_E) == "U.treaE"] <- "Pre-2010" 
+names(df2010_O)[names(df2010_O) == "U.treaO"] <- "Pre-2010" 
 
 # plotting results
 # set data real long - 1980 
@@ -859,8 +865,10 @@ wdf2010_O$run <- "Odd-year"
 
 df2010 <- bind_rows(wdf2010_E, wdf2010_O)
 
+df <- bind_rows(df1980, df2010)
+
 # plot - 1980
-bplot1980 <- ggplot(df1980, aes(x = effect, y = value, fill = run)) +
+bplot1980Event <- ggplot(df1980, aes(x = effect, y = value, fill = run)) +
   geom_boxplot(position = position_dodge(width = 0.75), width = 0.7) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   scale_fill_manual(values = c("Even-year" = "#0072B2", "Odd-year" = "#E69F00")) +
@@ -875,10 +883,10 @@ bplot1980 <- ggplot(df1980, aes(x = effect, y = value, fill = run)) +
         axis.text.y = element_text(size = 18),
         legend.text = element_text(size = 16),
         legend.title = element_blank()) 
-bplot1980
+bplot1980Event
 
 # plot - 2010
-bplot2010 <- ggplot(df2010, aes(x = effect, y = value, fill = run)) +
+bplot2010Event <- ggplot(df2010, aes(x = effect, y = value, fill = run)) +
   geom_boxplot(position = position_dodge(width = 0.75), width = 0.7) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   scale_fill_manual(values = c("Even-year" = "#0072B2", "Odd-year" = "#E69F00")) +
@@ -893,4 +901,50 @@ bplot2010 <- ggplot(df2010, aes(x = effect, y = value, fill = run)) +
         axis.text.y = element_text(size = 18),
         legend.text = element_text(size = 16),
         legend.title = element_blank())
+bplot2010Event
+
+# plot - both
+bplotEvent <- ggplot(df, aes(x = effect, y = value, fill = run)) +
+  geom_boxplot(position = position_dodge(width = 0.55), width = 0.5) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_fill_manual(values = c("Even-year" = "#0072B2", "Odd-year" = "#E69F00")) +
+  labs(
+    x = NULL,
+    y = "Effect of Indian River in pre-treatment period",
+    fill = "Run"
+  ) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 18),
+        axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0, unit = "pt")),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        legend.text = element_text(size = 16),
+        legend.title = element_blank())
+bplotEvent
+  # event studies show no significant difference at Indian River in pretreatment period
+  # parellel trends assumption holds
+
+ggsave(here("output", "figures", "bplotEvent.png"), plot=bplotEvent, device="png", dpi=300) 
+
+bplot1980
 bplot2010
+
+# stacking figs
+# Shared label
+# bplot1980$labels$y <- bplot2010$labels$y <- " "
+# ylab <- wrap_elements(
+#   full = textGrob(
+#     "State Estimate (standardized)",
+#     rot = 90,
+#     gp = gpar(fontsize = 18)
+#   )
+# )
+
+# combine
+bplot1980$labels$y <- bplot2010$labels$y <- " "
+STKbplotDD <- (bplot1980/bplot2010) +
+  plot_layout(widths = c(0.01, 1)) +
+  plot_layout(guides = "collect")
+STKbplotDD
+
+ggsave(here("output", "figures", "STKbplotDD.png"), plot=STKbplotDD, device="png", dpi=300)
