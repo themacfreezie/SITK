@@ -331,7 +331,7 @@ model.list_DD2010ful <- list(
   x0 = x.model, V0 = v.model, tinitx = 0,
   C= cPDO.model, c = c2010PDO.data, D = d.model, d = obD)
 
-# if(!file.exists(here("data", "clean", "boot_ssNSE_DD1980.rds"))){
+if(!file.exists(here("data", "clean", "boot_df1980.rds"))){
 # model run - 1980
 ssNSE_DD1980nul <- MARSS(dat, 
                       model = model.list_DD1980nul, 
@@ -384,32 +384,33 @@ delta.aicc <- aicc_table - min(aicc_table)
 rel.lik <- exp(-0.5 * delta.aicc)
 weights <- rel.lik / sum(rel.lik)
 
-# bootstrap parameter estimation - 1980
-runs = 100
-# boot_ssNSE_DD1980obs <- MARSSboot(ssNSE_DD1980obs
-#                                  , nboot = runs
-#                                  , output="parameters"
-#                                  , sim = "parametric"
-#                                  # , param.gen="hessian"
-# )
-# boot_ssNSE_DD1980ful <- MARSSboot(ssNSE_DD1980ful
-#                                   , nboot = runs
-#                                   , output="parameters"
-#                                   , sim = "parametric"
-#                                   # , param.gen="hessian"
-# )
+# bootstrap parameter estimation
+runs = 1000
+
+# model run - 1980
+if(!file.exists(here("data", "clean", "boot_ssNSE_DD1980obs.rds"))){
 boot_ssNSE_DD1980obs <- MARSSboot(ssNSE_DD1980obs
                                   , nboot = runs
                                   , output="all"
                                   , sim = "parametric"
                                   # , param.gen="hessian"
 )$boot.params
+saveRDS(boot_ssNSE_DD1980obs, file=here("data", "clean", "boot_ssNSE_DD1980obs.rds"))
+}
+
+boot_ssNSE_DD1980obs <- readRDS(file=here("data", "clean", "boot_ssNSE_DD1980obs.rds"))
+
+if(!file.exists(here("data", "clean", "boot_ssNSE_DD1980ful.rds"))){
 boot_ssNSE_DD1980ful <- MARSSboot(ssNSE_DD1980ful
                                   , nboot = runs
                                   , output="parameters"
                                   , sim = "parametric"
                                   # , param.gen="hessian"
 )$boot.params
+
+saveRDS(boot_ssNSE_DD1980ful, file=here("data", "clean", "boot_ssNSE_DD1980ful.rds"))
+}
+boot_ssNSE_DD1980ful <- readRDS(file=here("data", "clean", "boot_ssNSE_DD1980ful.rds"))
 
 # Get estimates of DD effects from both
 bootDD1980obs_postE <- boot_ssNSE_DD1980obs["U.postE", ]
@@ -439,14 +440,12 @@ avg_boot1980intrO <- (weights[1]*bootDD1980obs_intrO ) + (weights[2]*bootDD1980f
 df1980 <- rbind(avg_boot1980postE, avg_boot1980treaE, avg_boot1980intrE,
                 avg_boot1980postO, avg_boot1980treaO, avg_boot1980intrO)
 
+saveRDS(df1980, file=here("data", "clean", "boot_df1980.rds"))
+}
+df1980 <- readRDS(file=here("data", "clean", "boot_df1980.rds"))
 
 
-# ssNSE_DD1980 <- ssNSE_DD1980obs
-# saveRDS(ssNSE_DD1980, file=here("data", "clean", "ssNSE_DD1980.rds"))
-# }
-# ssNSE_DD1980 <- readRDS(file=here("data", "clean", "ssNSE_DD1980.rds"))
-
-# if(!file.exists(here("data", "clean", "ssNSE_DD2010.rds"))){
+if(!file.exists(here("data", "clean", "boot_df2010.rds"))){
 # model run - 2010
 ssNSE_DD2010nul <- MARSS(dat, 
                       model = model.list_DD2010nul, 
@@ -500,18 +499,27 @@ delta.aicc <- aicc_table - min(aicc_table)
 rel.lik <- exp(-0.5 * delta.aicc)
 weights <- rel.lik / sum(rel.lik)
 
+if(!file.exists(here("data", "clean", "boot_ssNSE_DD2010obs.rds"))){
 boot_ssNSE_DD2010obs <- MARSSboot(ssNSE_DD2010obs
                                   , nboot = runs
                                   , output="all"
                                   , sim = "parametric"
                                   # , param.gen="hessian"
 )$boot.params
+saveRDS(boot_ssNSE_DD2010obs, file=here("data", "clean", "boot_ssNSE_DD2010obs.rds"))
+}
+boot_ssNSE_DD2010obs <- readRDS(file=here("data", "clean", "boot_ssNSE_DD2010obs.rds"))
+
+if(!file.exists(here("data", "clean", "boot_ssNSE_DD2010ful.rds"))){
 boot_ssNSE_DD2010ful <- MARSSboot(ssNSE_DD2010ful
                                   , nboot = runs
                                   , output="parameters"
                                   , sim = "parametric"
                                   # , param.gen="hessian"
 )$boot.params
+saveRDS(boot_ssNSE_DD2010ful, file=here("data", "clean", "boot_ssNSE_DD2010ful.rds"))
+}
+boot_ssNSE_DD2010ful <- readRDS(file=here("data", "clean", "boot_ssNSE_DD2010ful.rds"))
 
 # Get estimates of DD effects from both
 bootDD2010obs_postE <- boot_ssNSE_DD2010obs["U.postE", ]
@@ -541,53 +549,16 @@ avg_boot2010intrO <- (weights[1]*bootDD2010obs_intrO ) + (weights[2]*bootDD2010f
 df2010 <- rbind(avg_boot2010postE, avg_boot2010treaE, avg_boot2010intrE,
                 avg_boot2010postO, avg_boot2010treaO, avg_boot2010intrO)
 
-
-
-
-# ssNSE_DD2010 <- ssNSE_DD2010obs
-# saveRDS(ssNSE_DD2010, file=here("data", "clean", "ssNSE_DD2010.rds"))
-# }
-# ssNSE_DD2010 <- readRDS(file=here("data", "clean", "ssNSE_DD2010.rds"))
-
-# # bootstrap for confidence intervals
-# ptm <- proc.time()
-# # bootstrap parameter estimation - 1980
-# if(!file.exists(here("data", "clean", "boot_ssNSE_DD1980.rds"))){
-#   boot_ssNSE_DD1980 <- MARSSboot(ssNSE_DD1980
-#                                  , nboot=1000
-#                                  , output="parameters"
-#                                  , sim = "parametric"
-#                                  # , param.gen="hessian"
-#   )
-#   saveRDS(boot_ssNSE_DD1980, file=here("data", "clean", "boot_ssNSE_DD1980.rds"))
-# }
-# 
-# # bootstrap parameter estimation - 2010
-# if(!file.exists(here("data", "clean", "boot_ssNSE_DD2010.rds"))){
-#   boot_ssNSE_DD2010 <- MARSSboot(ssNSE_DD2010
-#                                  , nboot=1000
-#                                  , output="parameters"
-#                                  , sim = "parametric"
-#                                  # , param.gen="hessian"
-#   )
-#   saveRDS(boot_ssNSE_DD2010, file=here("data", "clean", "boot_ssNSE_DD2010.rds"))
-# }
-# 
-# boot_ssNSE_DD1980 <- readRDS(file=here("data", "clean", "boot_ssNSE_DD1980.rds"))
-# boot_ssNSE_DD2010 <- readRDS(file=here("data", "clean", "boot_ssNSE_DD2010.rds"))
-# 
-# proc.time()[3] - ptm
+saveRDS(df2010, file=here("data", "clean", "boot_df2010.rds"))
+}
+df2010 <- readRDS(file=here("data", "clean", "boot_df2010.rds"))
 
 # grab bootstrap parameter estimates for interaction term
-# df1980 <- boot_ssNSE_DD1980$boot.params
 df1980 <- data.frame(t(df1980))
-# df1980 <- df1980[, -c(1:47, 54:59)]
 df1980_E <- df1980[-c(4:6)]
 df1980_O <- df1980[-c(1:3)]
 
-# df2010 <- boot_ssNSE_DD2010$boot.params
 df2010 <- data.frame(t(df2010))
-# df2010 <- df2010[, -c(1:47, 54:59)]
 df2010_E <- df2010[-c(4:6)]
 df2010_O <- df2010[-c(1:3)]
 
