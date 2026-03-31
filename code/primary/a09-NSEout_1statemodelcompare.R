@@ -71,8 +71,8 @@ STACKwobs.df <- rbind(eveCol_wobs, oddCol_wobs)
 # even on top
 
 # pdo
-oddCol_wpdo <- Wpdo[, seq(ncol(Wpdo)) %% 2 == 1]
-eveCol_wpdo <- Wpdo[, seq(ncol(Wpdo)) %% 2 != 1]
+eveCol_wpdo <- Wpdo[, seq(ncol(Wpdo)) %% 2 == 1]
+oddCol_wpdo <- Wpdo[, seq(ncol(Wpdo)) %% 2 != 1]
 
 colnames(oddCol_wpdo) <- newnames
 colnames(eveCol_wpdo) <- newnames
@@ -237,22 +237,20 @@ saveRDS(ssNSE_3state_1E2O, file=here("data", "clean", "ssNSE_3state_1E2O.rds"))
 
 # AICc comparison
 ssNSE_3state_1E2O$AICc
-  # 3772.879
+  # 3770.176
     # best fit
 ssNSE_4state$AICc
-  # 3785.795
-    # deltAICc = 12.916, evidence ratio = 637.78
-    # meaning 3state_1E2O is 637 times more likely than a 2 state system
-      # equivalent to 99.84% confidence this model is a worse fit
+  # 3782.953
+    # deltAICc = 12.777, evidence ratio = 594.96
+    # meaning 3state_1E2O is 595 times more likely than a 4 state system
+      # equivalent to 99.83% confidence this model is a worse fit
 ssNSE_2state$AICc
-  # 3799.343
+  # 3797.115
     # also worse fit than the 4 state system
-    # deltAICc = 26.464, evidence ratio = 557,936
-      # basically 100% confidence this is a worse fit (99.9998%)
+    # deltAICc = 26.939, evidence ratio = 707,505
+      # basically 100% confidence this is a worse fit (99.99986%)
 ssNSE_3state_2E1O$AICc
-  # 3819.296
+  # 3817.099
     # worst fit by a lot
-    # deltAICc = 46.417, evidence ratio = 12,003,930,802
-      # extreme confidence this is a worse fit (99.999999992%)
-    # relative to 2 state model - 
-      # deltAICc = 19.953, evidence ratio = 21,514, 99.995% confidence
+    # deltAICc = 46.923, evidence ratio = 15,459,661,737
+      # extreme confidence this is a worse fit (99.999999993%)

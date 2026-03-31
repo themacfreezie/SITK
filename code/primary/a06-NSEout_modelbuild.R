@@ -67,8 +67,8 @@ STACKwobs.df <- rbind(eveCol_wobs, oddCol_wobs)
 # even on top
 
 # pdo
-oddCol_wpdo <- Wpdo[, seq(ncol(Wpdo)) %% 2 == 1]
-eveCol_wpdo <- Wpdo[, seq(ncol(Wpdo)) %% 2 != 1]
+eveCol_wpdo <- Wpdo[, seq(ncol(Wpdo)) %% 2 == 1]
+oddCol_wpdo <- Wpdo[, seq(ncol(Wpdo)) %% 2 != 1]
 
 colnames(oddCol_wpdo) <- newnames
 colnames(eveCol_wpdo) <- newnames

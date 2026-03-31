@@ -17,21 +17,21 @@ ssNSE_u2q2r2 <- readRDS(here("data", "clean", "ssNSE_u2q2r2.rds"))
 
 # AICc evaluation of competing models
 MARSSaic(ssNSE_u1q1r1, output = c("AIC"))
-  # 3788.686
+  # 3785.206  
 MARSSaic(ssNSE_u1q1r2, output = c("AIC"))
-  # 3841.958
+  # 3839.605  
 MARSSaic(ssNSE_u2q1r1, output = c("AIC"))
-  # 3794.538
+  # 3791.812 
 MARSSaic(ssNSE_u2q1r2, output = c("AIC"))
-  # 3820.157
+  # 3821.669 
 MARSSaic(ssNSE_u1q2r1, output = c("AIC"))
-  # 3785.795 <- best model
+  # 3782.953 <- best model 
 MARSSaic(ssNSE_u1q2r2, output = c("AIC"))
-  # 3838.619
+  # 3836.268 
 MARSSaic(ssNSE_u2q2r1, output = c("AIC"))
-  # 3791.588
+  # 3789.391 
 MARSSaic(ssNSE_u2q2r2, output = c("AIC"))
-  # 3835.989
+  # 3836.714
 
 ssNSE <- ssNSE_u1q2r1
   # No process trend (U = "zero")
