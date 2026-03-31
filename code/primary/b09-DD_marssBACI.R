@@ -52,7 +52,7 @@ colnames(eveCol_wpinks) <- newnames
 eveCol_wpinks <- cbind(STREAMID = streamID, eveCol_wpinks)
 
 STACKwpinks_scst.df <- rbind(eveCol_wpinks, oddCol_wpinks)
-# even on top
+  # even on top
 
 # observers
 streamID <- wobserver.df[, 1]
@@ -67,11 +67,11 @@ colnames(eveCol_wobs) <- newnames
 eveCol_wobs <- cbind(STREAMID = streamID, eveCol_wobs)
 
 STACKwobs.df <- rbind(eveCol_wobs, oddCol_wobs)
-# even on top
+  # even on top
 
 # pdo
-oddCol_wpdo <- Wpdo[, seq(ncol(Wpdo)) %% 2 == 1]
-eveCol_wpdo <- Wpdo[, seq(ncol(Wpdo)) %% 2 != 1]
+eveCol_wpdo <- Wpdo[, seq(ncol(Wpdo)) %% 2 == 1]
+oddCol_wpdo <- Wpdo[, seq(ncol(Wpdo)) %% 2 != 1]
 
 colnames(oddCol_wpdo) <- newnames
 colnames(eveCol_wpdo) <- newnames
@@ -331,7 +331,7 @@ model.list_DD2010ful <- list(
   x0 = x.model, V0 = v.model, tinitx = 0,
   C= cPDO.model, c = c2010PDO.data, D = d.model, d = obD)
 
-if(!file.exists(here("data", "clean", "ssNSE_DD1980.rds"))){
+# if(!file.exists(here("data", "clean", "boot_ssNSE_DD1980.rds"))){
 # model run - 1980
 ssNSE_DD1980nul <- MARSS(dat, 
                       model = model.list_DD1980nul, 
@@ -362,25 +362,91 @@ ssNSE_DD1980obs$AICc
   # 3792.056
     # best fit
 ssNSE_DD1980ful$AICc
-  # 3796.116
-    # deltAICc = 4.06, evidence ratio = 7.614
-    # equivalent to 88.39% confidence this model is a worse fit
+  # 3793.633
+    # deltAICc = 1.577, evidence ratio = 2.2
+    # equivalent to 68.75% confidence this model is a worse fit
 ssNSE_DD1980nul$AICc
   # 3857.415
     # deltAICc = 65.36, evidence ratio =  > 6*e^15
     # equivalent to 99.999999% confidence this model is a worse fit
 ssNSE_DD1980pdo$AICc
-  # 3861.515
-    # deltAICc = 69.46, evidence ratio =  > 8*e^16
+  # 3858.997
+    # deltAICc = 66.94, evidence ratio =  > 2*e^16
     # equivalent to 99.999999% confidence this model is a worse fit
 
-# for now we'll proceed with best-fit models
-ssNSE_DD1980 <- ssNSE_DD1980obs
-saveRDS(ssNSE_DD1980, file=here("data", "clean", "ssNSE_DD1980.rds"))
-}
-ssNSE_DD1980 <- readRDS(file=here("data", "clean", "ssNSE_DD1980.rds"))
+# proceed with model averaging for bootstrap (representative draws from each model)
+# find akaike weights
+AICc1 <- ssNSE_DD1980obs$AICc
+AICc2 <- ssNSE_DD1980ful$AICc
 
-if(!file.exists(here("data", "clean", "ssNSE_DD2010.rds"))){
+aicc_table <- c(AICc1, AICc2)
+delta.aicc <- aicc_table - min(aicc_table)
+rel.lik <- exp(-0.5 * delta.aicc)
+weights <- rel.lik / sum(rel.lik)
+
+# bootstrap parameter estimation - 1980
+runs = 10
+# boot_ssNSE_DD1980obs <- MARSSboot(ssNSE_DD1980obs
+#                                  , nboot = runs
+#                                  , output="parameters"
+#                                  , sim = "parametric"
+#                                  # , param.gen="hessian"
+# )
+# boot_ssNSE_DD1980ful <- MARSSboot(ssNSE_DD1980ful
+#                                   , nboot = runs
+#                                   , output="parameters"
+#                                   , sim = "parametric"
+#                                   # , param.gen="hessian"
+# )
+boot_ssNSE_DD1980obs <- MARSSboot(ssNSE_DD1980obs
+                                  , nboot = runs
+                                  , output="all"
+                                  , sim = "parametric"
+                                  # , param.gen="hessian"
+)$boot.params
+boot_ssNSE_DD1980ful <- MARSSboot(ssNSE_DD1980ful
+                                  , nboot = runs
+                                  , output="parameters"
+                                  , sim = "parametric"
+                                  # , param.gen="hessian"
+)$boot.params
+
+# Get estimates of DD effects from both
+bootDD1980obs_postE <- boot_ssNSE_DD1980obs["U.postE", ]
+bootDD1980ful_postE <- boot_ssNSE_DD1980ful["U.postE", ]
+avg_boot1980postE <- (weights[1]*bootDD1980obs_postE ) + (weights[2]*bootDD1980ful_postE)
+
+bootDD1980obs_treaE <- boot_ssNSE_DD1980obs["U.treaE", ]
+bootDD1980ful_treaE <- boot_ssNSE_DD1980ful["U.treaE", ]
+avg_boot1980treaE <- (weights[1]*bootDD1980obs_treaE ) + (weights[2]*bootDD1980ful_treaE)
+
+bootDD1980obs_intrE <- boot_ssNSE_DD1980obs["U.intrE", ]
+bootDD1980ful_intrE <- boot_ssNSE_DD1980ful["U.intrE", ]
+avg_boot1980intrE <- (weights[1]*bootDD1980obs_intrE ) + (weights[2]*bootDD1980ful_intrE)
+
+bootDD1980obs_postO <- boot_ssNSE_DD1980obs["U.postO", ]
+bootDD1980ful_postO <- boot_ssNSE_DD1980ful["U.postO", ]
+avg_boot1980postO <- (weights[1]*bootDD1980obs_postO ) + (weights[2]*bootDD1980ful_postO)
+
+bootDD1980obs_treaO <- boot_ssNSE_DD1980obs["U.treaO", ]
+bootDD1980ful_treaO <- boot_ssNSE_DD1980ful["U.treaO", ]
+avg_boot1980treaO <- (weights[1]*bootDD1980obs_treaO ) + (weights[2]*bootDD1980ful_treaO)
+
+bootDD1980obs_intrO <- boot_ssNSE_DD1980obs["U.intrO", ]
+bootDD1980ful_intrO <- boot_ssNSE_DD1980ful["U.intrO", ]
+avg_boot1980intrO <- (weights[1]*bootDD1980obs_intrO ) + (weights[2]*bootDD1980ful_intrO)
+
+df1980 <- rbind(avg_boot1980postE, avg_boot1980treaE, avg_boot1980intrE,
+                avg_boot1980postO, avg_boot1980treaO, avg_boot1980intrO)
+
+
+
+# ssNSE_DD1980 <- ssNSE_DD1980obs
+# saveRDS(ssNSE_DD1980, file=here("data", "clean", "ssNSE_DD1980.rds"))
+# }
+# ssNSE_DD1980 <- readRDS(file=here("data", "clean", "ssNSE_DD1980.rds"))
+
+# if(!file.exists(here("data", "clean", "ssNSE_DD2010.rds"))){
 # model run - 2010
 ssNSE_DD2010nul <- MARSS(dat, 
                       model = model.list_DD2010nul, 
@@ -411,74 +477,128 @@ ssNSE_DD2010obs$AICc
   # 3792.188
     # best fit
 ssNSE_DD2010ful$AICc
-  # 3795.871
-    # deltAICc = 3.68, evidence ratio = 6.31
-    # equivalent to 86.31% confidence this model is a worse fit
+  # 3793.148
+    # deltAICc = 0.96, evidence ratio = 1.62
+    # equivalent to 61.77% confidence this model is a worse fit
 ssNSE_DD2010nul$AICc
   # 3857.26
     # deltAICc = 65.07, evidence ratio =  > 7*e^15
     # equivalent to 99.999999% confidence this model is a worse fit
 ssNSE_DD2010pdo$AICc
-  # 3860.971
+  # 3857.816
     # deltAICc = 68.78, evidence ratio =  > 1*e^16
     # equivalent to 99.999999% confidence this model is a worse fit
 
-# proceed with best-fit models
-ssNSE_DD2010 <- ssNSE_DD2010obs
-saveRDS(ssNSE_DD2010, file=here("data", "clean", "ssNSE_DD2010.rds"))
-}
-ssNSE_DD2010 <- readRDS(file=here("data", "clean", "ssNSE_DD2010.rds"))
+# proceed with model averaging for bootstrap (representative draws from each model)
+# find akaike weights
+# find akaike weights
+AICc1 <- ssNSE_DD2010obs$AICc
+AICc2 <- ssNSE_DD2010ful$AICc
 
-# bootstrap for confidence intervals
-ptm <- proc.time()
-# bootstrap parameter estimation - 1980
-if(!file.exists(here("data", "clean", "boot_ssNSE_DD1980.rds"))){
-  boot_ssNSE_DD1980 <- MARSSboot(ssNSE_DD1980
-                                 , nboot=1000
-                                 , output="parameters"
-                                 , sim = "parametric"
-                                 # , param.gen="hessian"
-  )
-  saveRDS(boot_ssNSE_DD1980, file=here("data", "clean", "boot_ssNSE_DD1980.rds"))
-}
+aicc_table <- c(AICc1, AICc2)
+delta.aicc <- aicc_table - min(aicc_table)
+rel.lik <- exp(-0.5 * delta.aicc)
+weights <- rel.lik / sum(rel.lik)
 
-# bootstrap parameter estimation - 2010
-if(!file.exists(here("data", "clean", "boot_ssNSE_DD2010.rds"))){
-  boot_ssNSE_DD2010 <- MARSSboot(ssNSE_DD2010
-                                 , nboot=1000
-                                 , output="parameters"
-                                 , sim = "parametric"
-                                 # , param.gen="hessian"
-  )
-  saveRDS(boot_ssNSE_DD2010, file=here("data", "clean", "boot_ssNSE_DD2010.rds"))
-}
+boot_ssNSE_DD2010obs <- MARSSboot(ssNSE_DD2010obs
+                                  , nboot = runs
+                                  , output="all"
+                                  , sim = "parametric"
+                                  # , param.gen="hessian"
+)$boot.params
+boot_ssNSE_DD2010ful <- MARSSboot(ssNSE_DD2010ful
+                                  , nboot = runs
+                                  , output="parameters"
+                                  , sim = "parametric"
+                                  # , param.gen="hessian"
+)$boot.params
 
-boot_ssNSE_DD1980 <- readRDS(file=here("data", "clean", "boot_ssNSE_DD1980.rds"))
-boot_ssNSE_DD2010 <- readRDS(file=here("data", "clean", "boot_ssNSE_DD2010.rds"))
+# Get estimates of DD effects from both
+bootDD2010obs_postE <- boot_ssNSE_DD2010obs["U.postE", ]
+bootDD2010ful_postE <- boot_ssNSE_DD2010ful["U.postE", ]
+avg_boot2010postE <- (weights[1]*bootDD2010obs_postE ) + (weights[2]*bootDD2010ful_postE)
 
-proc.time()[3] - ptm
+bootDD2010obs_treaE <- boot_ssNSE_DD2010obs["U.treaE", ]
+bootDD2010ful_treaE <- boot_ssNSE_DD2010ful["U.treaE", ]
+avg_boot2010treaE <- (weights[1]*bootDD2010obs_treaE ) + (weights[2]*bootDD2010ful_treaE)
+
+bootDD2010obs_intrE <- boot_ssNSE_DD2010obs["U.intrE", ]
+bootDD2010ful_intrE <- boot_ssNSE_DD2010ful["U.intrE", ]
+avg_boot2010intrE <- (weights[1]*bootDD2010obs_intrE ) + (weights[2]*bootDD2010ful_intrE)
+
+bootDD2010obs_postO <- boot_ssNSE_DD2010obs["U.postO", ]
+bootDD2010ful_postO <- boot_ssNSE_DD2010ful["U.postO", ]
+avg_boot2010postO <- (weights[1]*bootDD2010obs_postO ) + (weights[2]*bootDD2010ful_postO)
+
+bootDD2010obs_treaO <- boot_ssNSE_DD2010obs["U.treaO", ]
+bootDD2010ful_treaO <- boot_ssNSE_DD2010ful["U.treaO", ]
+avg_boot2010treaO <- (weights[1]*bootDD2010obs_treaO ) + (weights[2]*bootDD2010ful_treaO)
+
+bootDD2010obs_intrO <- boot_ssNSE_DD2010obs["U.intrO", ]
+bootDD2010ful_intrO <- boot_ssNSE_DD2010ful["U.intrO", ]
+avg_boot2010intrO <- (weights[1]*bootDD2010obs_intrO ) + (weights[2]*bootDD2010ful_intrO)
+
+df2010 <- rbind(avg_boot2010postE, avg_boot2010treaE, avg_boot2010intrE,
+                avg_boot2010postO, avg_boot2010treaO, avg_boot2010intrO)
+
+
+
+
+# ssNSE_DD2010 <- ssNSE_DD2010obs
+# saveRDS(ssNSE_DD2010, file=here("data", "clean", "ssNSE_DD2010.rds"))
+# }
+# ssNSE_DD2010 <- readRDS(file=here("data", "clean", "ssNSE_DD2010.rds"))
+
+# # bootstrap for confidence intervals
+# ptm <- proc.time()
+# # bootstrap parameter estimation - 1980
+# if(!file.exists(here("data", "clean", "boot_ssNSE_DD1980.rds"))){
+#   boot_ssNSE_DD1980 <- MARSSboot(ssNSE_DD1980
+#                                  , nboot=1000
+#                                  , output="parameters"
+#                                  , sim = "parametric"
+#                                  # , param.gen="hessian"
+#   )
+#   saveRDS(boot_ssNSE_DD1980, file=here("data", "clean", "boot_ssNSE_DD1980.rds"))
+# }
+# 
+# # bootstrap parameter estimation - 2010
+# if(!file.exists(here("data", "clean", "boot_ssNSE_DD2010.rds"))){
+#   boot_ssNSE_DD2010 <- MARSSboot(ssNSE_DD2010
+#                                  , nboot=1000
+#                                  , output="parameters"
+#                                  , sim = "parametric"
+#                                  # , param.gen="hessian"
+#   )
+#   saveRDS(boot_ssNSE_DD2010, file=here("data", "clean", "boot_ssNSE_DD2010.rds"))
+# }
+# 
+# boot_ssNSE_DD1980 <- readRDS(file=here("data", "clean", "boot_ssNSE_DD1980.rds"))
+# boot_ssNSE_DD2010 <- readRDS(file=here("data", "clean", "boot_ssNSE_DD2010.rds"))
+# 
+# proc.time()[3] - ptm
 
 # grab bootstrap parameter estimates for interaction term
-df1980 <- boot_ssNSE_DD1980$boot.params
+# df1980 <- boot_ssNSE_DD1980$boot.params
 df1980 <- data.frame(t(df1980))
-df1980 <- df1980[, -c(1:47, 54:59)]
-df1980_E <- df1980[-c(2,4,6)]
-df1980_O <- df1980[-c(1,3,5)]
+# df1980 <- df1980[, -c(1:47, 54:59)]
+df1980_E <- df1980[-c(4:6)]
+df1980_O <- df1980[-c(1:3)]
 
-df2010 <- boot_ssNSE_DD2010$boot.params
+# df2010 <- boot_ssNSE_DD2010$boot.params
 df2010 <- data.frame(t(df2010))
-df2010 <- df2010[, -c(1:47, 54:59)]
-df2010_E <- df2010[-c(2,4,6)]
-df2010_O <- df2010[-c(1,3,5)]
+# df2010 <- df2010[, -c(1:47, 54:59)]
+df2010_E <- df2010[-c(4:6)]
+df2010_O <- df2010[-c(1:3)]
 
 # rename columns
-names(df1980_E)[names(df1980_E) == "U.postE"] <- "Effect of treatment period"
-names(df1980_E)[names(df1980_E) == "U.treaE"] <- "Effect of treatment group"
-names(df1980_E)[names(df1980_E) == "U.intrE"] <- "Interaction effect" # parameter of interest
+names(df1980_E)[names(df1980_E) == "avg_boot1980postE"] <- "Effect of treatment period"
+names(df1980_E)[names(df1980_E) == "avg_boot1980treaE"] <- "Effect of treatment group"
+names(df1980_E)[names(df1980_E) == "avg_boot1980intrE"] <- "Interaction effect" # parameter of interest
 
-names(df1980_O)[names(df1980_O) == "U.postO"] <- "Effect of treatment period"
-names(df1980_O)[names(df1980_O) == "U.treaO"] <- "Effect of treatment group"
-names(df1980_O)[names(df1980_O) == "U.intrO"] <- "Interaction effect" # parameter of interest
+names(df1980_O)[names(df1980_O) == "avg_boot1980postO"] <- "Effect of treatment period"
+names(df1980_O)[names(df1980_O) == "avg_boot1980treaO"] <- "Effect of treatment group"
+names(df1980_O)[names(df1980_O) == "avg_boot1980intrO"] <- "Interaction effect" # parameter of interest
 
 names(df2010_E)[names(df2010_E) == "U.postE"] <- "Effect of treatment period"
 names(df2010_E)[names(df2010_E) == "U.treaE"] <- "Effect of treatment group" 
@@ -542,6 +662,7 @@ bplot1980 <- ggplot(df1980, aes(x = effect, y = value, fill = run)) +
   theme_classic() +
   theme(axis.title = element_text(size = 18),
         axis.text.x = element_blank(),
+        # axis.text.x = element_text(size = 14),
         axis.text.y = element_text(size = 18),
         legend.text = element_text(size = 16),
         legend.title = element_blank()) + 
