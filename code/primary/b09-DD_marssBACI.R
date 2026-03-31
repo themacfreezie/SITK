@@ -875,7 +875,7 @@ ptm <- proc.time()
 # bootstrap parameter estimation - 1980
 if(!file.exists(here("data", "clean", "boot_ssNSE_DD1980event.rds"))){
   boot_ssNSE_DD1980event <- MARSSboot(ssNSE_DD1980event
-                                 , nboot=100
+                                 , nboot=1000
                                  , output="parameters"
                                  , sim = "parametric"
                                  # , param.gen="hessian"
@@ -886,7 +886,7 @@ if(!file.exists(here("data", "clean", "boot_ssNSE_DD1980event.rds"))){
 # bootstrap parameter estimation - 2010
 if(!file.exists(here("data", "clean", "boot_ssNSE_DD2010event.rds"))){
   boot_ssNSE_DD2010event <- MARSSboot(ssNSE_DD2010event
-                                 , nboot=100
+                                 , nboot=1000
                                  , output="parameters"
                                  , sim = "parametric"
                                  # , param.gen="hessian"
