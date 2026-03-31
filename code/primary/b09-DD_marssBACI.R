@@ -600,13 +600,13 @@ names(df1980_O)[names(df1980_O) == "avg_boot1980postO"] <- "Effect of treatment 
 names(df1980_O)[names(df1980_O) == "avg_boot1980treaO"] <- "Effect of treatment group"
 names(df1980_O)[names(df1980_O) == "avg_boot1980intrO"] <- "Interaction effect" # parameter of interest
 
-names(df2010_E)[names(df2010_E) == "U.postE"] <- "Effect of treatment period"
-names(df2010_E)[names(df2010_E) == "U.treaE"] <- "Effect of treatment group" 
-names(df2010_E)[names(df2010_E) == "U.intrE"] <- "Interaction effect" # parameter of interest
+names(df2010_E)[names(df2010_E) == "avg_boot2010postE"] <- "Effect of treatment period"
+names(df2010_E)[names(df2010_E) == "avg_boot2010treaE"] <- "Effect of treatment group"
+names(df2010_E)[names(df2010_E) == "avg_boot2010intrE"] <- "Interaction effect" # parameter of interest
 
-names(df2010_O)[names(df2010_O) == "U.postO"] <- "Effect of treatment period"
-names(df2010_O)[names(df2010_O) == "U.treaO"] <- "Effect of treatment group"
-names(df2010_O)[names(df2010_O) == "U.intrO"] <- "Interaction effect" # parameter of interest
+names(df2010_O)[names(df2010_O) == "avg_boot2010postO"] <- "Effect of treatment period"
+names(df2010_O)[names(df2010_O) == "avg_boot2010treaO"] <- "Effect of treatment group"
+names(df2010_O)[names(df2010_O) == "avg_boot2010intrO"] <- "Interaction effect" # parameter of interest
 
 # plotting results
 # set data real long - 1980 
