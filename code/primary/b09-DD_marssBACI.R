@@ -385,7 +385,7 @@ rel.lik <- exp(-0.5 * delta.aicc)
 weights <- rel.lik / sum(rel.lik)
 
 # bootstrap parameter estimation - 1980
-runs = 10
+runs = 100
 # boot_ssNSE_DD1980obs <- MARSSboot(ssNSE_DD1980obs
 #                                  , nboot = runs
 #                                  , output="parameters"
