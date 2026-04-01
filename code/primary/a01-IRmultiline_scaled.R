@@ -45,6 +45,21 @@ print(ggplot(pinksO_sc.df, aes(x=YEAR, y=ESCbyKM, group=STREAM)) +
         geom_line() +
         gghighlight(STREAM == "Indian River"))
 
+# quick sketch of indian river numbers
+irO.df <- pinksO_sc.df[pinksO_sc.df$STREAMID == "113-41-019", ]
+irE.df <- pinksE_sc.df[pinksO_sc.df$STREAMID == "113-41-019", ]
+
+irO.df$run <- "Odd"
+irE.df$run <- "Even"
+irE.df <- irE.df[-1, ]
+
+ir.df <- rbind(irE.df, irO.df)
+
+print(ggplot(ir.df, aes(x=YEAR, y=PEAK_COUNT, color=run)) +
+        ggtitle("Indian River") +
+        xlab("Year") + ylab("Peak Count") +
+        geom_line())
+
 # dismissing NSE inner and SSE
 pinksE_nseO.df <- pinksE_sc.df %>% filter(SUB_REGION=="NSE Outside")
 pinksO_nseO.df <- pinksO_sc.df %>% filter(SUB_REGION=="NSE Outside")
