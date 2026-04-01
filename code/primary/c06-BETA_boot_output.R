@@ -27,6 +27,22 @@ names(df_O)[names(df_O) == "B.bO_Ht.Rt.1"] <- "River(t-1)>>Hatchery(t)"
 names(df_O)[names(df_O) == "B.bO_Rt.Ht.1"] <- "Hatchery(t-1)>>River(t)" # parameter of interest
 names(df_O)[names(df_O) == "B.bO_RR"] <- "River(t-1)>>River(t)"
 
+# percent greater than zero
+sum(df_E$`Hatchery(t-1)>>River(t)` > 0, na.rm = TRUE)/1000
+  # 94.2%
+sum(df_O$`Hatchery(t-1)>>River(t)` > 0, na.rm = TRUE)/1000
+  # 92%
+
+sum(df_E$`River(t-1)>>Hatchery(t)` > 0, na.rm = TRUE)/1000
+  # 99.9%
+sum(df_O$`River(t-1)>>Hatchery(t)` > 0, na.rm = TRUE)/1000
+  # 98.3%
+
+sum(df_E$`River(t-1)>>River(t))` > 0, na.rm = TRUE)/1000
+  # 99.99%
+sum(df_O$`River(t-1)>>River(t)` > 0, na.rm = TRUE)/1000
+  # 100%
+
 # modular - even
 df <- df_E
 
