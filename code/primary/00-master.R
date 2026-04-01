@@ -27,6 +27,7 @@ source(here("code", "primary", "b05-DD_eventstudies.R"))
 source(here("code", "primary", "b06-DD_syntheticcontrols.R"))
 source(here("code", "primary", "b07-DD_screg.R"))
 source(here("code", "primary", "b08-DD_output.R"))
+source(here("code", "primary", "b09-DD_marssBACI.R"))
 
 # betas modeling
 source(here("code", "primary", "c01-BETA_data_clean.R"))
