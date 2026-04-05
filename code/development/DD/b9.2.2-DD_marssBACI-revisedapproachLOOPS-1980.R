@@ -1,9 +1,10 @@
 # packages
 library(here)
 library(MARSS)
+library(tidyverse)
 
 # set loc
-here::i_am("code/development/DD/b9.2.2-DD_marssBACI-revisedapproachLOOPS.R")
+here::i_am("code/development/DD/b9.2.2-DD_marssBACI-revisedapproachLOOPS-1980.R")
 options(max.print=2000)
 
 # load data 
@@ -110,7 +111,7 @@ for (i in start_col:end_col) {
     # Create unique name (e.g., "treat_R12_1_R34_1")
     n_i <- i - 10
     n_j <- j - 10
-    matrix_name <- paste0("treat_R12_", n_i, "_R34_", n_j)
+    matrix_name <- paste0("treat_E_", n_i, "_O_", n_j)
     
     # Combine with pdo and store in the list
     treatment_matrices[[matrix_name]] <- rbind(pdo, temp_matrix)
@@ -297,6 +298,7 @@ marss_summary <- data.frame(
   stringsAsFactors = FALSE
 )
 
+if(!file.exists(here("data", "clean", "marss_summary1980.rds"))){
 # Outer Loop: The 4 Covariate Specifications
 for (c_idx in 1:length(c_models)) {
   
@@ -324,7 +326,7 @@ for (c_idx in 1:length(c_models)) {
       dat, 
       model = model.list, 
       method = "kem",
-      control = list(maxit = 1000) # Added silent to keep console clean
+      control = list(maxit = 1000)
     )
     
     # Extract AICc
@@ -337,5 +339,70 @@ for (c_idx in 1:length(c_models)) {
     ))
   }
 }
+saveRDS(marss_summary, file=here("data", "clean", "marss_summary1980.rds"))
+}
+marss_summary <- readRDS(file=here("data", "clean", "marss_summary1980.rds"))
 
-saveRDS(marss_summary, file=here("data", "clean", "marss_summary.rds"))
+# find best model - lots within 2 AICc
+min_aicc <- min(marss_summary$AICc, na.rm = TRUE)
+best_models <- subset(marss_summary, AICc <= (min_aicc + 2))
+best_models$C_spec <- substr(best_models$Model_Name, 2, 2)
+best_models$C_spec <- as.numeric(best_models$C_spec)
+  # of those within 2, 43 out of 46 have universal treatment effect (per run)
+
+# bootstrap for best model
+best.list <- list(
+  B = b.model, U = u.model, Q = q.model,
+  Z = z.model, A = a.model, R = r.model,
+  x0 = x.model, V0 = v.model, tinitx = 0,
+  C = c_models[[2]],
+  c = treatment_matrices[[185]],
+  D = d.model, d = obD
+)
+
+if(!file.exists(here("data", "clean", "DDrevised_bestfitBOOT1980.rds"))){
+best <- MARSS(
+  dat, 
+  model = best.list, 
+  method = "kem",
+  control = list(maxit = 1000)
+)
+saveRDS(best, file=here("data", "clean", "DDrevised_bestfit1980.rds"))
+
+best.boot <- MARSSboot(best
+                         , nboot = 100
+                         , output="parameters"
+                         , sim = "parametric"
+)$boot.params
+saveRDS(best.boot, file=here("data", "clean", "DDrevised_bestfitBOOT1980.rds"))
+}
+best.boot <- readRDS(file=here("data", "clean", "DDrevised_bestfitBOOT1980.rds"))
+
+boot.df <- data.frame(t(best.boot))
+boot.df <- boot.df[-c(1:49, 52:57)]
+
+# set data real long - 1980 
+wboot.df <- boot.df |>
+  pivot_longer(
+    cols = c(colnames(boot.df)),
+    names_to = "effect",
+    values_to = "value"
+  )
+
+# plot - 1980
+bplot1980 <- ggplot(wboot.df, aes(x = effect, y = value)) +
+  geom_boxplot(position = position_dodge(width = 0.75), width = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(
+    x = NULL,
+    y = NULL
+  ) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 18),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 18),
+        legend.text = element_text(size = 16),
+        legend.title = element_blank()) + 
+  annotate("text", x = Inf, y = Inf, label = "1980", 
+           hjust = 1, vjust = 1, size = 10) 
+bplot1980
