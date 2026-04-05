@@ -320,15 +320,15 @@ for (c_idx in 1:length(c_models)) {
     model_id <- paste0("C", c_idx, "_", t_name)
     
     # Run the MARSS model (using try() to prevent loop breaks on errors)
-    fit <- try(MARSS(
+    fit <- MARSS(
       dat, 
       model = model.list, 
       method = "kem",
-      control = list(maxit = 1000, silent = TRUE) # Added silent to keep console clean
-    ), silent = TRUE)
+      control = list(maxit = 1000) # Added silent to keep console clean
+    )
     
     # Extract AICc
-    current_aicc <- if (!inherits(fit, "try-error")) fit$AICc else NA
+    current_aicc <- fit$AICc
     
     # Append results
     marss_summary <- rbind(marss_summary, data.frame(
@@ -337,3 +337,5 @@ for (c_idx in 1:length(c_models)) {
     ))
   }
 }
+
+saveRDS(marss_summary, file=here("data", "clean", "marss_summary.rds"))
