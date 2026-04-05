@@ -1,10 +1,9 @@
 # packages
 library(here)
 library(MARSS)
-library(tidyverse)
 
 # set loc
-here::i_am("code/development/DD/b9.1-DD_marssBACI-minimum example.R")
+here::i_am("code/development/DD/b9.2.2-DD_marssBACI-revisedapproachLOOPS.R")
 options(max.print=2000)
 
 # load data 
@@ -91,23 +90,31 @@ obD <- result
 start_col <- 11
 end_col <- 32
 
-# Loop through each step to create a new matrix
+# Initialize an empty list to store the results
+treatment_matrices <- list()
+
+# Outer loop for rows 1 & 2 (11 to 32)
 for (i in start_col:end_col) {
-  
-  # 1. Create a blank 4x32 matrix of zeros
-  temp_matrix <- matrix(0, nrow = 4, ncol = 32)
-  
-  # 2. Fill columns from the 11th up to the current index 'i' with 1s
-  temp_matrix[, start_col:i] <- 1
-  
-  # 3. Calculate how many columns have 1s to create the name
-  num_ones <- i - start_col + 1
-  matrix_name <- paste0("treat_cols_", num_ones)
-  
-  temp_matrix <- rbind(pdo, temp_matrix)
-  
-  # 4. Assign the matrix to that name in the global environment
-  assign(matrix_name, temp_matrix)
+  # Inner loop for rows 3 & 4 (11 to 32)
+  for (j in start_col:end_col) {
+    
+    # Create blank 4x32 matrix
+    temp_matrix <- matrix(0, nrow = 4, ncol = 32)
+    
+    # Fill rows 1 & 2 up to index 'i'
+    temp_matrix[1:2, 11:i] <- 1
+    
+    # Fill rows 3 & 4 up to index 'j'
+    temp_matrix[3:4, 11:j] <- 1
+    
+    # Create unique name (e.g., "treat_R12_1_R34_1")
+    n_i <- i - 10
+    n_j <- j - 10
+    matrix_name <- paste0("treat_R12_", n_i, "_R34_", n_j)
+    
+    # Combine with pdo and store in the list
+    treatment_matrices[[matrix_name]] <- rbind(pdo, temp_matrix)
+  }
 }
 
 # setting up MARSS model inputs
@@ -237,15 +244,51 @@ r.model[6,6] <- "rIndianRiver"
 r.model[42,42] <- "rIndianRiver"
 
 # C (effect of covariates)
-cPDO.model <- matrix(list(0), 4, 6)
-cPDO.model[1,1] <- "pE"
-cPDO.model[2,1] <- "pE"
-cPDO.model[3,2] <- "pO"
-cPDO.model[4,2] <- "pO"
-cPDO.model[1,3] <- "treatE_region"
-cPDO.model[2,4] <- "treatE_ir"
-cPDO.model[3,5] <- "treatO_region"
-cPDO.model[4,6] <- "treatO_ir"
+c.model1 <- matrix(list(0), 4, 6)
+c.model1[1,1] <- "pE"
+c.model1[2,1] <- "pE"
+c.model1[3,2] <- "pO"
+c.model1[4,2] <- "pO"
+c.model1[1,3] <- "treatE_region"
+c.model1[2,4] <- "treatE_ir"
+c.model1[3,5] <- "treatO_region"
+c.model1[4,6] <- "treatO_ir"
+
+# C (effect of covariates)
+c.model2 <- matrix(list(0), 4, 6)
+c.model2[1,1] <- "pE"
+c.model2[2,1] <- "pE"
+c.model2[3,2] <- "pO"
+c.model2[4,2] <- "pO"
+c.model2[1,3] <- "treatE"
+c.model2[2,4] <- "treatE"
+c.model2[3,5] <- "treatO"
+c.model2[4,6] <- "treatO"
+
+# C (effect of covariates)
+c.model3 <- matrix(list(0), 4, 6)
+c.model3[1,1] <- "pE"
+c.model3[2,1] <- "pE"
+c.model3[3,2] <- "pO"
+c.model3[4,2] <- "pO"
+c.model3[1,3] <- "treatE_region"
+c.model3[2,4] <- "treatE_ir"
+c.model3[3,5] <- "treatO"
+c.model3[4,6] <- "treatO"
+
+# C (effect of covariates)
+c.model4 <- matrix(list(0), 4, 6)
+c.model4[1,1] <- "pE"
+c.model4[2,1] <- "pE"
+c.model4[3,2] <- "pO"
+c.model4[4,2] <- "pO"
+c.model4[1,3] <- "treatE"
+c.model4[2,4] <- "treatE"
+c.model4[3,5] <- "treatO_region"
+c.model4[4,6] <- "treatO_ir"
+
+# Put the four specifications into a list for easy looping
+c_models <- list(c.model1, c.model2, c.model3, c.model4)
 
 # Initialize an empty list to store the results
 marss_summary <- data.frame(
@@ -254,147 +297,43 @@ marss_summary <- data.frame(
   stringsAsFactors = FALSE
 )
 
-
-# Loop through differenct specs
-for (i in 1:22) {
+# Outer Loop: The 4 Covariate Specifications
+for (c_idx in 1:length(c_models)) {
   
-  # 1. Get the specific matrix for this year from the workspace
-  current_treat <- get(paste0("treat_cols_", i))
-  
-  # 2. Update the model list with the current treatment matrix
-  model.list <- list(
-    B = b.model, U = u.model, Q = q.model,
-    Z = z.model, A = a.model, R = r.model,
-    x0 = x.model, V0 = v.model, tinitx = 0,
-    C = cPDO.model, 
-    c = current_treat, # This replaces treat_cols_i
-    D = d.model, d = obD
-  )
-  
-  # 3. Run the MARSS model
-  # 'try' ensures the loop continues even if one model fails to converge
-  model_name <- paste0("ssNSE_DD_", i)
-  
-  fit <- MARSS(
-    dat, 
-    model = model.list, 
-    method = "kem",
-    control = list(maxit = 1000)
-  )
-  
-  # 3. Extract AICc if the model ran successfully
-  if (!inherits(fit, "try-error")) {
-    current_aicc <- fit$AICc
-  } else {
-    current_aicc <- NA  # Assign NA if the model failed
+  # Inner Loop: The 484 Treatment Matrices
+  for (t_name in names(treatment_matrices)) {
+    
+    current_treat <- treatment_matrices[[t_name]]
+    current_c_spec <- c_models[[c_idx]]
+    
+    # Update the model list
+    model.list <- list(
+      B = b.model, U = u.model, Q = q.model,
+      Z = z.model, A = a.model, R = r.model,
+      x0 = x.model, V0 = v.model, tinitx = 0,
+      C = current_c_spec,       # Current C specification
+      c = current_treat,        # Current treatment matrix
+      D = d.model, d = obD
+    )
+    
+    # Create a unique name: e.g., "C1_treat_R12_1_R34_1"
+    model_id <- paste0("C", c_idx, "_", t_name)
+    
+    # Run the MARSS model (using try() to prevent loop breaks on errors)
+    fit <- try(MARSS(
+      dat, 
+      model = model.list, 
+      method = "kem",
+      control = list(maxit = 1000, silent = TRUE) # Added silent to keep console clean
+    ), silent = TRUE)
+    
+    # Extract AICc
+    current_aicc <- if (!inherits(fit, "try-error")) fit$AICc else NA
+    
+    # Append results
+    marss_summary <- rbind(marss_summary, data.frame(
+      Model_Name = model_id,
+      AICc = current_aicc
+    ))
   }
-  
-  # 4. Append the results to the data frame
-  marss_summary <- rbind(marss_summary, data.frame(
-    Model_Name = model_name,
-    AICc = current_aicc
-  ))
 }
-
-# C (effect of covariates)
-cPDO.model1 <- matrix(list(0), 4, 6)
-cPDO.model1[1,1] <- "pE"
-cPDO.model1[2,1] <- "pE"
-cPDO.model1[3,2] <- "pO"
-cPDO.model1[4,2] <- "pO"
-cPDO.model1[1,3] <- "treatE_region"
-cPDO.model1[2,4] <- "treatE_ir"
-cPDO.model1[3,5] <- "treatO_region"
-cPDO.model1[4,6] <- "treatO_ir"
-
-model.list_DD1980ful1 <- list(
-  B = b.model, U = u.model, Q = q.model,
-  Z = z.model, A = a.model, R = r.model,
-  x0 = x.model, V0 = v.model, tinitx = 0,
-  C = cPDO.model, 
-  c = treat_cols_9, # This replaces treat_cols_i
-  D = d.model, d = obD
-)
-
-ssNSE_DD1980ful1 <- MARSS(dat, 
-                          model = model.list_DD1980ful1,
-                          method = "kem",
-                          control = list(maxit = 1000))
-
-# C (effect of covariates)
-cPDO.model2 <- matrix(list(0), 4, 6)
-cPDO.model2[1,1] <- "pE"
-cPDO.model2[2,1] <- "pE"
-cPDO.model2[3,2] <- "pO"
-cPDO.model2[4,2] <- "pO"
-cPDO.model2[1,3] <- "treatE"
-cPDO.model2[2,4] <- "treatE"
-cPDO.model2[3,5] <- "treatO"
-cPDO.model2[4,6] <- "treatO"
-
-# model builds - 1980
-# PDO & observer
-model.list_DD1980ful2 <- list(
-  B = b.model, U = u.model, Q = q.model,
-  Z = z.model, A = a.model, R = r.model,
-  x0 = x.model, V0 = v.model, tinitx = 0,
-  C= cPDO.model2, c = treat_cols_9, D = d.model, d = obD)
-
-ssNSE_DD1980ful2 <- MARSS(dat, 
-                          model = model.list_DD1980ful2, 
-                          method = "kem",
-                          control = list(maxit = 1000))
-
-# C (effect of covariates)
-cPDO.model3 <- matrix(list(0), 4, 6)
-cPDO.model3[1,1] <- "pE"
-cPDO.model3[2,1] <- "pE"
-cPDO.model3[3,2] <- "pO"
-cPDO.model3[4,2] <- "pO"
-cPDO.model3[1,3] <- "treatE_region"
-cPDO.model3[2,4] <- "treatE_ir"
-cPDO.model3[3,5] <- "treatO"
-cPDO.model3[4,6] <- "treatO"
-
-# model builds - 1980
-# PDO & observer
-model.list_DD1980ful3 <- list(
-  B = b.model, U = u.model, Q = q.model,
-  Z = z.model, A = a.model, R = r.model,
-  x0 = x.model, V0 = v.model, tinitx = 0,
-  C= cPDO.model3, c = treat_cols_9, D = d.model, d = obD)
-
-ssNSE_DD1980ful3 <- MARSS(dat, 
-                          model = model.list_DD1980ful3, 
-                          method = "kem",
-                          control = list(maxit = 1000))
-
-# C (effect of covariates)
-cPDO.model4 <- matrix(list(0), 4, 6)
-cPDO.model4[1,1] <- "pE"
-cPDO.model4[2,1] <- "pE"
-cPDO.model4[3,2] <- "pO"
-cPDO.model4[4,2] <- "pO"
-cPDO.model4[1,3] <- "treatE"
-cPDO.model4[2,4] <- "treatE"
-cPDO.model4[3,5] <- "treatO_region"
-cPDO.model4[4,6] <- "treatO_ir"
-
-# model builds - 1980
-# PDO & observer
-model.list_DD1980ful4 <- list(
-  B = b.model, U = u.model, Q = q.model,
-  Z = z.model, A = a.model, R = r.model,
-  x0 = x.model, V0 = v.model, tinitx = 0,
-  C= cPDO.model4, c = treat_cols_9, D = d.model, d = obD)
-
-ssNSE_DD1980ful4 <- MARSS(dat, 
-                          model = model.list_DD1980ful4, 
-                          method = "kem",
-                          control = list(maxit = 1000))
-
-# AICc comparison
-ssNSE_DD1980ful1$AICc
-ssNSE_DD1980ful2$AICc
-ssNSE_DD1980ful3$AICc
-ssNSE_DD1980ful4$AICc
