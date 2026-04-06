@@ -116,9 +116,30 @@ bplot2010
 
 # combine
 bplot1980$labels$y <- bplot2010$labels$y <- " "
-STKbplotDD <- (bplot1980/bplot2010) +
+STKbplotDD1 <- (bplot1980/bplot2010) +
   plot_layout(widths = c(0.01, 1)) +
   plot_layout(guides = "collect")
-STKbplotDD
+STKbplotDD1
 
-ggsave(here("output", "figures", "STKbplotDD.png"), plot=STKbplotDD, device="png", dpi=300)
+wboot.df <- bind_rows(wboot1980.df, wboot2010.df)
+
+# alternate approach
+STKbplotDD2 <- ggplot(wboot.df, aes(x = period, y = value, fill = run)) + 
+  # position_dodge(width = 0.5) pulls the even/odd bars closer within each period
+  geom_boxplot(width = 0.4, position = position_dodge(width = 0.5)) + 
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_fill_manual(values = c("Even-year" = "#0072B2", "Odd-year" = "#E69F00")) +
+  labs(
+    x = NULL,
+    y = "Effect of post-treatment period on regional abundance"
+  ) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 14),
+        axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0, unit = "pt")),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        legend.text = element_text(size = 16),
+        legend.title = element_blank())
+STKbplotDD2
+
+ggsave(here("output", "figures", "STKbplotDD.png"), plot=STKbplotDD2, device="png", dpi=300)
