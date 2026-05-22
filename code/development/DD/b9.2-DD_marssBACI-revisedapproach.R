@@ -4,7 +4,7 @@ library(MARSS)
 library(tidyverse)
 
 # set loc
-here::i_am("code/development/DD/b9.1-DD_marssBACI-minimum example.R")
+here::i_am("code/development/DD/b9.2-DD_marssBACI-revisedapproach.R")
 options(max.print=2000)
 
 # load data 
