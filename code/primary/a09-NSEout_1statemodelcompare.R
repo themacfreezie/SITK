@@ -68,7 +68,7 @@ colnames(eveCol_wobs) <- newnames
 eveCol_wobs <- cbind(STREAMID = streamID, eveCol_wobs)
 
 STACKwobs.df <- rbind(eveCol_wobs, oddCol_wobs)
-# even on top
+  # even on top
 
 # pdo
 eveCol_wpdo <- Wpdo[, seq(ncol(Wpdo)) %% 2 == 1]
@@ -121,7 +121,6 @@ indriv_row <- c(0, 0, 1)
 bottom_half[6, ] <- indriv_row
 z.model_3state_1E2O <- rbind(top_half, bottom_half)
 
-
 # D (control for observer)
 d.model <- matrix(list(0), 2*n, (2*11)*n)
 num_rowsD <- nrow(d.model)
@@ -143,7 +142,6 @@ for (i in 1:num_rowsD) {
   d.model[i, cc:(cc+10)] <- obs_vector
 }
 
-
 # C (effect of pdo) 
 # C 2 states
 c.model_2state <- matrix(list(0), 2, 2)
@@ -162,7 +160,6 @@ c.model_3state_1E2O[1,1] <- "pE"
 c.model_3state_1E2O[2,2] <- "pO"
 c.model_3state_1E2O[3,2] <- "pO"
 
-
 # Q (process error)
 # Q 2 states
 q.model_2state <- matrix(list(0), 2, 2)
@@ -180,7 +177,6 @@ q.model_3state_1E2O <- matrix(list(0), 3, 3)
 q.model_3state_1E2O[1,1] <- "qE"
 q.model_3state_1E2O[2,2] <- "qO"
 q.model_3state_1E2O[3,3] <- "qO"
-
 
 # R (site level observation error)
 rSITE.model <- matrix(list(0), 72, 72)
