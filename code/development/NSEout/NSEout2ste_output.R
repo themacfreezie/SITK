@@ -11,59 +11,6 @@ options(max.print=2000)
 # load in ssE (from 05E)
 ssNSE <- readRDS(file=here("data", "clean", "ssNSE_2state.rds"))
 
-# # some plots - Indian River (data v. fitted)
-# states <- ssNSE$states
-# ytT <- ssNSE$call$data
-# d <- list(states, ytT)
-# df <- data.frame(do.call(rbind,d))
-# df <- data.frame(t(df))
-# 
-# df <- df[-c(1, 3, 5:9, 11:45, 47:76)]
-# 
-# names(df)[names(df) == "X2"] <- "IRe.x"
-# names(df)[names(df) == "X4"] <- "IRo.x"
-# names(df)[names(df) == "X.5"] <- "IRe.y"
-# names(df)[names(df) == "X.41"] <- "IRo.y"
-# 
-# df_E <- df[-c(2,4)]
-# df_O <- df[-c(1,3)]
-# 
-# df_E$index <- 1:nrow(df_E)
-# df_E <- df_E %>% 
-#   pivot_longer(
-#     cols = c("IRe.x", "IRe.y"),
-#     names_to = "measure",
-#     values_to = "value"
-#   )
-# 
-# df_O$index <- 1:nrow(df_O)
-# df_O <- df_O %>% 
-#   pivot_longer(
-#     cols = c("IRo.x", "IRo.y"),
-#     names_to = "measure",
-#     values_to = "value"
-#   )
-# 
-# ggplot(df_E, aes(x = index, y = value, color = measure)) +
-#   geom_point() +
-#   labs(x = NULL,
-#        title='IR Data v. Fitted States',
-#        subtitle="Even year runs",
-#        y=NULL) +
-#   theme_classic()
-# 
-# ggplot(df_O, aes(x = index, y = value, color = measure)) +
-#   geom_point() +
-#   labs(x = NULL,
-#        title='IR Data v. Fitted States',
-#        subtitle="Odd year runs",
-#        y=NULL) +
-#   theme_classic()
-# 
-# ## some plots - all streams
-# # let's see those estimates
-# fitted(ssNSE)
-
 #grabbing data for figures
 statesNSE.est <- ssNSE$states
 statesNSEse.est <- ssNSE$states.se
@@ -95,13 +42,6 @@ yearsNSEo <- c(1961, 1963, 1965, 1967, 1969,
 statesLongNSE <- statesLongNSE %>% 
   mutate(Year = c(rep(yearsNSEe, 1), rep(yearsNSEo, 1)))
 
-# statesNSE <- c("NSE Outer", "Indian River")
-# statesLongNSE <- statesLongNSE %>% 
-#   mutate(state = c(rep(statesNSE[1], 32),
-#                    rep(statesNSE[2], 32),
-#                    rep(statesNSE[1], 32),
-#                    rep(statesNSE[2], 32)))
-
 runNSE <- c("Even", "Odd")
 statesLongNSE <- statesLongNSE %>% 
   mutate(run= c(rep(runNSE[1], 32),
@@ -124,7 +64,7 @@ statesLongNSE_E <- statesLongNSE[statesLongNSE$run == 'Even', ]
 statesLongNSE_O <- statesLongNSE[statesLongNSE$run != 'Even', ]
 
 # plotting
-STKsteNSE_E <- ggplot(data = statesLongNSE_E, aes(y=fitted, x=Year, color = run )) +
+STK2steNSE_E <- ggplot(data = statesLongNSE_E, aes(y=fitted, x=Year, color = run )) +
   geom_ribbon(aes(ymin=lb, ymax=ub, fill = run), alpha=0.35, linetype=0) +
   geom_line(show.legend = FALSE) +
   theme_classic() +  
@@ -143,9 +83,9 @@ STKsteNSE_E <- ggplot(data = statesLongNSE_E, aes(y=fitted, x=Year, color = run 
   scale_x_continuous(expand = c(0, 0)) + 
   scale_y_continuous(expand = expansion(mult = c(0, 0.05))) + 
   geom_hline(yintercept = 0, linetype = "dashed")
-STKsteNSE_E
+STK2steNSE_E
 
-STKsteNSE_O <- ggplot(data = statesLongNSE_O, aes(y=fitted, x=Year, color = run)) +
+STK2steNSE_O <- ggplot(data = statesLongNSE_O, aes(y=fitted, x=Year, color = run)) +
   geom_ribbon(aes(ymin=lb, ymax=ub, fill=run), alpha=0.35, linetype=0) +
   geom_line(show.legend = FALSE) +
   theme_classic() +  
@@ -164,102 +104,14 @@ STKsteNSE_O <- ggplot(data = statesLongNSE_O, aes(y=fitted, x=Year, color = run)
   scale_x_continuous(expand = c(0, 0)) + 
   scale_y_continuous(expand = expansion(mult = c(0, 0.05))) + 
   geom_hline(yintercept = 0, linetype = "dashed")
-STKsteNSE_O
+STK2steNSE_O
 
-ggsave(here("output", "figures", "STK2steNSE_E.png"), plot=STKsteNSE_E, device="png", dpi=300)
-ggsave(here("output", "figures", "STK2steNSE_O.png"), plot=STKsteNSE_O, device="png", dpi=300)
-
-# # effort to plot indian river residuals
-# IRstatesLongE <- statesLongNSE_E %>% filter(state == "Indian River")
-# IRstatesLongO <- statesLongNSE_O %>% filter(state == "Indian River")
-# 
-# # load in IRdata
-# IRdata_E <- readRDS(here("data", "clean", "eIRdata.rds"))
-# IRstatesLongE$data <- IRdata_E
-# IRstatesLongE$predict <- ssNSE$ytT[6,]
-# 
-# IRdata_O <- readRDS(here("data", "clean", "oIRdata.rds"))
-# IRstatesLongO$data <- IRdata_O
-# IRstatesLongO$predict <- ssNSE$ytT[42,]
-# 
-# # save long state estimates
-# save(IRstatesLongE, file=here("data", "clean", "IRstatesLongE.Rda"))
-# save(IRstatesLongO, file=here("data", "clean", "IRstatesLongO.Rda"))
-# 
-# IRresid_E <- ggplot(data = IRstatesLongE, aes(y=fitted, x=Year)) +
-#   geom_ribbon(aes(ymin=lb, ymax=ub), alpha=0.35, linetype=0) +
-#   geom_line(show.legend = FALSE) +
-#   geom_point(aes(y=data, x=Year)) +
-#   theme_classic() +
-#   labs(x = "", 
-#        y="State Estimate (standardized)",
-#        title='Recorded pink salmon returns compared to estimated returns at Indian River',
-#        subtitle='Even year runs') +
-#   theme(legend.position="none")
-# IRresid_E
-# 
-# IRresid_O <- ggplot(data = IRstatesLongO, aes(y=fitted, x=Year)) +
-#   geom_ribbon(aes(ymin=lb, ymax=ub), alpha=0.35, linetype=0) +
-#   geom_line(show.legend = FALSE) +
-#   geom_point(aes(y=data, x=Year)) +
-#   theme_classic() +
-#   labs(x = "", 
-#        y="State Estimate (standardized)",
-#        title='Recorded pink salmon returns compared to estimated returns at Indian River',
-#        subtitle='Odd year runs') +
-#   theme(legend.position="none")
-# IRresid_O
-# 
-# ggsave(here("output", "figures", "IRresid_E.png"), plot=IRresid_E, device="png", dpi=300)
-# ggsave(here("output", "figures", "IRresid_O.png"), plot=IRresid_O, device="png", dpi=300)
-# 
-# # stacked figure
-# STKsteNSE_E <- ggplot(data = statesLongNSE_E, aes(y=fitted, x=Year, color = state)) +
-#   geom_ribbon(aes(ymin=lb, ymax=ub, fill=state), alpha=0.35, linetype=0) +
-#   geom_line(show.legend = FALSE) +
-#   theme_classic() +  
-#   theme(plot.subtitle = element_text(size = 16)) +
-#   theme(axis.title.y = element_text(margin=margin(r = 15, unit = "pt"))) +
-#   theme(axis.title = element_text(size = 18),
-#         axis.text = element_text(size = 14)) +
-#   theme(axis.text.x=element_blank()) +
-#   gghighlight(state == "Indian River", 
-#               use_direct_label = FALSE, 
-#               unhighlighted_params = list(color="grey70")) +
-#   labs(x = "", 
-#        y="State Estimate (standardized)",
-#        title=NULL,
-#        subtitle="Even") +
-#   theme(legend.position="none") +
-#   scale_x_continuous(expand = c(0, 0)) + 
-#   scale_y_continuous(expand = expansion(mult = c(0, 0.05))) + 
-#   geom_hline(yintercept = 0, linetype = "dashed")
-# STKsteNSE_E
-# 
-# STKsteNSE_O <- ggplot(data = statesLongNSE_O, aes(y=fitted, x=Year, color = state)) +
-#   geom_ribbon(aes(ymin=lb, ymax=ub, fill=state), alpha=0.35, linetype=0) +
-#   geom_line(show.legend = FALSE) +
-#   theme_classic() +  
-#   theme(plot.subtitle = element_text(size = 16)) +
-#   theme(axis.title.y = element_text(margin=margin(r = 15, unit = "pt"))) +
-#   theme(axis.title = element_text(size = 18),
-#         axis.text = element_text(size = 14)) +
-#   gghighlight(state == "Indian River", 
-#               use_direct_label = FALSE, 
-#               unhighlighted_params = list(color="grey70")) +
-#   labs(x = "", 
-#        y="State Estimate (standardized)",
-#        title=NULL,
-#        subtitle="Odd") +
-#   theme(legend.position="none") +
-#   scale_x_continuous(expand = c(0, 0)) + 
-#   scale_y_continuous(expand = expansion(mult = c(0, 0.05))) + 
-#   geom_hline(yintercept = 0, linetype = "dashed")
-# STKsteNSE_O
+ggsave(here("output", "figures", "STK2steNSE_E.png"), plot=STK2steNSE_E, device="png", dpi=300)
+ggsave(here("output", "figures", "STK2steNSE_O.png"), plot=STK2steNSE_O, device="png", dpi=300)
 
 # stacking figs
 # Shared label
-STKsteNSE_O$labels$y <- STKsteNSE_E$labels$y <- " "
+STK2steNSE_O$labels$y <- STK2steNSE_E$labels$y <- " "
 ylab <- wrap_elements(
   full = textGrob(
     "State Estimate (standardized)",
@@ -269,8 +121,8 @@ ylab <- wrap_elements(
 )
 
 # combine
-STKsteNSE <- (ylab | (STKsteNSE_E / STKsteNSE_O)) +
+STK2steNSE <- (ylab | (STK2steNSE_E / STK2steNSE_O)) +
   plot_layout(widths = c(0.01, 1))
-STKsteNSE
+STK2steNSE
 
-ggsave(here("output", "figures", "STK2steNSE.png"), plot=STKsteNSE, device="png", dpi=300)
+ggsave(here("output", "figures", "STK2steNSE.png"), plot=STK2steNSE, device="png", dpi=300)
