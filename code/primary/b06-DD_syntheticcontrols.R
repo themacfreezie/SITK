@@ -135,7 +135,7 @@ DD_E1980 <- DD_E1980 %>%
   filter(STREAMID != "113-41-019")
 DD_E1980 <- rbind(DD_E1980, DD_IR)
 
-# no variation in some observers before 1980
+# no variation in some observers before treatment period
 # 1, 2, 4, 6, 8, 10
 DD_E1980 <- DD_E1980[-c(7, 8, 10, 12, 14, 16)]
 

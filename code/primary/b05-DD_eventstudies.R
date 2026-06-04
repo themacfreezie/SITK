@@ -22,12 +22,12 @@ DD_O2010 <- DD_O2010 %>% filter(dPost == 0)
 # regression model evaluating dIR (covariates based on best model evaluation)
 # - 1980 
 eventE_1980 <- lm(standard_ct ~ dIR + Observer, DD_E1980)
-# eventO_1980 <- lm(standard_ct ~ dIR + lagPDO + Observer, DD_O1980)
-eventO_1980 <- lm(standard_ct ~ dIR + Observer, DD_O1980)
+eventO_1980 <- lm(standard_ct ~ dIR + lagPDO + Observer, DD_O1980)
+# eventO_1980 <- lm(standard_ct ~ dIR + Observer, DD_O1980)
 
 # - 2010 
-# eventE_2010 <- lm(standard_ct ~ dIR + lagPDO + Observer , DD_E2010)
-eventE_2010 <- lm(standard_ct ~ dIR + Observer , DD_E2010)
+eventE_2010 <- lm(standard_ct ~ dIR + lagPDO + Observer , DD_E2010)
+# eventE_2010 <- lm(standard_ct ~ dIR + Observer , DD_E2010)
 eventO_2010 <- lm(standard_ct ~ dIR + Observer, DD_O2010)
 
 # check mods
