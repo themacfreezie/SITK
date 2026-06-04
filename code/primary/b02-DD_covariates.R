@@ -49,8 +49,10 @@ DD_O1980 <- DD_O[-c(6)]
 DD_E2010 <- DD_E[-c(5)]
 DD_O2010 <- DD_O[-c(5)]
 
-names(DD_E1980)[names(DD_E1980) == "dPost1980"] <- "dPost"
-names(DD_O1980)[names(DD_O1980) == "dPost1980"] <- "dPost"
+names(DD_E1980)[names(DD_E1980) == "dPost1975"] <- "dPost"
+names(DD_O1980)[names(DD_O1980) == "dPost1975"] <- "dPost"
+# names(DD_E1980)[names(DD_E1980) == "dPost1980"] <- "dPost"
+# names(DD_O1980)[names(DD_O1980) == "dPost1980"] <- "dPost"
 names(DD_E2010)[names(DD_E2010) == "dPost2010"] <- "dPost"
 names(DD_O2010)[names(DD_O2010) == "dPost2010"] <- "dPost"
 

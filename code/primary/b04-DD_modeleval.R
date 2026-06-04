@@ -81,7 +81,7 @@ anova(DDmodO_obsv1980, DDmodO_both1980)
   # could lagged pdo may be capturing other year-level fixed effects?
 # observer is significantly stronger than base
 # full is significantly stronger than pdo
-# full is (weakly) significantly stronger than observer 
+# full is significantly stronger than observer 
 # full is best?
 
 anova(DDmodO_base2010, DDmodO_envi2010)
