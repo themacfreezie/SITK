@@ -8,19 +8,19 @@ here::i_am("code/primary/b08-DD_output.R")
 options(max.print=2000)
 
 # load in ss models
-DDmodE_base1980synth <- readRDS(file=here("data", "clean", "DDmodE_base1980synth.rds"))
-DDmodO_both1980 <- readRDS(file=here("data", "clean", "DDmodO_both1980.rds"))
+DDmodE_base1975synth <- readRDS(file=here("data", "clean", "DDmodE_base1975synth.rds"))
+DDmodO_base1975synth <- readRDS(file=here("data", "clean", "DDmodO_base1975synth.rds"))
 DDmodE_both2010 <- readRDS(file=here("data", "clean", "DDmodE_both2010.rds"))
 DDmodO_obsv2010 <- readRDS(file=here("data", "clean", "DDmodO_obsv2010.rds"))
 
-summary(DDmodE_base1980synth) 
+summary(DDmodE_base1975synth) 
 summary(DDmodE_both2010)
-summary(DDmodO_both1980) 
+summary(DDmodO_both1975synth) 
 summary(DDmodO_obsv2010)
 
 # model list
-models <- list("Even, 1980" = DDmodE_base1980synth, 
-               "Odd, 1980" = DDmodO_both1980,
+models <- list("Even, 1975" = DDmodE_base1975synth, 
+               "Odd, 1975" = DDmodO_base1975synth,
                "Even, 2010" = DDmodE_both2010,
                "Odd, 2010" = DDmodO_obsv2010)
 
@@ -32,8 +32,8 @@ modelsummary(models,
                              "dPost:dIR" = "Treatment Effect"),
              stars = c("*" = 0.05),
              gof_omit = 'DF|Deviance|AIC|BIC|Log.Lik|RMSE|F',
-             title = "Indian River pink salmon difference-in-difference models",
-             output = here("output", "figures", "DD_table.png")
+             title = "Indian River pink salmon difference-in-difference models"
+             # , output = here("output", "figures", "DD_table.png")
              )
 
 # # build results tabls
