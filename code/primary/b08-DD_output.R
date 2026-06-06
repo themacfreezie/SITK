@@ -15,7 +15,7 @@ DDmodO_obsv2010 <- readRDS(file=here("data", "clean", "DDmodO_obsv2010.rds"))
 
 summary(DDmodE_base1975synth) 
 summary(DDmodE_both2010)
-summary(DDmodO_both1975synth) 
+summary(DDmodO_base1975synth) 
 summary(DDmodO_obsv2010)
 
 # model list

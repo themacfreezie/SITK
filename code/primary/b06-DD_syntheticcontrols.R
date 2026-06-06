@@ -291,11 +291,11 @@ if(!file.exists(file=here("data", "clean", "synthcontrol_E1975.Rda"))){
       unit = STREAMID,
       time = index,
       i_unit = "113-41-019",
-      i_time = 9,
+      i_time = 10,
       generate_placebos = TRUE
     ) %>% 
     # 2. Predictors: Generate covariates for pre-intervention
-    generate_predictor(time_window = 1:9,
+    generate_predictor(time_window = 1:10,
                        # lagPDO = mean(lagPDO),
                        # Observer_3 = mean(Observer_3),
                        Observer_5 = mean(Observer_5),
@@ -303,7 +303,7 @@ if(!file.exists(file=here("data", "clean", "synthcontrol_E1975.Rda"))){
                        Observer_9 = mean(Observer_9)
     ) %>% 
     # 3. Weights: Optimize donor unit weights  
-    generate_weights(optimization_window = 1:9) %>% 
+    generate_weights(optimization_window = 1:10) %>% 
     generate_control()
   
   # check it out
@@ -318,7 +318,7 @@ if(!file.exists(file=here("data", "clean", "synthcontrol_E1975.Rda"))){
   # generate year and dummies and rename count
   synth_control$YEAR <- (synth_control$time_unit - 1)*2 + 1960
   synthcontrol_E1975 <- synth_control[-c(1,2)]
-  synthcontrol_E1975$dPost <- ifelse(synthcontrol_E1975$YEAR>1975, 1, 0)
+  synthcontrol_E1975$dPost <- ifelse(synthcontrol_E1975$YEAR>1976, 1, 0)
   synthcontrol_E1975$dIR <- 0
   names(synthcontrol_E1975)[names(synthcontrol_E1975) == "synth_y"] <- "standard_ct"
   
@@ -360,7 +360,7 @@ if(!file.exists(file=here("data", "clean", "synthcontrol_O1975.Rda"))){
     grab_synthetic_control()
   
   # generate year and dummies and rename count
-  synth_control$YEAR <- (synth_control$time_unit - 1)*2 + 1960
+  synth_control$YEAR <- (synth_control$time_unit - 1)*2 + 1961
   synthcontrol_O1975 <- synth_control[-c(1,2)]
   synthcontrol_O1975$dPost <- ifelse(synthcontrol_O1975$YEAR>1975, 1, 0)
   synthcontrol_O1975$dIR <- 0

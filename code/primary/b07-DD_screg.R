@@ -23,7 +23,7 @@ DD_O1975 <- DD_O1975[-c(2,6,7)]
 
 # bind datesets
 DD_E1975 <- rbind(DD_E1975, synthcontrol_E1975)
-DD_O1975 <- rbind(DD_O1975, synthcontrol_E1975)
+DD_O1975 <- rbind(DD_O1975, synthcontrol_O1975)
 
 # check linear trends assumption w/ synthetic data
 DD_E1975pre <- DD_E1975 %>% filter(dPost == 0)

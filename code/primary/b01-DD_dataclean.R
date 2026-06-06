@@ -177,7 +177,7 @@ DD_pinksE_scst.df$dIR <- ifelse(DD_pinksE_scst.df$STREAMID=="113-41-019", 1, 0)
 DD_pinksO_scst.df$dIR <- ifelse(DD_pinksO_scst.df$STREAMID=="113-41-019", 1, 0)
 
 #generating dummy variables for treatment
-DD_pinksE_scst.df$dPost1975 <- ifelse(DD_pinksE_scst.df$YEAR>1975, 1, 0)
+DD_pinksE_scst.df$dPost1975 <- ifelse(DD_pinksE_scst.df$YEAR>1976, 1, 0)
 DD_pinksO_scst.df$dPost1975 <- ifelse(DD_pinksO_scst.df$YEAR>1975, 1, 0)
 
 # DD_pinksE_scst.df$dPost1980 <- ifelse(DD_pinksE_scst.df$YEAR>1980, 1, 0)
