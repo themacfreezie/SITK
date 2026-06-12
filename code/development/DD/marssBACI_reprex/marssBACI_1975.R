@@ -4,12 +4,12 @@ library(MARSS)
 library(tidyverse)
 
 # set loc
-here::i_am("marssBACI_1980.R")
+here::i_am("code/development/DD/marssBACI_reprex/marssBACI_1975.R")
 options(max.print=2000)
 
 # load data 
 # esc data - from NSEout_WIDEstandardize
-load(here("NSEout_wpinks_scst.Rda"))
+load(here("data", "clean", "NSEout_wpinks_scst.Rda"))
 
 # grab year lists, # of observations, & pure count data
 wpinks_scst.df <- wpinks_scst.df[-c(66)]
@@ -131,7 +131,7 @@ marsssummary_Rde <- data.frame(
   stringsAsFactors = FALSE
 )
 
-if(!file.exists(here("MARSSsummary_Rde1975.rds"))){
+if(!file.exists(here("data", "clean", "MARSSsummary_Rde1975.rds"))){
   # 4 Covariate Specifications
   for (c_idx in 1:length(c_models)) {
     
@@ -171,9 +171,9 @@ if(!file.exists(here("MARSSsummary_Rde1975.rds"))){
       ))
     }
   }
-  saveRDS(marsssummary_Rde, file=here("MARSSsummary_Rde1975.rds"))
+  saveRDS(marsssummary_Rde, file=here("data", "clean", "MARSSsummary_Rde1975.rds"))
 }
-marsssummary_Rde <- readRDS(file=here("MARSSsummary_Rde1975.rds"))
+marsssummary_Rde <- readRDS(file=here("data", "clean", "MARSSsummary_Rde1975.rds"))
 
 # find best model
 min_aicc <- min(marsssummary_Rde$AICc, na.rm = TRUE)
@@ -191,7 +191,7 @@ marsssummary_Rvc <- data.frame(
   stringsAsFactors = FALSE
 )
 
-if(!file.exists(here("MARSSsummary_Rvc1975.rds"))){
+if(!file.exists(here("data", "clean", "MARSSsummary_Rvc1975.rds"))){
   # 4 Covariate Specifications
   for (c_idx in 1:length(c_models)) {
     
@@ -231,9 +231,9 @@ if(!file.exists(here("MARSSsummary_Rvc1975.rds"))){
       ))
     }
   }
-  saveRDS(marsssummary_Rvc, file=here("MARSSsummary_Rvc1975.rds"))
+  saveRDS(marsssummary_Rvc, file=here("data", "clean", "MARSSsummary_Rvc1975.rds"))
 }
-marsssummary_Rvc <- readRDS(file=here("MARSSsummary_Rvc1975.rds"))
+marsssummary_Rvc <- readRDS(file=here("data", "clean", "MARSSsummary_Rvc1975.rds"))
 
 # find best model
 min_aicc <- min(marsssummary_Rvc$AICc, na.rm = TRUE)
@@ -260,7 +260,7 @@ marsssummary_Rsite <- data.frame(
   stringsAsFactors = FALSE
 )
 
-if(!file.exists(here("marsssummary_Rsite1975.rds"))){
+if(!file.exists(here("data", "clean", "marsssummary_Rsite1975.rds"))){
   # 4 Covariate Specifications
   for (c_idx in 1:length(c_models)) {
     
@@ -300,9 +300,9 @@ if(!file.exists(here("marsssummary_Rsite1975.rds"))){
       ))
     }
   }
-  saveRDS(marsssummary_Rsite, file=here("MARSSsummary_Rsite1975.rds"))
+  saveRDS(marsssummary_Rsite, file=here("data", "clean", "MARSSsummary_Rsite1975.rds"))
 }
-marsssummary_Rsite <- readRDS(file=here("MARSSsummary_Rsite1975.rds"))
+marsssummary_Rsite <- readRDS(file=here("data", "clean", "MARSSsummary_Rsite1975.rds"))
 
 # find best model
 min_aicc <- min(marsssummary_Rsite$AICc, na.rm = TRUE)
