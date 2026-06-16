@@ -75,6 +75,7 @@ colnames(oddCol_wpdo) <- newnames
 colnames(eveCol_wpdo) <- newnames
 
 STACKwpdo.df <- rbind(eveCol_wpdo, oddCol_wpdo)
+# even on top
 
 # convert counts, observer ID, and pdo data to matrix
 dat <- data.matrix(STACKwpinks_scst.df[2:ncol(STACKwpinks_scst.df)])
