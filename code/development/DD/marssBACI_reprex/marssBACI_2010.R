@@ -192,8 +192,17 @@ c.model4[2,4] <- "treatE"
 c.model4[3,5] <- "treatO_region"
 c.model4[4,6] <- "treatO_ir"
 
+# C (effect of covariates)
+c.model5 <- matrix(list(0), 4, 6)
+c.model5[1,1] <- "pE"
+c.model5[2,1] <- "pE"
+c.model5[3,2] <- "pO"
+c.model5[4,2] <- "pO"
+c.model5[2,4] <- "treatE_ir"
+c.model5[4,6] <- "treatO_ir"
+
 # put specifications into a list for easy looping
-c_models <- list(c.model1, c.model2, c.model3, c.model4)
+c_models <- list(c.model1, c.model2, c.model3, c.model4, c.model5)
 
 ## three looks at observation error
 # R (diag and eq)

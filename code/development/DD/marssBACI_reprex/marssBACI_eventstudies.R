@@ -143,29 +143,69 @@ z.model4[37:72, 2] <- 1
 z.model4[42, 2:3]  <- c(0, 1)
 
 # D (control for observer)
-d.model <- matrix(list(0), 2*n, (2*11)*n)
-num_rowsD <- nrow(d.model)
+d.model1975 <- matrix(list(0), 2*n, (2*4)*n)
+num_rowsD <- nrow(d.model1975)
 
-obs_vector <- c(paste0("obs", seq(11)))
+obs_vector <- c(paste0("obs", seq(4)))
 
 for (i in 1:num_rowsD) {
-  cc <- 11*i - 10
-  d.model[i, cc:(cc+10)] <- obs_vector
+  cc <- 4*i - 3
+  d.model1975[i, cc:(cc+3)] <- obs_vector
 }
+  # 1975
+
+d.model2010 <- matrix(list(0), 2*n, (2*8)*n)
+num_rowsD <- nrow(d.model2010)
+
+obs_vector <- c(paste0("obs", seq(8)))
+
+for (i in 1:num_rowsD) {
+  cc <- 8*i - 7
+  d.model2010[i, cc:(cc+7)] <- obs_vector
+}
+  # 2010
 
 # Q (process error)
-q.model <- matrix(list(0), 4, 4)
-q.model[1,1] <- "qE"
-q.model[2,2] <- "qE"
-q.model[3,3] <- "qO"
-q.model[4,4] <- "qO"
+q.model1 <- matrix(list(0), 4, 4)
+q.model1[1,1] <- "qE"
+q.model1[2,2] <- "qE"
+q.model1[3,3] <- "qO"
+q.model1[4,4] <- "qO"
+
+q.model2 <- matrix(list(0), 2, 2)
+q.model2[1,1] <- "qE"
+q.model2[2,2] <- "qO"
+
+q.model3 <- matrix(list(0), 3, 3)
+q.model3[1,1] <- "qE"
+q.model3[2,2] <- "qE"
+q.model3[3,3] <- "qO"
+
+q.model4 <- matrix(list(0), 3, 3)
+q.model4[1,1] <- "qE"
+q.model4[2,2] <- "qO"
+q.model4[3,3] <- "qO"
 
 # C (effect of covariates)
-c.model <- matrix(list(0), 4, 2)
-c.model[1,1] <- "pE"
-c.model[2,1] <- "pE"
-c.model[3,2] <- "pO"
-c.model[4,2] <- "pO"
+c.model1 <- matrix(list(0), 4, 2)
+c.model1[1,1] <- "pE"
+c.model1[2,1] <- "pE"
+c.model1[3,2] <- "pO"
+c.model1[4,2] <- "pO"
+
+c.model2 <- matrix(list(0), 2, 2)
+c.model2[1,1] <- "pE"
+c.model2[2,2] <- "pO"
+
+c.model3 <- matrix(list(0), 3, 2)
+c.model3[1,1] <- "pE"
+c.model3[2,1] <- "pE"
+c.model3[3,2] <- "pO"
+
+c.model4 <- matrix(list(0), 3, 2)
+c.model4[1,1] <- "pE"
+c.model4[2,2] <- "pO"
+c.model4[3,2] <- "pO"
 
 ## three looks at observation error
 # R (diag and eq)
@@ -184,56 +224,162 @@ rSite.model[6,6] <- "rIndianRiver"
 rSite.model[42,42] <- "rIndianRiver"
 
 # put Z specs into a list for easy looping
-Z_models <- list(z.model1, z.model2, z.model3, z.model4)
+# Z_models <- list(z.model1, z.model2, z.model3, z.model4)
 
 # put R specs into a list for easy looping
 R_models <- list(rDE.model, rVC.model, rSite.model)
+# R_models <- list(rDE.model)
+# R_models <- list(rVC.model)
+# R_models <- list(rSite.model)
 
-# empty list to store the results
-marssEventstudies_1975 <- data.frame(
-  Model_Name = character(),
-  AICc = numeric(),
-  stringsAsFactors = FALSE
-)
-
-# loopy models!
+# loopy models! - 1975
 # 3 types of R
 for (R_spec in 1:length(R_models)) {
-  
-  # 4 Z specs
-  for (Z_spec in names(Z_models)) {
-    
-    z.model <- Z_models[[Z_spec]]
+
     r.model <- R_models[[R_spec]]
 
     # mod list
-    model.list <- list(
-      B = b.model, U = u.model, Q = q.model,
-      Z = z.model, A = a.model, R = r.model,
+    model.list1 <- list(
+      B = b.model, U = u.model, Q = q.model1,
+      Z = z.model1, A = a.model, R = r.model,
       x0 = x.model, V0 = v.model, tinitx = 0,
-      C = c.model,
+      C = c.model1,
       c = pdo1975
-      #, D = d.model, d = obD1975
+      , D = d.model1975, d = obD1975
     )
     
-    # unique id, e.g., "C1_treat_E_1_O_1"
-    model_id <- paste0(Z_spec, "_", R_spec)
+    model.list2 <- list(
+      B = b.model, U = u.model, Q = q.model2,
+      Z = z.model2, A = a.model, R = r.model,
+      x0 = x.model, V0 = v.model, tinitx = 0,
+      C = c.model2,
+      c = pdo1975
+      , D = d.model1975, d = obD1975
+    )
+    
+    model.list3 <- list(
+      B = b.model, U = u.model, Q = q.model3,
+      Z = z.model3, A = a.model, R = r.model,
+      x0 = x.model, V0 = v.model, tinitx = 0,
+      C = c.model3,
+      c = pdo1975
+      , D = d.model1975, d = obD1975
+    )
+    
+    model.list4 <- list(
+      B = b.model, U = u.model, Q = q.model4,
+      Z = z.model4, A = a.model, R = r.model,
+      x0 = x.model, V0 = v.model, tinitx = 0,
+      C = c.model4,
+      c = pdo1975
+      , D = d.model1975, d = obD1975
+    )
     
     # run MARSS 
-    fit <- MARSS(
+    fit1 <- MARSS(
       dat1975, 
-      model = model.list, 
+      model = model.list1, 
       method = "kem",
       control = list(maxit = 1000)
     )
     
-    # extract AICc
-    current_aicc <- fit$AICc
+    # run MARSS 
+    fit2 <- MARSS(
+      dat1975, 
+      model = model.list2, 
+      method = "kem",
+      control = list(maxit = 1000)
+    )
     
-    # append results
-    marssEventstudies_1975 <- rbind(marssEventstudies_1975, data.frame(
-      Model_Name = model_id,
-      AICc = current_aicc
-    ))
-  }
+    # run MARSS 
+    fit3 <- MARSS(
+      dat1975, 
+      model = model.list3, 
+      method = "kem",
+      control = list(maxit = 1000)
+    )
+    
+    # run MARSS 
+    fit4 <- MARSS(
+      dat1975, 
+      model = model.list4, 
+      method = "kem",
+      control = list(maxit = 1000)
+    )
+}
+
+# loopy models! - 2010
+# 3 types of R
+for (R_spec in 1:length(R_models)) {
+  
+  r.model <- R_models[[R_spec]]
+  
+  # mod list
+  model.list1 <- list(
+    B = b.model, U = u.model, Q = q.model1,
+    Z = z.model1, A = a.model, R = r.model,
+    x0 = x.model, V0 = v.model, tinitx = 0,
+    C = c.model1,
+    c = pdo2010
+    , D = d.model2010, d = obD2010
+  )
+  
+  model.list2 <- list(
+    B = b.model, U = u.model, Q = q.model2,
+    Z = z.model2, A = a.model, R = r.model,
+    x0 = x.model, V0 = v.model, tinitx = 0,
+    C = c.model2,
+    c = pdo2010
+    , D = d.model2010, d = obD2010
+  )
+  
+  model.list3 <- list(
+    B = b.model, U = u.model, Q = q.model3,
+    Z = z.model3, A = a.model, R = r.model,
+    x0 = x.model, V0 = v.model, tinitx = 0,
+    C = c.model3,
+    c = pdo2010
+    , D = d.model2010, d = obD2010
+  )
+  
+  model.list4 <- list(
+    B = b.model, U = u.model, Q = q.model4,
+    Z = z.model4, A = a.model, R = r.model,
+    x0 = x.model, V0 = v.model, tinitx = 0,
+    C = c.model4,
+    c = pdo2010
+    , D = d.model2010, d = obD2010
+  )
+  
+  # run MARSS 
+  fit1 <- MARSS(
+    dat2010, 
+    model = model.list1, 
+    method = "kem",
+    control = list(maxit = 1000)
+  )
+  
+  # run MARSS 
+  fit2 <- MARSS(
+    dat2010, 
+    model = model.list2, 
+    method = "kem",
+    control = list(maxit = 1000)
+  )
+  
+  # run MARSS 
+  fit3 <- MARSS(
+    dat2010, 
+    model = model.list3, 
+    method = "kem",
+    control = list(maxit = 1000)
+  )
+  
+  # run MARSS 
+  fit4 <- MARSS(
+    dat2010, 
+    model = model.list4, 
+    method = "kem",
+    control = list(maxit = 1000)
+  )
 }

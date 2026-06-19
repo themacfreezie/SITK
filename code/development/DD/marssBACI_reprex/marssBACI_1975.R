@@ -192,8 +192,17 @@ c.model4[2,4] <- "treatE"
 c.model4[3,5] <- "treatO_region"
 c.model4[4,6] <- "treatO_ir"
 
+# C (effect of covariates)
+c.model5 <- matrix(list(0), 4, 6)
+c.model5[1,1] <- "pE"
+c.model5[2,1] <- "pE"
+c.model5[3,2] <- "pO"
+c.model5[4,2] <- "pO"
+c.model5[2,4] <- "treatE_ir"
+c.model5[4,6] <- "treatO_ir"
+
 # put specifications into a list for easy looping
-c_models <- list(c.model1, c.model2, c.model3, c.model4)
+c_models <- list(c.model1, c.model2, c.model3, c.model4, c.model5)
 
 ## three looks at observation error
 # R (diag and eq)
@@ -387,3 +396,80 @@ min_aicc <- min(marsssummary_Rsite$AICc, na.rm = TRUE)
 bestmodels_Rsite <- subset(marsssummary_Rsite, AICc <= (min_aicc + 2))
 bestmodels_Rsite$C_spec <- substr(bestmodels_Rsite$Model_Name, 2, 2)
 bestmodels_Rsite$C_spec <- as.numeric(bestmodels_Rsite$C_spec)
+
+
+
+# TEMPORARY JUST TO CONSIDER C.MODEL 5
+# R (site level observation error)
+r.model <- matrix(list(0), 72, 72)
+for (i in 1:36) {
+  r.model[i,i] <- paste0("r",i)
+}
+for (i in 1:36) {
+  r.model[i+36,i+36] <- paste0("r",i)
+}
+r.model[6,6] <- "rIndianRiver"
+r.model[42,42] <- "rIndianRiver"
+
+# empty list to store the results
+marsssummary_RsiteC5 <- data.frame(
+  Model_Name = character(),
+  AICc = numeric(),
+  stringsAsFactors = FALSE
+)
+
+if(!file.exists(here("data", "clean", "marsssummary_Rsite1975-CMOD5only.rds"))){
+    
+    # 49 Treatment Matrices
+    for (t_name in names(treatment_matrices)) {
+      
+      current_treat <- treatment_matrices[[t_name]]
+      
+      # mod list
+      model.list <- list(
+        B = b.model, U = u.model, Q = q.model,
+        Z = z.model, A = a.model, R = r.model,
+        x0 = x.model, V0 = v.model, tinitx = 0,
+        C = c.model5,
+        c = current_treat,        # Current treatment matrix
+        D = d.model, d = obD
+      )
+      
+      # unique id, e.g., "C1_treat_E_1_O_1"
+      model_id <- paste0("C5_", t_name)
+      
+      # run MARSS 
+      fit <- MARSS(
+        dat, 
+        model = model.list, 
+        method = "kem",
+        control = list(maxit = 1000)
+      )
+      
+      # extract AICc
+      current_aicc <- fit$AICc
+      
+      # append results
+      marsssummary_RsiteC5 <- rbind(marsssummary_RsiteC5, data.frame(
+        Model_Name = model_id,
+        AICc = current_aicc
+      ))
+    }
+  saveRDS(marsssummary_RsiteC5, file=here("data", "clean", "marsssummary_Rsite1975-CMOD5only.rds"))
+}
+marsssummary_RsiteC5 <- readRDS(file=here("data", "clean", "marsssummary_Rsite1975-CMOD5only.rds"))
+
+# find best model
+min_aicc <- min(marsssummary_RsiteC5$AICc, na.rm = TRUE)
+bestmodels_RsiteC5 <- subset(marsssummary_RsiteC5, AICc <= (min_aicc + 2))
+bestmodels_RsiteC5$C_spec <- substr(bestmodels_RsiteC5$Model_Name, 2, 2)
+bestmodels_RsiteC5$C_spec <- as.numeric(bestmodels_RsiteC5$C_spec)
+
+# bind Rsite marss summaries
+marsssummary_RsiteALL <- rbind(marsssummary_Rsite, marsssummary_RsiteC5)
+
+# find best model
+min_aicc <- min(marsssummary_RsiteALL$AICc, na.rm = TRUE)
+bestmodels_RsiteALL <- subset(marsssummary_RsiteALL, AICc <= (min_aicc + 2))
+bestmodels_RsiteALL$C_spec <- substr(bestmodels_RsiteALL$Model_Name, 2, 2)
+bestmodels_RsiteALL$C_spec <- as.numeric(bestmodels_RsiteALL$C_spec)
