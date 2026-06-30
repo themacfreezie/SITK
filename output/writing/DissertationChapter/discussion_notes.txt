@@ -1,0 +1,30 @@
+Tom's note:
+I think it is important here, at the start of the Discussion, to remind the readers exactly what hypotheses were 
+tested, and then make sure, in non-statistical terms, they know what the findings were. Going back into the 
+Introduction themes leaves the reader unsure what the true outcome was, and I am not at all sure. Once we all know 
+that, then you want to discuss your findings per se, followed by gradually broadening the scope to discuss them in 
+light of broader conservation concerns for salmon (wild – hatchery, etc.) and then for other animals. A paragraph 
+for caveats follows that, and then you end with the conclusions. OK?] 
+
+Hypotheses statement:
+My research seeks to assess whether the abundances of pink salmon observed in recent decades at Indian River exist 
+within a natural range of variation relative to pink salmon streams elsewhere in the region, and to evaluate if and 
+to what extent Sheldon Jackson Hatchery operations have driven increasing abundance since 1980. This is 
+accomplished by evaluating three hypotheses. 1) Pink salmon population dynamics at Indian River are separate from 
+those observed at ADFG index streams in the region. A state-space model which specifies pink salmon abundance at 
+Indian River as separate from pink salmon abundance elsewhere in the region will better fit available data than a 
+model which does not make this distinction. 2) The 1975 commencement and/or 2010 expansion of hatchery operations 
+has had some measurable impact on Indian River pink salmon population densities. A before-after control-impact 
+(BACI) analysis will estimate a significant effect of treatment. And 3) the number of pink salmon juveniles 
+released by SJH in brood year t-1 is impacting pink salmon abundance observed at Indian River in brood year t. An 
+autoregressive model will estimate this “cross effect” as significant. Each of these approaches is discussed in 
+greater detail in the following section.
+
+Ideal structure:
+p1 - Open with brief restatement of goals and hypotheses
+p2 - common patterns at IR?
+p3 - Detail: even (h1, h2, h3)
+p4 - Detail: odd (h1, h2, h3)
+p5 - what does this all mean for the system?
+p6 - what does this all mean for overabundant native species in general?
+	Something like that?
