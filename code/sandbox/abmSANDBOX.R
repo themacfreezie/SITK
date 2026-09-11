@@ -1,4 +1,7 @@
 # Pure AI example here..
+# libraries
+library(ggplot2)
+
 # INFECTIONS!! ------------------------------------------------------------
 ## Set up
 # set.seed(42)            # For reproducible results
@@ -466,104 +469,243 @@ legend("topright", legend = c("Population 1", "Population 2", "Total Dead"),
   # this doesn't make sense because they aren't being replenished..
 
 
-# straying, survival, and reproduction ------------------------------------
+# # straying, survival, and reproduction ------------------------------------
+# num_agents  <- 100000  
+# prob_stray1 <- 0.075  
+# prob_stray2 <- 0.12  
+# prob_surv1  <- 0.002  
+# prob_surv2  <- 0.05   
+# birth_rate1 <- 1500  
+# birth_rate2 <- 1000   
+# total_steps <- 50
+# 
+# agents1 <- data.frame(id = 1:num_agents, status = "pop1", stringsAsFactors = FALSE)
+# agents2 <- data.frame(id = (num_agents + 1):(2*num_agents), status = "pop2", stringsAsFactors = FALSE)
+# agents  <- rbind(agents1, agents2)
+# 
+# max_id <- max(agents$id)
+# total_dead_counter <- 0
+# 
+# run_time_step <- function(population, stray_rate1, stray_rate2, surv_rate1, surv_rate2, b_rate1, b_rate2) {
+#   n <- nrow(population)
+#   if (n == 0) return(list(pop = population, dead_this_step = 0))
+#   
+#   current_status <- population$status
+#   
+#   rand_surv <- runif(n)
+#   rand_stray <- runif(n)
+#   
+#   is_alive <- (current_status == "pop1" & rand_surv < surv_rate1) | 
+#     (current_status == "pop2" & rand_surv < surv_rate2)
+#   
+#   population$status <- ifelse(current_status == "pop1" & rand_stray < stray_rate1, "pop2",
+#                               ifelse(current_status == "pop2" & rand_stray < stray_rate2, "pop1", 
+#                                      current_status))
+#   
+#   surv_pop1 <- sum(population$status == "pop1" & is_alive)
+#   surv_pop2 <- sum(population$status == "pop2" & is_alive)
+#   
+#   population <- population[is_alive, , drop = FALSE]
+#   dead_this_step <- n - nrow(population)
+#   
+#   new_births1 <- rpois(1, lambda = surv_pop1 * b_rate1)
+#   new_births2 <- rpois(1, lambda = surv_pop2 * b_rate2)
+#   total_births <- new_births1 + new_births2
+#   
+#   if (total_births > 0) {
+#     new_ids <- (max_id + 1):(max_id + total_births)
+#     max_id <<- max_id + total_births 
+#     
+#     new_status <- c(rep("pop1", new_births1), rep("pop2", new_births2))
+#     newborns <- data.frame(id = new_ids, status = new_status, stringsAsFactors = FALSE)
+#     population <- rbind(population, newborns)
+#   }
+#   
+#   return(list(pop = population, dead_this_step = dead_this_step))
+# }
+# 
+# history <- data.frame(
+#   Year = 1:total_steps,
+#   Pop1 = numeric(total_steps),
+#   Pop2 = numeric(total_steps),
+#   Dead = numeric(total_steps)
+# )
+# 
+# for (step in 1:total_steps){
+#   step_result <- run_time_step(agents, prob_stray1, prob_stray2, prob_surv1, prob_surv2, birth_rate1, birth_rate2)
+#   agents <- step_result$pop
+#   total_dead_counter <- total_dead_counter + step_result$dead_this_step
+#   
+#   history$Pop1[step] <- sum(agents$status == "pop1")
+#   history$Pop2[step] <- sum(agents$status == "pop2")
+#   history$Dead[step] <- total_dead_counter
+# }
+# 
+# plot(history$Year, history$Pop1, type = "l", col = "blue", lwd = 2, 
+#      ylim = c(0, max(c(history$Pop1, history$Pop2))), 
+#      xlab = "Years", ylab = "Population Size", 
+#      main = "Population Dynamics with Reproduction and Straying")
+# 
+# lines(history$Year, history$Pop2, col = "red", lwd = 2)
+# 
+# legend("topleft", legend = c("Population 1", "Population 2"), 
+#        col = c("blue", "red"), lwd = 2)
+
+
+# ATTEMPT AT FULL MODEL --------------------------------------------------------
 ## Set up
-num_agents  <- 100000  # initial number of fish per population
-prob_stray1 <- 0.075  # pop 1 likelihood of straying to pop 2
-prob_stray2 <- 0.12  # pop 2 likelihood of straying to pop 1
-prob_surv1  <- 0.002  # annual survival probability for pop 1
-prob_surv2  <- 0.05   # annual survival probability for pop 2
-birth_rate1 <- 1500  # Average offspring per surviving fish in pop 1
-birth_rate2 <- 1000   # Average offspring per surviving fish in pop 2
-total_steps <- 50
+# inputs
+num_wild_init     <- 2000   
+num_hatchery_init <- 10000
 
-# Create initial population dataframe
-agents1 <- data.frame(id = 1:num_agents, status = "pop1", stringsAsFactors = FALSE)
-agents2 <- data.frame(id = (num_agents + 1):(2*num_agents), status = "pop2", stringsAsFactors = FALSE)
-agents  <- rbind(agents1, agents2)
+surv_wild     <- 0.001   
+surv_hatchery <- 0.05 
 
-# Track the highest ID used so far to ensure new fish get unique IDs
-max_id <- max(agents$id)
+mean_stray_wild_init     <- 0.05  
+mean_stray_hatchery_init <- 0.15
 
-# Vectorized simulation function for one time step
-run_time_step <- function(population, stray_rate1, stray_rate2, surv_rate1, surv_rate2, b_rate1, b_rate2) {
-  n <- nrow(population)
-  current_status <- population$status
-  
-  # 1. SURVIVAL & STRAYING
-  rand_surv <- runif(n)
-  rand_stray <- runif(n)
-  
-  is_alive <- ifelse(current_status == "pop1" & rand_surv < surv_rate1, TRUE,
-                     ifelse(current_status == "pop2" & rand_surv < surv_rate2, TRUE,
-                            ifelse(current_status == "dead", FALSE, FALSE)))
-  
-  population$status <- ifelse(!is_alive, "dead",
-                              ifelse(current_status == "pop1" & rand_stray < stray_rate1, "pop2",
-                                     ifelse(current_status == "pop2" & rand_stray < stray_rate2, "pop1", 
-                                            current_status)))
-  
-  # 2. REPRODUCTION STEP (NEW)
-  # Count survivors in each population *after* straying has occurred
-  surv_pop1 <- sum(population$status == "pop1")
-  surv_pop2 <- sum(population$status == "pop2")
-  
-  # Calculate total new births using a Poisson distribution for natural randomness
-  new_births1 <- rpois(1, lambda = surv_pop1 * b_rate1)
-  new_births2 <- rpois(1, lambda = surv_pop2 * b_rate2)
-  total_births <- new_births1 + new_births2
-  
-  if (total_births > 0) {
-    # Generate unique IDs for the new offspring
-    new_ids <- (max_id + 1):(max_id + total_births)
-    max_id <<- max_id + total_births # Update global tracking variable
-    
-    # Assign locations to newborns
-    new_status <- c(rep("pop1", new_births1), rep("pop2", new_births2))
-    
-    # Combine newborns into a dataframe
-    newborns <- data.frame(id = new_ids, status = new_status, stringsAsFactors = FALSE)
+fecundity_wild     <- 1000  
+fecundity_hatchery <- 1000
 
-    # Append newborns to the master population list
-    population <- rbind(population, newborns)
-  }
-  
-  return(population)
-}
+hatchery_annual_release <- 10000 
+stream_carrying_capacity <- 20000
 
-# Run model across time
-history <- data.frame(
-  Year = 1:total_steps,
-  Pop1 = numeric(total_steps),
-  Pop2 = numeric(total_steps),
-  Dead = numeric(total_steps)
+total_steps             <- 10 
+
+# dataframes
+wild_agents <- data.frame(
+  id = 1:num_wild_init,
+  origin = "wild",
+  stray_rate = rnorm(num_wild_init, mean = mean_stray_wild_init, sd = 0.01)
 )
 
-# Main simulation loop
-for (step in 1:total_steps){
-  agents <- run_time_step(agents, prob_stray1, prob_stray2, prob_surv1, prob_surv2, birth_rate1, birth_rate2)
+hatch_agents <- data.frame(
+  id = (num_wild_init + 1):(num_wild_init + num_hatchery_init),
+  origin = "hatchery",
+  stray_rate = rnorm(num_hatchery_init, mean = mean_stray_hatchery_init, sd = 0.01)
+)
+
+agents <- rbind(wild_agents, hatch_agents)
+agents$stray_rate <- pmax(0, pmin(1, agents$stray_rate)) # Bound probabilities between 0 and 1
+
+max_id <- max(agents$id)
+
+## build main loop function
+run_generation <- function(current_agents, s_wild, s_hatch, f_wild, f_hatch, hatch_release, capacity) {
+  n <- nrow(current_agents)
+  if (n == 0) return(data.frame(id=integer(), origin=character(), stray_rate=numeric()))
   
-  history$Pop1[step] <- sum(agents$status == "pop1")
-  history$Pop2[step] <- sum(agents$status == "pop2")
-  history$Dead[step] <- sum(agents$status == "dead")
+  # freshwater/early survival
+  rand_surv <- runif(n)
+  is_surviving <- ifelse(current_agents$origin == "wild" & rand_surv < s_wild, TRUE,
+                         ifelse(current_agents$origin == "hatchery" & rand_surv < s_hatch, TRUE, FALSE))
+  
+  returning_adults <- current_agents[is_surviving, ]
+  n_adults <- nrow(returning_adults)
+  
+  if (n_adults == 0) {
+    # if all die, the hatchery still releases its fish next year
+    new_hatchery <- data.frame(
+      id = (max_id + 1):(max_id + hatch_release),
+      origin = "hatchery",
+      stray_rate = rnorm(hatch_release, mean = mean_stray_hatchery_init, sd = 0.01)
+    )
+    max_id <<- max_id + hatch_release
+    return(new_hatchery)
+  }
+    # not so sure on this piece - they would need to source new broodstock but whatever
+  
+  # straying
+  rand_stray <- runif(n_adults)
+  returning_adults$spawning_site <- ifelse(rand_stray < returning_adults$stray_rate,
+                                           ifelse(returning_adults$origin == "wild", "hatchery", "wild"),
+                                           returning_adults$origin)
+  
+  # reproduction and heritability with carrying capacity - all adults die after this step
+  stream_spawners <- returning_adults[returning_adults$spawning_site == "wild", ]
+  
+  new_wild_agents <- data.frame(id=integer(), origin=character(), stray_rate=numeric())
+  n_stream <- nrow(stream_spawners)
+  
+  if (n_stream >= 2) {
+    # pairs to mate
+    parents1 <- stream_spawners[sample(1:n_stream, n_stream, replace = TRUE), ]
+    parents2 <- stream_spawners[sample(1:n_stream, n_stream, replace = TRUE), ]
+    
+    # calculate eggs per pair based on maternal origin - parent 1 is mother
+    eggs_per_pair <- ifelse(parents1$origin == "wild", f_wild, f_hatch)
+    total_potential_eggs <- sum(eggs_per_pair)
+    
+    if (total_potential_eggs > 0) {
+      # Beverton-Holt density dependence applied to offspring limit
+      # prevents total born wild juveniles from exceeding the stream capacity
+      actual_offspring_count <- round(total_potential_eggs / (1 + (total_potential_eggs / capacity)))
+      
+      # sample indices proportionally to eggs produced by each parent pair
+      sampled_parent_indices <- sample(1:n_stream, size = actual_offspring_count, replace = TRUE, prob = eggs_per_pair)
+      
+      # offspring inherit the mid-parent stray rate plus a tiny mutation/variation
+      mid_parent_stray <- (parents1$stray_rate[sampled_parent_indices] + parents2$stray_rate[sampled_parent_indices]) / 2
+      offspring_stray <- mid_parent_stray + rnorm(actual_offspring_count, mean = 0, sd = 0.005)
+      offspring_stray <- pmax(0, pmin(1, offspring_stray))
+      
+      new_ids <- (max_id + 1):(max_id + actual_offspring_count)
+      max_id <<- max_id + actual_offspring_count
+      
+      new_wild_agents <- data.frame(
+        id = new_ids,
+        origin = "wild",
+        stray_rate = offspring_stray,
+        stringsAsFactors = FALSE
+      )
+    }
+  }
+  
+  # fixed hatchery release - overrides natural reproduction
+  new_hatch_ids <- (max_id + 1):(max_id + hatch_release)
+  max_id <<- max_id + hatch_release
+  
+  new_hatchery_agents <- data.frame(
+    id = new_hatch_ids,
+    origin = "hatchery",
+    stray_rate = rnorm(hatch_release, mean = mean_stray_hatchery_init, sd = 0.01),
+    stringsAsFactors = FALSE
+  )
+  
+  next_generation <- rbind(new_wild_agents, new_hatchery_agents)
+  return(next_generation)
 }
 
-# Plot the population dynamics
-plot(history$Year, history$Pop1, type = "l", col = "blue", lwd = 2, 
-     ylim = c(0, max(c(history$Pop1, history$Pop2))), 
-     xlab = "Years", ylab = "Population Size", 
-     main = "Population Dynamics with Reproduction and Straying")
+## run simulation
+# dataframe to store information
+history <- data.frame(
+  Generation = 1:total_steps,
+  Wild_Abundance = numeric(total_steps),
+  Hatchery_Abundance = numeric(total_steps),
+  Mean_Stream_Stray_Gene = numeric(total_steps)
+)
 
-lines(history$Year, history$Pop2, col = "red", lwd = 2)
-# lines(history$Year, history$Dead, col = "black", lwd = 2, lty = 2)
+# running
+for (gen in 1:total_steps) {
+  # track status 
+  history$Wild_Abundance[gen] <- sum(agents$origin == "wild")
+  history$Hatchery_Abundance[gen] <- sum(agents$origin == "hatchery")
+  history$Mean_Stream_Stray_Gene[gen] <- mean(agents$stray_rate[agents$origin == "wild"])
+  
+  agents <- run_generation(agents, surv_wild, surv_hatchery, fecundity_wild, fecundity_hatchery, hatchery_annual_release, stream_carrying_capacity)
+}
 
-legend("topleft", legend = c("Population 1", 
-                             "Population 2"), 
-       col = c("blue", "red"), lwd = 2, lty = c(1, 1, 2))
-  # this works I think.. they are both recruiting
+# what is this??
+par(mfrow = c(1, 2))
 
-# WHAT ELSE DO I WANT? ---------------------------------------------------------
-  # fixed number released by hatchery each time step
-  # heritable straying tendencies?
+## plot results
+plot(history$Generation, history$Wild_Abundance, type = "b", col = "darkgreen", lwd = 2,
+     ylim = c(0, max(c(history$Wild_Abundance, history$Hatchery_Abundance))),
+     xlab = "Generations", ylab = "Abundance (Smolts/Fry)", 
+     main = "Population Sizes Over Time")
+lines(history$Generation, history$Hatchery_Abundance, type = "b", col = "orange", lwd = 2)
+legend("bottomright", legend = c("Wild Born", "Hatchery Released"), col = c("darkgreen", "orange"), lwd = 2)
 
-
+plot(history$Generation, history$Mean_Stream_Stray_Gene, type = "b", col = "purple", lwd = 2,
+     xlab = "Generations", ylab = "Mean Straying Trait Value",
+     main = "Evolution of Wild Straying Trait")
