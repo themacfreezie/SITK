@@ -552,6 +552,63 @@ legend("topright", legend = c("Population 1", "Population 2", "Total Dead"),
 #        col = c("blue", "red"), lwd = 2)
 
 
+
+# Simple Salmon Life Cycle Simulation Model -------------------------------
+years <- 5000
+spawners <- numeric(years)
+eggs <- numeric(years)
+smolts <- numeric(years)
+adults <- numeric(years)
+
+# Initial population
+spawners[1] <- 1500
+
+# Vital rates and parameters
+fecundity <- 1900     # Average eggs per female
+s_egg_base <- 0.065          # Egg to fry/smolt survival rate
+s_ocean_base <- 0.04        # Smolt to adult ocean survival rate
+harvest_rate <- 0.4   # Fishing mortality rate
+carrying_cap <- 150000  # Stream rearing capacity (Beverton-Holt style)
+
+for (t in 1:(years - 1)) {
+  # 1. Spawning phase with random variation in fecundity
+  # rpois protects against zero if numbers get low
+  eggs[t] <- sum(rpois(spawners[t], lambda = fecundity)) * 0.5 
+  
+  # 2. Freshwater phase with density-dependence (Beverton-Holt) + environmental shock
+  # Adding a random environmental multiplier to freshwater survival
+  env_shock_fw <- max(0.2, rnorm(1, mean = 1, sd = 0.15)) 
+  smolts_expected <- (s_egg_base * eggs[t]) / (1 + (s_egg_base * eggs[t]) / carrying_cap)
+  smolts[t] <- smolts_expected * env_shock_fw
+  
+  # 3. Ocean phase with highly variable survival (simulating marine heatwaves/el niño)
+  # Ocean conditions vary wildly using a log-normal distribution
+  env_shock_ocean <- rlnorm(1, meanlog = 0, sdlog = 0.25)
+  s_ocean_actual <- min(0.15, s_ocean_base * env_shock_ocean)
+  raw_adults <- smolts[t] * s_ocean_actual
+  
+  # 4. Harvest phase
+  adults[t] <- raw_adults * (1 - harvest_rate)
+  
+  # 5. Next year's spawners (escapement)
+  spawners[t + 1] <- adults[t]
+  
+  # Extinction safeguard for the simulation loop
+  if (spawners[t + 1] <= 0) {
+    spawners[(t+1):years] <- 0
+    break
+  }
+}
+
+# Plot the dynamic, stable population
+plot(1:years, spawners, type = "b", col = "darkgreen", lwd = 2, pch = 16,
+     xlab = "Year", ylab = "Number of Spawners",
+     main = "Stochastic Salmon Spawner Abundance Over Time")
+# Add a line to show the healthy baseline equilibrium
+abline(h = mean(spawners[10:years]), col = "red", lty = 2)
+
+
+
 # ATTEMPT AT FULL MODEL --------------------------------------------------------
 ## Set up
 # inputs
