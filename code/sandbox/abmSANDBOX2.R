@@ -4,18 +4,18 @@ library(tidyverse)
 # set.seed(123)
 
 # parameters
-Years        <- 50 
-Weeks        <- 12     # per season
+Years        <- 50     # number of seasons
+Weeks        <- 12     # weeks per season
 Fecundity    <- 4      # average surviving smolts/offspring per spawning adult
 HeritStray   <- 0      # 0 = offspring stray rate is mean of population; 1 = exact mid-parent trait
 HeritTime    <- 1      # 0 = offspring stray rate is mean of population; 1 = exact mid-parent trait
 
  # stream/hatchery settings
-Stream_K          <- 1200   # Carrying capacity of the Wild Stream (K)
+Stream_K          <- 1500   # Carrying capacity of the Wild Stream (K)
 Hatchery_Release  <- 3000   # Constant annual smolt release from hatchery
 Broodstock_Need   <- 250
 
-Initial_Abundance <- c(800, 1200) # [1 = Wild Stream, 2 = Hatchery]
+Initial_Abundance <- c(1500, 3000) # [1 = Wild Stream, 2 = Hatchery]
 Base_Stray_Rate   <- c(0.04, 0.08) # hatchery fish often have higher stray rates
 Natal_Mortality   <- c(0.15, 0.10) 
 Mean_Run_Timing   <- c(4.0, 7.0)   # Wild is early-ish (4); Hatchery is mid-run (7)
@@ -50,7 +50,12 @@ history <- data.frame(
   Year       = 1:Years, 
   WildStream = numeric(Years), 
   Hatchery   = numeric(Years),
-  Harvested  = numeric(Years)
+  Harvested  = numeric(Years),
+  Wild_AvgStray = numeric(Years), 
+  Wild_AvgTime  = numeric(Years), 
+  Hatch_AvgStray= numeric(Years), 
+  Hatch_AvgTime = numeric(Years)  
+  
 )
 
 # main simulation loop
@@ -74,7 +79,20 @@ for (yr in 1:Years) {
   # prespawn mortality  - mortality threshold based on origin
   mort_threshold <- ifelse(agents$natal == 1, Natal_Mortality[1], Natal_Mortality[2])
   survived_natal_mort <- runif(n_fish) > mort_threshold
-  agents <- agents[survived_natal_mort, ]
+  surv_agents <- agents[survived_natal_mort, ]
+  
+  # log traits before replacement occurs
+  wild_born     <- surv_agents[surv_agents$natal == 1, ]
+  hatchery_born <- surv_agents[surv_agents$natal == 2, ]
+  
+  history$Wild_AvgStray[yr] <- if(nrow(wild_born) > 0) mean(wild_born$stray_prob) else NA
+  history$Wild_AvgTime[yr]  <- if(nrow(wild_born) > 0) mean(wild_born$run_timing) else NA
+  
+  history$Hatch_AvgStray[yr] <- if(nrow(hatchery_born) > 0) mean(hatchery_born$stray_prob) else NA
+  history$Hatch_AvgTime[yr]  <- if(nrow(hatchery_born) > 0) mean(hatchery_born$run_timing) else NA
+  
+  # apply mortality filter to progress simulation loop
+  agents <- surv_agents
   
   # update population count post-mortality
   n_fish <- nrow(agents)
@@ -97,7 +115,8 @@ for (yr in 1:Years) {
   
   if (n_river >= 2) {
     # dd impacts spawning capacity
-    success_prob_river <- min(1, Stream_K / n_river)
+    expected_adults_per_spawner <- Fecundity * (1 - Natal_Mortality[1])
+    success_prob_river <- min(1, Stream_K / (n_river * expected_adults_per_spawner))
     river_survival <- runif(n_river) < success_prob_river
     river_spawners <- river_returns[river_survival, ]
     n_spawners_river <- nrow(river_spawners)
@@ -187,7 +206,7 @@ for (yr in 1:Years) {
 
 print(head(history, 20))
 
-#plot
+# plot returns
 max_y_value <- max(c(history$WildStream, history$Hatchery, history$Harvested, Stream_K), na.rm = TRUE)
 history_long <- pivot_longer(history, cols = c(WildStream, Hatchery, Harvested), 
                              names_to = "Metric", values_to = "Count")
@@ -198,10 +217,10 @@ ggplot(history_long, aes(x = Year, y = Count, color = Metric, linetype = Metric)
   # label carrying capacity
   annotate("text", x = Years * 0.2, y = Stream_K + (max_y_value * 0.03), 
            label = "Wild Habitat Carrying Capacity (K)", color = "#005f73", fontface = "italic", size = 3.5) +
-  scale_color_manual(values = c("WildStream" = "#005f73", "Hatchery" = "#9b2226", "Harvested" = "#ca6702"),
-                     labels = c("Wild Stream Returns", "Hatchery Returns", "Commercial Harvest")) +
-  scale_linetype_manual(values = c("WildStream" = "solid", "Hatchery" = "solid", "Harvested" = "twodash"),
-                        labels = c("Wild Stream Returns", "Hatchery Returns", "Commercial Harvest")) +
+  scale_color_manual(values = c("Harvested" = "#ca6702", "Hatchery" = "#9b2226", "WildStream" = "#005f73"),
+                     labels = c("Commercial Harvest", "Hatchery Returns", "Wild Stream Returns")) +
+  scale_linetype_manual(values = c("Harvested" = "twodash", "Hatchery" = "solid", "WildStream" = "solid"),
+                        labels = c("Commercial Harvest", "Hatchery Returns", "Wild Stream Returns")) +
   labs(title = "Salmon Demographics: Wild Stream vs. Hatchery System",
        subtitle = "Tracking individual spawning abundances, straying dynamics, and commercial extraction sinks",
        x = "Simulation Year", y = "Total Individual Fish Count", color = "Demographic Sector", linetype = "Demographic Sector") +
@@ -210,3 +229,65 @@ ggplot(history_long, aes(x = Year, y = Count, color = Metric, linetype = Metric)
         plot.subtitle = element_text(size = 9, color = "gray30"),
         legend.position = "bottom",
         panel.grid.minor = element_blank())
+
+# plot stray tendencies
+stray_data <- history %>%
+  select(Year, Wild_AvgStray, Hatch_AvgStray) %>%
+  pivot_longer(
+    cols = c(Wild_AvgStray, Hatch_AvgStray),
+    names_to = "Population",
+    values_to = "Avg_Stray_Rate"
+  ) %>%
+  mutate(
+    Population = recode(Population, 
+                        "Wild_AvgStray" = "Wild Stream", 
+                        "Hatch_AvgStray" = "Hatchery")
+  )
+
+ggplot(stray_data, aes(x = Year, y = Avg_Stray_Rate, color = Population)) +
+  geom_line(linewidth = 1.2) +
+  scale_color_manual(values = c("Wild Stream" = "#1b9e77", "Hatchery" = "#d95f02")) +
+  labs(
+    title = "Evolution of Stray Tendency Over Time",
+    subtitle = "Tracking average stray probability by natal origin",
+    x = "Year (Season)",
+    y = "Average Stray Probability",
+    color = "Natal Population"
+  ) +
+  theme_classic() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    axis.title = element_text(size = 11),
+    legend.position = "bottom"
+  )
+
+# plot run timing
+timing_data <- history %>%
+  select(Year, Wild_AvgTime, Hatch_AvgTime) %>%
+  pivot_longer(
+    cols = c(Wild_AvgTime, Hatch_AvgTime),
+    names_to = "Population",
+    values_to = "Avg_Run_Timing"
+  ) %>%
+  mutate(
+    Population = recode(Population, 
+                        "Wild_AvgTime" = "Wild Stream", 
+                        "Hatch_AvgTime" = "Hatchery")
+  )
+
+ggplot(timing_data, aes(x = Year, y = Avg_Run_Timing, color = Population)) +
+  geom_line(linewidth = 1.2) +
+  scale_color_manual(values = c("Wild Stream" = "#1b9e77", "Hatchery" = "#d95f02")) +
+  labs(
+    title = "Evolution of Run Timing Over Time",
+    subtitle = "Tracking average entry week by natal origin",
+    x = "Year (Season)",
+    y = "Average Run Timing (Weeks)",
+    color = "Natal Population"
+  ) +
+  theme_classic() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    axis.title = element_text(size = 11),
+    legend.position = "bottom"
+  )
