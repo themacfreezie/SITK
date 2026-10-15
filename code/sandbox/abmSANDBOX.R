@@ -612,7 +612,7 @@ abline(h = mean(spawners[10:years]), col = "red", lty = 2)
 # ATTEMPT AT FULL MODEL --------------------------------------------------------
 ## Set up
 # inputs
-num_wild_init     <- 2000   
+num_wild_init <- 2000   
 num_hatchery_init <- 10000
 
 surv_wild     <- 0.001   

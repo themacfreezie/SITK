@@ -1,0 +1,212 @@
+# salmon agent-based simulation model: straying and carrying cpacity only
+library(tidyverse)
+
+# set.seed(123)
+
+# parameters
+Years        <- 50 
+Weeks        <- 12     # per season
+Fecundity    <- 4      # average surviving smolts/offspring per spawning adult
+HeritStray   <- 0      # 0 = offspring stray rate is mean of population; 1 = exact mid-parent trait
+HeritTime    <- 1      # 0 = offspring stray rate is mean of population; 1 = exact mid-parent trait
+
+ # stream/hatchery settings
+Stream_K          <- 1200   # Carrying capacity of the Wild Stream (K)
+Hatchery_Release  <- 3000   # Constant annual smolt release from hatchery
+Broodstock_Need   <- 250
+
+Initial_Abundance <- c(800, 1200) # [1 = Wild Stream, 2 = Hatchery]
+Base_Stray_Rate   <- c(0.04, 0.08) # hatchery fish often have higher stray rates
+Natal_Mortality   <- c(0.15, 0.10) 
+Mean_Run_Timing   <- c(4.0, 7.0)   # Wild is early-ish (4); Hatchery is mid-run (7)
+
+# initialization - starting agents dataframes
+init_stream <- function(id_start, num_fish, natal_origin, initial_stray_prob, initial_mean_week) {
+  data.frame(
+    id         = id_start:(id_start + num_fish - 1),
+    natal      = rep(natal_origin, num_fish),   
+    current    = rep(natal_origin, num_fish), 
+    stray_prob = rnorm(num_fish, mean = initial_stray_prob, sd = 0.01),
+    run_timing = rnorm(num_fish, mean = initial_mean_week, sd = 1.2)
+  )
+}
+
+agents1 <- init_stream(id_start = 1, 
+                       num_fish = Initial_Abundance[1], 
+                       natal_origin = 1, 
+                       initial_stray_prob = Base_Stray_Rate[1], 
+                       initial_mean_week = Mean_Run_Timing[1])
+
+agents2 <- init_stream(id_start = Initial_Abundance[1] + 1, 
+                       num_fish = Initial_Abundance[2], 
+                       natal_origin = 2, 
+                       initial_stray_prob = Base_Stray_Rate[2], 
+                       initial_mean_week = Mean_Run_Timing[2])
+
+agents  <- rbind(agents1, agents2)
+
+# tracking annual abundance and harvest
+history <- data.frame(
+  Year       = 1:Years, 
+  WildStream = numeric(Years), 
+  Hatchery   = numeric(Years),
+  Harvested  = numeric(Years)
+)
+
+# main simulation loop
+next_id <- max(agents$id) + 1
+
+for (yr in 1:Years) {
+  n_fish <- nrow(agents)
+  
+  if (n_fish == 0) {
+    cat("Extinction event in year:", yr, "\n")
+    break
+  }
+  
+  # does an individual stray?
+  will_stray <- runif(n_fish) < agents$stray_prob
+  
+  agents$current <- ifelse(will_stray, 
+                           ifelse(agents$natal == 1, 2, 1), # stray to opposite stream
+                           agents$natal) # return to natal stream
+  
+  # prespawn mortality  - mortality threshold based on origin
+  mort_threshold <- ifelse(agents$natal == 1, Natal_Mortality[1], Natal_Mortality[2])
+  survived_natal_mort <- runif(n_fish) > mort_threshold
+  agents <- agents[survived_natal_mort, ]
+  
+  # update population count post-mortality
+  n_fish <- nrow(agents)
+  if (n_fish == 0) break
+  
+  # assign entry week rounded to discrete weeks, bounded by season limits
+  agents$entry_week <- round(agents$run_timing)
+  agents$entry_week <- pmax(1, pmin(agents$entry_week, Weeks))
+  
+  river_returns    <- agents[agents$current == 1, ]
+  hatchery_returns <- agents[agents$current == 2, ]
+  
+  # log returns
+  history$WildStream[yr] <- nrow(river_returns)
+  history$Hatchery[yr]   <- nrow(hatchery_returns)
+  
+  # submodel a: wild stream spawning w/ density dependence
+  wild_offspring <- list()
+  n_river <- nrow(river_returns)
+  
+  if (n_river >= 2) {
+    # dd impacts spawning capacity
+    success_prob_river <- min(1, Stream_K / n_river)
+    river_survival <- runif(n_river) < success_prob_river
+    river_spawners <- river_returns[river_survival, ]
+    n_spawners_river <- nrow(river_spawners)
+    
+    # week-by-week spawning within the river
+    if (n_spawners_river >= 2) {
+      for (wk in 1:Weeks) {
+        wk_spawners <- river_spawners[river_spawners$entry_week == wk, ]
+        n_wk <- nrow(wk_spawners)
+        
+        if (n_wk >= 2) {
+          wk_offspring_count <- round(n_wk * Fecundity)
+          if (wk_offspring_count > 0) {
+            p1 <- sample(1:n_wk, wk_offspring_count, replace = TRUE)
+            p2 <- sample(1:n_wk, wk_offspring_count, replace = TRUE)
+            
+            # inherit stray probability w/ noise
+            mid_stray <- (wk_spawners$stray_prob[p1] + wk_spawners$stray_prob[p2]) / 2
+            pop_stray <- mean(river_spawners$stray_prob)
+            o_stray   <- (HeritStray * mid_stray) + ((1 - HeritStray) * pop_stray)
+            o_stray   <- pmax(0, pmin(o_stray + rnorm(wk_offspring_count, 0, 0.002), 1))
+            
+            # inherit run timing w/ noise
+            mid_time  <- (wk_spawners$run_timing[p1] + wk_spawners$run_timing[p2]) / 2
+            pop_time  <- mean(river_spawners$run_timing)
+            o_time    <- (HeritTime * mid_time) + ((1 - HeritTime) * pop_time) + rnorm(wk_offspring_count, 0, 0.5)
+            
+            wild_offspring[[wk]] <- data.frame(
+              id = next_id:(next_id + wk_offspring_count - 1),
+              natal = 1, current = 1, stray_prob = o_stray, run_timing = o_time
+            )
+            next_id <- next_id + wk_offspring_count
+          }
+        }
+      }
+    }
+  }
+  wild_generation <- do.call(rbind, wild_offspring)
+  
+  # submodel b: hatchery returns (broodstock selection and harvest)
+  hatchery_generation <- data.frame()
+  n_hatch <- nrow(hatchery_returns)
+  
+  if (n_hatch >= 2) {
+    # bias selection toward early weeks - week 1 (of W) has weight W, Week W has weight 1.
+    sampling_weights <- (Weeks + 1) - hatchery_returns$entry_week
+    
+    # cap sampling needs at whatever returned
+    actual_brood_count <- min(Broodstock_Need, n_hatch)
+    
+    # sample individual broodstock rows based early returning bias
+    broodstock_indices <- sample(1:n_hatch, size = actual_brood_count, 
+                                 replace = FALSE, prob = sampling_weights)
+    broodstock <- hatchery_returns[broodstock_indices, ]
+    
+    # remaining fish are routed to commercial harvest logs
+    history$Harvested[yr] <- n_hatch - actual_brood_count
+    
+    # produce fixed # of offspring matrix from the selected broodstock
+    if (actual_brood_count >= 2) {
+      p1 <- sample(1:actual_brood_count, Hatchery_Release, replace = TRUE)
+      p2 <- sample(1:actual_brood_count, Hatchery_Release, replace = TRUE)
+      
+      mid_stray <- (broodstock$stray_prob[p1] + broodstock$stray_prob[p2]) / 2
+      pop_stray <- mean(broodstock$stray_prob)
+      o_stray   <- (HeritStray * mid_stray) + ((1 - HeritStray) * pop_stray)
+      o_stray   <- pmax(0, pmin(o_stray + rnorm(Hatchery_Release, 0, 0.002), 1))
+      
+      mid_time  <- (broodstock$run_timing[p1] + broodstock$run_timing[p2]) / 2
+      pop_time  <- mean(broodstock$run_timing)
+      o_time    <- (HeritTime * mid_time) + ((1 - HeritTime) * pop_time) + rnorm(Hatchery_Release, 0, 0.5)
+      
+      hatchery_generation <- data.frame(
+        id = next_id:(next_id + Hatchery_Release - 1),
+        natal = 2, current = 2, stray_prob = o_stray, run_timing = o_time
+      )
+      next_id <- next_id + Hatchery_Release
+    }
+  } else {
+    history$Harvested[yr] <- 0
+  }
+  
+  # progeny become next year's agents
+  agents <- rbind(wild_generation, hatchery_generation)
+  if (is.null(agents)) { agents <- data.frame() }
+} 
+
+print(head(history, 20))
+
+#plot
+max_y_value <- max(c(history$WildStream, history$Hatchery, history$Harvested, Stream_K), na.rm = TRUE)
+history_long <- pivot_longer(history, cols = c(WildStream, Hatchery, Harvested), 
+                             names_to = "Metric", values_to = "Count")
+ggplot(history_long, aes(x = Year, y = Count, color = Metric, linetype = Metric)) +
+  geom_line(linewidth = 1.2) +
+  # horizontal dashed line for Wild Stream Capacity
+  geom_hline(yintercept = Stream_K, color = "#005f73", linetype = "dashed", alpha = 0.6) +
+  # label carrying capacity
+  annotate("text", x = Years * 0.2, y = Stream_K + (max_y_value * 0.03), 
+           label = "Wild Habitat Carrying Capacity (K)", color = "#005f73", fontface = "italic", size = 3.5) +
+  scale_color_manual(values = c("WildStream" = "#005f73", "Hatchery" = "#9b2226", "Harvested" = "#ca6702"),
+                     labels = c("Wild Stream Returns", "Hatchery Returns", "Commercial Harvest")) +
+  scale_linetype_manual(values = c("WildStream" = "solid", "Hatchery" = "solid", "Harvested" = "twodash"),
+                        labels = c("Wild Stream Returns", "Hatchery Returns", "Commercial Harvest")) +
+  labs(title = "Salmon Demographics: Wild Stream vs. Hatchery System",
+       subtitle = "Tracking individual spawning abundances, straying dynamics, and commercial extraction sinks",
+       x = "Simulation Year", y = "Total Individual Fish Count", color = "Demographic Sector", linetype = "Demographic Sector") +
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold", size = 13),
+        plot.subtitle = element_text(size = 9, color = "gray30"),
+        legend.position = "bottom",
+        panel.grid.minor = element_blank())
