@@ -1,4 +1,4 @@
-# salmon agent-based simulation model: straying and carrying cpacity only
+# salmon agent-based simulation model
 library(tidyverse)
 
 # set.seed(123)
@@ -114,7 +114,7 @@ for (yr in 1:Years) {
   n_river <- nrow(river_returns)
   
   if (n_river >= 2) {
-    # dd impacts spawning capacity
+    # density dependence impacts spawning capacity
     expected_adults_per_spawner <- Fecundity * (1 - Natal_Mortality[1])
     success_prob_river <- min(1, Stream_K / (n_river * expected_adults_per_spawner))
     river_survival <- runif(n_river) < success_prob_river
@@ -162,12 +162,13 @@ for (yr in 1:Years) {
   
   if (n_hatch >= 2) {
     # bias selection toward early weeks - week 1 (of W) has weight W, Week W has weight 1.
+        ## this might be overly simplistic..
     sampling_weights <- (Weeks + 1) - hatchery_returns$entry_week
     
     # cap sampling needs at whatever returned
     actual_brood_count <- min(Broodstock_Need, n_hatch)
     
-    # sample individual broodstock rows based early returning bias
+    # sample individual broodstock rows based on early returning bias
     broodstock_indices <- sample(1:n_hatch, size = actual_brood_count, 
                                  replace = FALSE, prob = sampling_weights)
     broodstock <- hatchery_returns[broodstock_indices, ]
