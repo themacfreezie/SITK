@@ -210,8 +210,8 @@ run_salmon_sim <- function(wild_stray_rate, hatch_stray_rate) {
 }
 
 # define stray parameter grid
-wild_stray_levels  <- seq(0.00, 0.5, by = 0.01)
-hatch_stray_levels <- seq(0.00, 0.5, by = 0.01)
+wild_stray_levels  <- seq(0.00, 0.5, by = 0.05)
+hatch_stray_levels <- seq(0.00, 0.5, by = 0.05)
 
 sweep_grid <- expand.grid(
   Wild_Stray  = wild_stray_levels,
