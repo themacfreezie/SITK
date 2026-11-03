@@ -12,7 +12,7 @@ straysSJ <- strays %>% filter(Source!="ESCAPEMENT SURVEY")
 
 # detail cleaning, IR
 straysIR <- straysIR %>% filter(`AStream / Watershed Code`=="113-41-10190")
-  # dismiss weird streamID from IR
+  # dismiss 1 weird streamID that is not IR
 straysIR <- straysIR %>% filter(`Stat Week` < 42)
   # dismiss real late samples (past mid-october)
 
@@ -32,10 +32,19 @@ straysIR <- straysIR[-c(2:3)]
 straysSJ <- straysSJ %>% filter(`Stat Week` < 42)
   # dismiss real late samples (past mid-october)
 
+# grab cost recovery only
+straysCRw <- straysSJ %>% filter(Source=="COST RECOVERY")
+
 # collapse around year, SJ
 straysSJ <- straysSJ %>%
   group_by(Year) %>%
   summarize(Marked = sum(Marked), `Not Marked` = sum(`Not Marked`))
+
+# collapse around year, cost recovery
+straysCR <- straysCRw %>%
+  group_by(Year) %>%
+  summarize(Marked = sum(Marked), `Not Marked` = sum(`Not Marked`))
+straysCRw <- straysCRw[-c(2:5, 7:14, 17:39)]
 
 # build total and pct, SJ
 straysSJ$sj_total = straysSJ$Marked + straysSJ$`Not Marked`
@@ -43,6 +52,18 @@ straysSJ <- straysSJ %>% filter(sj_total>=30)
   # dismiss sampling efforts w/ fewer than 30 observaitons
 straysSJ$sj_pctMark = straysSJ$Marked/straysSJ$sj_total
 straysSJ <- straysSJ[-c(2:3)]
+
+# build total and pct, cost recovery
+straysCR$CR_total = straysCR$Marked + straysCR$`Not Marked`
+straysCR <- straysCR %>% filter(CR_total>=30)
+  # dismiss sampling efforts w/ fewer than 30 observaitons
+straysCR$CR_pctMark = straysCR$Marked/straysCR$CR_total
+
+# build total and pct, cost recovery
+straysCRw$CRw_total = straysCRw$Marked + straysCRw$`Not Marked`
+straysCRw <- straysCRw %>% filter(CRw_total>=30)
+  # dismiss sampling efforts w/ fewer than 30 observaitons
+straysCRw$CRw_pctMark = straysCRw$Marked/straysCRw$CRw_total
 
 strays_clean <- merge(straysIR, straysSJ, by="Year")
 

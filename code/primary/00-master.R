@@ -36,3 +36,6 @@ source(here("code", "primary", "c03-BETA_modelbuild.R"))
 source(here("code", "primary", "c04-BETA_modeleval.R"))
 source(here("code", "primary", "c05-BETA_bootstrap.R"))
 source(here("code", "primary", "c06-BETA_boot_output.R"))
+
+# additional material
+source(here("code", "primary", "d01-STRAY_examination.R"))
